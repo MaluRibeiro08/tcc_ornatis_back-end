@@ -32,9 +32,19 @@ class ControllerEmpresa{
                 break;
             
             case 'POST':
-                
-                return $this->_model_empresa->create();
 
+                if ($this->_id_empresa) {
+                    return $this->_model_empresa->update();
+                    break;
+                } else {
+                    return $this->_model_empresa->create();
+                }
+
+                break;
+
+            case 'DELETE':
+                echo $this->_id_empresa;
+                return $this->_model_empresa->delete();
                 break;
 
             default:
