@@ -3,6 +3,7 @@
 class ModelAdministrador{
 
     private $_conexao;
+    private $_method;
 
     private $_id_administrador;
     private $_cpf;
@@ -13,14 +14,33 @@ class ModelAdministrador{
 
     public function __construct($conexao)
     {
-        
-        $json = file_get_contents("php://input");
-        $dadosAdmin = json_decode($json);
+        $this->_method = $_SERVER['REQUEST_METHOD'];
 
-        $this->_id_administrador = $dadosAdmin->id_administrador ?? null;
-        $this->_cpf = $dadosAdmin->cpf ?? null;
-        $this->_data_nascimento = $dadosAdmin->data_nascimento ?? null;
-        $this->_nome_adm = $dadosAdmin->nome_adm ?? null;
+        $json = file_get_contents("php://input");
+        $dados_admin = json_decode($json);
+
+        switch ($this->_method) {
+            case 'POST':
+                
+                $this->_id_administrador = $_POST["id_administrador"] ?? null;
+                $this->_cpf = $_POST["cpf"] ?? null;
+                $this->_data_nascimento = $_POST["data_nascimento"] ?? null;
+                $this->_nome_adm = $_POST["nome_adm"] ?? null;
+                $this->_id_empresa = $_POST["id_empresa"] ?? null;
+
+                break;
+            
+            default:
+
+                $this->_id_administrador = $dados_admin->id_administrador ?? null;
+                // $this->_cpf = $dados_admin->cpf ?? null;
+                // $this->_data_nascimento = $dados_admin->data_nascimento ?? null;
+                // $this->_nome_adm = $dados_admin->nome_adm ?? null;
+                // $this->_id_empresa = $dados_admin->_id_empresa ?? null;
+                break;
+        }
+
+        
 
         $this->_conexao = $conexao;
         
@@ -44,6 +64,7 @@ class ModelAdministrador{
     public function create(){
 
         //cadastro
+        /* Como pegar o id de empresa? */
 
         $sql = "INSERT INTO tbl_administrador (cpf, data_nascimento, nome_adm, id_empresa) 
         VALUES (?, ?, ?, ?)";
@@ -52,8 +73,8 @@ class ModelAdministrador{
 
         $stm->bindValue(1, $this->_cpf);
         $stm->bindValue(2, $this->_data_nascimento);
-        $stm->bindValue(1, $this->_nome_adm);
-        $stm->bindValue(1, $this->_id_empresa);
+        $stm->bindValue(3, $this->_nome_adm);
+        $stm->bindValue(4, $this->_id_empresa);
 
         if ($stm->execute()) {
             return "Success";
@@ -64,6 +85,40 @@ class ModelAdministrador{
         
 
     }
+
+    public function delete(){
+
+        $sql = "DELETE FROM tbl_administrador WHERE id_administrador = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_administrador);
+
+        if ($stm->execute()) {
+            return "Dados excluídos com sucesso!";
+        }
+
+    }
+
+    public function update(){
+
+        $sql = "UPDATE tbl_administrador SET
+        cpf = ?,
+        data_nascimento = ?,
+        nome_adm = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        
+        $stm->bindValue(1, $this->_cpf);
+        $stm->bindValue(2, $this->_data_nascimento);
+        $stm->bindValue(3, $this->_nome_adm);
+
+        if ($stm->execute()) {
+            return "Dados alterados com sucesso!";
+        }
+
+    }
+
+
 
 }
 

@@ -22,12 +22,21 @@ class ControllerAdministrador{
             case 'GET':
                 
                 return $this->_model_admin->findById();
-
                 break;
 
             case 'POST':
 
-                return $this->_model_admin->create();
+                if ($this->_id_administrador) {
+                    return $this->_model_admin->update();
+                    break;
+                } else {
+                    return $this->_model_admin->create();
+                    break;
+                }
+
+            case 'DELETE':
+                return $this->_model_admin->delete();
+                break;
 
             default:
                 # code...
