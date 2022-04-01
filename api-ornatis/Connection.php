@@ -2,34 +2,36 @@
 
 class Connection{
 
-    private $_dbHostName = "localhost";
+    private $_dbHostname = "127.0.0.1";
     private $_dbName = "db_ornatis";
-    private $_userName = "root";
+    private $_dbUsername = "root";
     private $_dbPassword = "12345678";
     private $_conexao;
 
-    public function __construct()
-    {
-        
+    public function __construct() {
+
         try {
             
-            $this-> _conexao = new PDO("mysql:host =$this->_dbHostName;dbname=$this->_dbName", 
-                                    $this->_userName,
-                                    $this->_dbPassword
-        );
+            $this-> _conexao = new PDO("mysql:host=$this->_dbHostname;
+                                         dbname=$this->_dbName", 
+                                         $this->_dbUsername,
+                                         $this->_dbPassword);
 
-            //configurações
-            $this->_conexao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        	$this->_conexao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        } catch (PDOException $e) {
+            // echo "Conectado com sucesso. <br />";
+            // print_r($this->_con);
+
+       } catch(PDOException $e) {
             
-            echo "Erro de conexão:" . $e->getMessage();
+           echo "Connection failed: <br />";
+           print_r($e->getMessage());
 
-        }
+       }
 
     }
 
-    public function returnConnection(){
+    public function returnConnection() {
         return $this->_conexao;
     }
 

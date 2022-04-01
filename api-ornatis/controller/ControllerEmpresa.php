@@ -5,6 +5,7 @@ class ControllerEmpresa{
     private $_method;
     private $_model_empresa;
     private $_id_empresa;
+    private $_flag;
 
     public function __construct($model)
     {
@@ -16,6 +17,7 @@ class ControllerEmpresa{
         $dados_empresa = json_decode($json);
 
         $this->_id_empresa = $dados_empresa->id_empresa ?? $_POST["id_empresa"] ?? null;
+        $this->_flag = $_POST["flag"] ?? null;
 
     }
 
@@ -36,7 +38,10 @@ class ControllerEmpresa{
                 if ($this->_id_empresa) {
                     return $this->_model_empresa->update();
                     break;
-                } else {
+                } elseif ($this->_flag == "rede_social") {
+                    return $this->_model_empresa->updateRedesSociais();
+                }
+                else {
                     return $this->_model_empresa->create();
                 }
 
