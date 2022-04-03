@@ -54,6 +54,14 @@ class ModelEmpresa
                 $this->_nome_usuario_instagram = $_POST["nome_usuario_instagram"] ?? null;
                 $this->_link_faceboook = $_POST["link_facebook"] ?? null;
 
+                $this->_rua_empresa = $_POST["rua"] ?? null;
+                $this->_bairro_empresa = $_POST["bairro"] ?? null;
+                $this->_numero_rua_empresa = $_POST["numero_rua"] ?? null;
+                $this->_complemento_endereco = $_POST["complemento"] ?? null;
+                $this->_cep = $_POST["cep"] ?? null;
+                $this->_id_cidade = $_POST["id_cidade"] ?? null;
+
+
                 break;
 
             default:
@@ -89,6 +97,226 @@ class ModelEmpresa
 
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+    // public function getInformacoesContaEmpresa()
+    // {
+    //    //$sql = "SELECT * FROM tbl_empresa WHERE id_empresa = ?";
+
+
+    //     $sql =
+    //         "SELECT
+    //         tbl_empresa.nome_fantasia,
+    //         tbl_empresa.cnpj,
+    //         tbl_empresa.telefone,
+    //         tbl_empresa.biografia,
+    //         tbl_empresa.intervalo_tempo_padrao_entre_servicos,
+    //         tbl_empresa.taxa_unica_cancelamento,
+    //         tbl_endereco_salao.cep,
+    //         tbl_endereco_salao.bairro,
+    //         tbl_endereco_salao.rua,
+    //         tbl_endereco_salao.numero,
+    //         tbl_endereco_salao.complemento,
+    //         tbl_cidade.nome_cidade,
+    //         tbl_estado.nome_estado,
+    //         tbl_forma_pagamento.forma_pagamento,
+    //         tbl_taxa_cancelamento.valor_acima_de_100,
+    //         tbl_taxa_cancelamento.horas_tolerancia,
+    //         tbl_taxa_cancelamento.porcentagem_sobre_valor_servico,
+    //         tbl_dia_semana.dia_da_semana,
+    //         tbl_dia_funcionamento.hora_inicio,
+    //         tbl_dia_funcionamento.hora_termino
+
+    //             from tbl_empresa 
+                    
+    //             inner join tbl_endereco_salao
+    //             on tbl_empresa.id_empresa = tbl_endereco_salao.id_empresa
+                
+    //             inner join tbl_cidade
+    //             on tbl_endereco_salao.id_empresa = tbl_cidade.id_cidade
+                
+    //             inner join tbl_estado
+    //             on tbl_cidade.id_estado = tbl_estado.id_estado
+                
+    //             inner join tbl_empresa_forma_pagamento
+    //             on tbl_empresa.id_empresa = tbl_empresa_forma_pagamento.id_empresa
+                
+    //             inner join tbl_forma_pagamento
+    //             on tbl_empresa_forma_pagamento.id_forma_pagamento = tbl_forma_pagamento.id_forma_pagamento
+                
+    //             inner join tbl_taxa_cancelamento
+    //             on tbl_empresa.id_empresa = tbl_taxa_cancelamento.id_empresa
+                
+    //             inner join tbl_dia_funcionamento
+    //             on tbl_empresa.id_empresa = tbl_dia_funcionamento.id_empresa
+                
+    //             inner join tbl_dia_semana
+    //             on tbl_dia_funcionamento.id_dia_semana = tbl_dia_semana.id_dia_semana
+                
+    //             where tbl_empresa.id_empresa = ?";
+                
+    //     $stm = $this->_conexao->prepare($sql);
+    //     $stm->bindValue(1, $this->_id_empresa);
+
+    //     $stm->execute();
+
+    //     return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    //}
+
+    public function getInformacoesEmpresa()
+    {
+        $sql = " SELECT 
+                tbl_empresa.nome_fantasia,
+                tbl_empresa.cnpj,
+                tbl_empresa.telefone,
+                tbl_empresa.biografia,
+                tbl_empresa.intervalo_tempo_padrao_entre_servicos,
+                tbl_empresa.taxa_unica_cancelamento
+
+                FROM tbl_empresa 
+                WHERE tbl_empresa.id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getEnderecoEmpresa()
+    {
+        $sql = "SELECT 
+                tbl_endereco_salao.cep,
+                tbl_endereco_salao.bairro,
+                tbl_endereco_salao.rua,
+                tbl_endereco_salao.numero,
+                tbl_endereco_salao.complemento,
+                tbl_cidade.nome_cidade,
+                tbl_estado.nome_estado
+
+                FROM tbl_endereco_salao
+                    inner join tbl_cidade
+                    on tbl_endereco_salao.id_cidade = tbl_cidade.id_cidade
+                    
+                    inner join tbl_estado
+                    on tbl_cidade.id_estado = tbl_estado.id_estado
+
+                WHERE tbl_endereco_salao.id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getFuncionamento()
+    {
+
+        $sql = "SELECT 
+                tbl_dia_funcionamento.hora_inicio,
+                tbl_dia_funcionamento.hora_termino,
+                tbl_dia_semana.dia_da_semana
+
+                FROM tbl_dia_funcionamento
+                    inner join tbl_dia_semana
+                    on tbl_dia_funcionamento.id_dia_semana = tbl_dia_semana.id_dia_semana
+                    
+
+                WHERE tbl_dia_funcionamento.id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+
+        $stm->execute();
+
+        $funcionamentos = $stm->fetchAll(\PDO::FETCH_ASSOC);
+        $dias_funcionamento = [];
+        $verificacao = [];
+        foreach ($funcionamentos as $funcionamento) 
+        {
+           $dia_semana = $funcionamento["dia_da_semana"];
+
+           if($dias_funcionamento == null)
+           {
+                $dias_funcionamento[$dia_semana][] = $funcionamento;
+
+           }
+           else
+           {    
+                $confimacao_criacao = false;
+                foreach($dias_funcionamento as $dia_semana_que_tem_funcionamento => $infos_funcionamento)
+                {
+                    
+                    if($dia_semana_que_tem_funcionamento == $dia_semana)
+                    {
+                        $dias_funcionamento[$dia_semana_que_tem_funcionamento][] = $funcionamento;
+                        $confimacao_criacao = true;
+                    }
+                }
+                if ($confimacao_criacao == false) 
+                {
+                    $dias_funcionamento[$dia_semana][] = $funcionamento;
+                }
+            }          
+            
+        };
+        // return $verificacao;
+        return $dias_funcionamento;
+    }
+
+    public function getFormasPagamento()
+    {
+        $sql = "SELECT 
+                tbl_forma_pagamento.forma_pagamento
+
+                FROM tbl_empresa_forma_pagamento
+                    inner join tbl_forma_pagamento
+                    on tbl_empresa_forma_pagamento.id_forma_pagamento = tbl_forma_pagamento.id_forma_pagamento
+
+                WHERE tbl_empresa_forma_pagamento.id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+
+        $stm->execute();
+
+        $formas_pagamento = $stm->fetchAll(\PDO::FETCH_ASSOC);
+       
+        if ($formas_pagamento == null) 
+        {
+            return "Nenhuma forma de pagamento encontrada";
+        } else {
+            $lista_formas_pagamento = [];
+            foreach ($formas_pagamento as $forma_pagamento) 
+            {
+                $lista_formas_pagamento[] = $forma_pagamento["forma_pagamento"];
+            };
+            return $lista_formas_pagamento;
+        }
+        
+
+    }
+
+    public function getTaxasCancelamento()
+    {
+        $sql = "SELECT 
+                tbl_taxa_cancelamento.valor_acima_de_100,
+                tbl_taxa_cancelamento.horas_tolerancia,
+                tbl_taxa_cancelamento.porcentagem_sobre_valor_servico
+
+                FROM tbl_taxa_cancelamento
+                WHERE tbl_taxa_cancelamento.id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
 
     public function create()
     {
