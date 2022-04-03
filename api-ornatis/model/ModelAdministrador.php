@@ -18,6 +18,7 @@ class ModelAdministrador{
 
         $json = file_get_contents("php://input");
         $dados_admin = json_decode($json);
+        var_dump($dados_admin);
 
         switch ($this->_method) {
             case 'POST':
@@ -31,8 +32,8 @@ class ModelAdministrador{
                 break;
             
             default:
-
                 $this->_id_administrador = $dados_admin->id_administrador ?? null;
+                $this->_id_empresa = $dados_admin->id_empresa ?? null;
                 // $this->_cpf = $dados_admin->cpf ?? null;
                 // $this->_data_nascimento = $dados_admin->data_nascimento ?? null;
                 // $this->_nome_adm = $dados_admin->nome_adm ?? null;
@@ -55,9 +56,52 @@ class ModelAdministrador{
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_administrador);
 
-        $stm->execute();
+        if($stm->execute())
+        {
+            return $stm->fetchAll(\PDO::FETCH_ASSOC);
+        }
+        else
+        {
+            return "deu errado";
+        };
+    }
+    public function findByEmpresa(){
+        //listagem
 
-        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+        $sql = "SELECT * FROM tbl_administrador WHERE id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+
+        if($stm->execute())
+        {
+            return $stm->fetchAll(\PDO::FETCH_ASSOC);
+        }
+        else
+        {
+            return "Erro ao buscar dados de administrador";
+        };
+    }
+    public function getLogin(int $idAdministrador)
+    {
+        $sql = "SELECT
+                tbl_login_adm.email_adm,
+                tbl_login_adm.senha_adm
+               
+                FROM tbl_login_adm 
+                WHERE id_administrador = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $idAdministrador);
+
+        if($stm->execute())
+        {
+            return $stm->fetchAll(\PDO::FETCH_ASSOC);
+        }
+        else
+        {
+            return "Erro ao buscar dados de login de administrador";
+        };
 
     }
 
