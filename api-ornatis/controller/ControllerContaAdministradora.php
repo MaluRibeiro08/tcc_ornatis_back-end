@@ -48,7 +48,7 @@ class ControllerContaAdministradora{
 
                     //dados de login
                     $_id_administrador = $dados_administrador["dados_administrador"][0]["id_administrador"];
-                    $dados_login["dados_login"] = $this->_model_admin->getLogin(1);
+                    $dados_login["dados_login"] = $this->_model_admin->getLogin($_id_administrador);
 
                     return (array_merge($dados_administrador,$dados_empresa, $dados_login));
                 }

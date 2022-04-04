@@ -5,8 +5,8 @@ class Connection{
     private $_dbHostname = "127.0.0.1";
     private $_dbName = "db_ornatis";
     private $_dbUsername = "root";
-    //private $_dbPassword = "12345678";
-    private $_dbPassword = "bcd127";
+    private $_dbPassword = "12345678";
+    //private $_dbPassword = "bcd127";
     private $_conexao;
 
     public function __construct() {
