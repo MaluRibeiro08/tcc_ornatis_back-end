@@ -170,7 +170,11 @@ class ModelEmpresa
                 tbl_empresa.telefone,
                 tbl_empresa.biografia,
                 tbl_empresa.intervalo_tempo_padrao_entre_servicos,
-                tbl_empresa.taxa_unica_cancelamento
+                tbl_empresa.taxa_unica_cancelamento,
+                tbl_empresa.imagem_perfil,
+                tbl_empresa.nome_usuario_instagram,
+                tbl_empresa.link_facebook
+                
 
                 FROM tbl_empresa 
                 WHERE tbl_empresa.id_empresa = ?";
@@ -179,7 +183,6 @@ class ModelEmpresa
         $stm->bindValue(1, $this->_id_empresa);
 
         $stm->execute();
-
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 
@@ -266,14 +269,18 @@ class ModelEmpresa
         return $dias_funcionamento;
     }
 
-    public function getFormasPagamento()
+    public function getInformacoesPagamento()
     {
         $sql = "SELECT 
-                tbl_forma_pagamento.forma_pagamento
+                tbl_forma_pagamento.forma_pagamento,
+                tbl_empresa.observacoes_pagamento
 
                 FROM tbl_empresa_forma_pagamento
                     inner join tbl_forma_pagamento
                     on tbl_empresa_forma_pagamento.id_forma_pagamento = tbl_forma_pagamento.id_forma_pagamento
+
+                    inner join tbl_empresa
+                    on tbl_empresa_forma_pagamento.id_empresa = tbl_empresa.id_empresa
 
                 WHERE tbl_empresa_forma_pagamento.id_empresa = ?";
 
@@ -288,11 +295,14 @@ class ModelEmpresa
         {
             return "Nenhuma forma de pagamento encontrada";
         } else {
+            // return $formas_pagamento;
             $lista_formas_pagamento = [];
             foreach ($formas_pagamento as $forma_pagamento) 
             {
-                $lista_formas_pagamento[] = $forma_pagamento["forma_pagamento"];
+                $lista_formas_pagamento["formas_aceitas"][] = $forma_pagamento["forma_pagamento"];
             };
+
+            $lista_formas_pagamento["observacoes_pagamento"] = $formas_pagamento[0]["observacoes_pagamento"];
             return $lista_formas_pagamento;
         }
         
@@ -302,18 +312,55 @@ class ModelEmpresa
     public function getTaxasCancelamento()
     {
         $sql = "SELECT 
+                tbl_empresa.taxa_unica_cancelamento,
+                tbl_taxa_cancelamento.id_taxa_cancelamento,
                 tbl_taxa_cancelamento.valor_acima_de_100,
                 tbl_taxa_cancelamento.horas_tolerancia,
                 tbl_taxa_cancelamento.porcentagem_sobre_valor_servico
 
-                FROM tbl_taxa_cancelamento
-                WHERE tbl_taxa_cancelamento.id_empresa = ?";
+                FROM tbl_empresa
+                INNER JOIN tbl_taxa_cancelamento
+                ON tbl_empresa.id_empresa = tbl_taxa_cancelamento.id_empresa
+
+                WHERE tbl_empresa.id_empresa = ?";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_empresa);
 
         $stm->execute();
 
+        $dados = $stm->fetchAll(\PDO::FETCH_ASSOC);
+        $taxas = [];
+
+        if($dados[0]['taxa_unica_cancelamento'] == null)
+        {
+            foreach($dados as $taxa)
+            {
+                $id_taxa =  $taxa["id_taxa_cancelamento"];
+                $taxas[$id_taxa]= $taxa;
+            }
+        }
+        else
+        {   
+            $taxas["taxa_unica_cancelamento"] = $dados[0]["taxa_unica_cancelamento"];
+        };
+
+        return $taxas;
+    }
+
+    public function getImagensEstabelecimento()
+    {
+        $sql = " SELECT 
+            tbl_imagem_espaco_salao.id_imagem_espaco_salao,
+            tbl_imagem_espaco_salao.imagem_salao
+
+            from tbl_imagem_espaco_salao 
+            where tbl_imagem_espaco_salao.id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+
+        $stm->execute();
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 

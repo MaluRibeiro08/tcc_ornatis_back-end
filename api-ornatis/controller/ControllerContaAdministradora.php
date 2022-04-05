@@ -19,7 +19,7 @@ class ControllerContaAdministradora{
         //PEGANDO DADOS DA REQ
         $json = file_get_contents("php://input");
         $dados_requisiscao = json_decode($json);
-        $this->_flag = $dados_requisiscao->flag ?? $_POST["flag"] ?? null;;
+        $this->_flag = $dados_requisiscao->acao ?? $_POST["acao"] ?? null;;
 
         //ID_EMPRESA
         $this->_id_empresa = $dados_requisiscao->id_empresa ?? $_POST["id_empresa"] ?? null;
@@ -33,7 +33,7 @@ class ControllerContaAdministradora{
 
         switch ($this->_method) {
             case 'GET':
-                if($this->_id_empresa != null)
+                if($this->_id_empresa != null && $this->_flag == "carregarDadosConta")
                 {
                     //buscando os dados do adm
                     $dados_administrador["dados_administrador"]= $this->_model_admin->findByEmpresa();
@@ -43,7 +43,7 @@ class ControllerContaAdministradora{
                     $dados_empresa["dados_empresa"] = $this->_model_empresa->getInformacoesEmpresa();
                     $dados_empresa["dados_endereco_empresa"] = $this->_model_empresa->getEnderecoEmpresa();
                     $dados_empresa["dados_funcionamento"] = $this->_model_empresa->getFuncionamento();
-                    $dados_empresa["dados_pagamento"] = $this->_model_empresa->getFormasPagamento();
+                    $dados_empresa["dados_pagamento"] = $this->_model_empresa->getInformacoesPagamento();
                     $dados_empresa["taxa_cancelamento_empresa"] = $this->_model_empresa->getTaxasCancelamento();
 
                     //dados de login
@@ -52,9 +52,29 @@ class ControllerContaAdministradora{
 
                     return (array_merge($dados_administrador,$dados_empresa, $dados_login));
                 }
+                else if ($this->_id_empresa != null && $this->_flag == 'carregarPerfil')
+                {
+                    //dados da empresa
+                        //INFORMAÇÕES FALTANTES: tipo de atendimento (relacionado a servicos),  funcionários (relacionado a funcionários), 
+
+                        //DADOS DO SALAO (nome, foto de perfil, biografia, contato, taxa única)
+                           $dados_empresa["dados_empresa"] = $this->_model_empresa->getInformacoesEmpresa();
+                        //IMAGENS DO ESTABELECIMENTO (nome, foto de perfil, biografia, contato, taxa única)
+                           $dados_empresa["imagens_estabelecimento"] = $this->_model_empresa->getImagensEstabelecimento();
+                        //LOCALIZACAO (endereco)
+                            $dados_empresa["dados_endereco_empresa"] = $this->_model_empresa->getEnderecoEmpresa();
+                        //FUNCIONAMENTO
+                            $dados_empresa["dados_funcionamento"] = $this->_model_empresa->getFuncionamento();
+                        //PAGAMENTO (formas aceitas, observacoes de pagamento)
+                            $dados_empresa["dados_pagamento"] = $this->_model_empresa->getInformacoesPagamento();
+                        //CANCELAMENTO (taxa unica ou taxas de cobrança)
+                            $dados_empresa["taxa_cancelamento_empresa"] = $this->_model_empresa->getTaxasCancelamento();
+                        
+                    return (array_merge($dados_empresa));
+                }
                 else
                 {
-                    return "Deu erro no router da controllerContaAdm";
+                    return "Não foi possível realizar ação! Verifique as informações de requeisição (ids, flags)";
                 };
                 
                 break;
