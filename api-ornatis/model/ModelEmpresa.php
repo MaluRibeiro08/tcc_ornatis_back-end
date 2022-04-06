@@ -361,7 +361,16 @@ class ModelEmpresa
         $stm->bindValue(1, $this->_id_empresa);
 
         $stm->execute();
-        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+        $imagens = $stm->fetchAll(\PDO::FETCH_ASSOC);
+        if ($imagens == null)
+        {
+            return "Nenhuma imagem de estabelecimento encontrada";
+        }
+        else
+        {
+            return $imagens;
+        }
     }
 
 
