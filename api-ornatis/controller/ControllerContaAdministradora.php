@@ -52,7 +52,7 @@ class ControllerContaAdministradora{
                     $_id_administrador = $dados_administrador["dados_administrador"][0]["id_administrador"];
                     $dados_login["dados_login"] = $this->_model_admin->getLogin($_id_administrador);
 
-                    return (array_merge($dados_administrador,$dados_empresa, $dados_login));
+                    return array_merge($dados_administrador,$dados_empresa, $dados_login);
                 }
                 else if ($this->_id_empresa != null && $this->_flag == 'carregarPerfil')
                 {
@@ -72,7 +72,7 @@ class ControllerContaAdministradora{
                         //CANCELAMENTO (taxa unica ou taxas de cobrança)
                             $dados_empresa["taxa_cancelamento_empresa"] = $this->_model_empresa->getTaxasCancelamento();
                         
-                    return (array_merge($dados_empresa));
+                    return array_merge($dados_empresa);
                 }
                 else
                 {
