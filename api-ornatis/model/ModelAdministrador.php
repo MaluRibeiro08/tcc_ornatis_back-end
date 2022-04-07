@@ -18,7 +18,7 @@ class ModelAdministrador{
 
         $json = file_get_contents("php://input");
         $dados_admin = json_decode($json);
-        var_dump($dados_admin);
+        // var_dump($dados_admin);
 
         switch ($this->_method) {
             case 'POST':
