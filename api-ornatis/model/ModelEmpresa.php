@@ -66,7 +66,7 @@ class ModelEmpresa
 
             default:
 
-                $this->_id_empresa = $dados_empresa->id_empresa ?? null;
+                $this->_id_empresa =  $_GET["id_empresa"] ?? $dados_empresa->id_empresa ?? null;
 
                 break;
         }

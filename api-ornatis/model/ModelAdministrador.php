@@ -32,8 +32,8 @@ class ModelAdministrador{
                 break;
             
             default:
-                $this->_id_administrador = $dados_admin->id_administrador ?? null;
-                $this->_id_empresa = $dados_admin->id_empresa ?? null;
+                $this->_id_administrador = $_GET["id_administrador"] ?? $dados_admin->id_administrador ?? null;
+                $this->_id_empresa =  $_GET["id_empresa"] ?? $dados_admin->id_empresa ?? null;
                 // $this->_cpf = $dados_admin->cpf ?? null;
                 // $this->_data_nascimento = $dados_admin->data_nascimento ?? null;
                 // $this->_nome_adm = $dados_admin->nome_adm ?? null;

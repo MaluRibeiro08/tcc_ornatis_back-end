@@ -19,13 +19,14 @@ class ControllerContaAdministradora{
         //PEGANDO DADOS DA REQ
         $json = file_get_contents("php://input");
         $dados_requisiscao = json_decode($json);
-        $this->_flag = $dados_requisiscao->acao ?? $_POST["acao"] ?? null;;
+
+        $this->_flag =  $_GET["acao"] ?? $dados_requisiscao->acao ?? $_POST["acao"] ?? null;;
 
         //ID_EMPRESA
-        $this->_id_empresa = $dados_requisiscao->id_empresa ?? $_POST["id_empresa"] ?? null;
+        $this->_id_empresa =  $_GET["id_empresa"] ?? $dados_requisiscao->id_empresa ?? $_POST["id_empresa"] ?? null;
 
         //ID_ADM
-        $this->_id_administrador = $dados_requisiscao->id_administrador ?? $_POST["id_administrador"] ?? null; 
+        $this->_id_administrador = $_GET["id_administrador"] ?? $dados_requisiscao->id_administrador ?? $_POST["id_administrador"] ?? null; 
 
     }
 
@@ -35,6 +36,7 @@ class ControllerContaAdministradora{
             case 'GET':
                 if($this->_id_empresa != null && $this->_flag == "carregarDadosConta")
                 {
+                    
                     //buscando os dados do adm
                     $dados_administrador["dados_administrador"]= $this->_model_admin->findByEmpresa();
 
