@@ -28,6 +28,20 @@ class ModelEmpresa
     private $_id_cidade;
 
     // ATRIBUTOS DE DIA DE FUNCIONAMENTO
+    private $_hora_inicio;
+    private $_hora_termino;
+    private $_id_dia_semana;
+
+    // ATRIBUTOS DE FORMA DE PAGAMENTO
+    private $_id_forma_pagamento;
+
+    // ATRIBUTOS DE TAXA DE CANCELAMENTO
+    private $_valor_acima_de_100;
+    private $_porcentagem_sobre_valor_servico;
+    private $_horas_tolerancia;
+
+    // ATRIBUTO DE IMAGEM DO SALÃO
+    private $_imagem_salao;
 
     public function __construct($conexao)
     {
@@ -42,6 +56,7 @@ class ModelEmpresa
 
                 $this->_flag = $_POST["flag"] ?? null;
 
+                // empresa
                 $this->_id_empresa = $_POST["id_empresa"] ?? null;
                 $this->_biografia = $_POST["biografia"] ?? null;
                 $this->_imagem_perfil = $_POST["imagem_perfil"] ?? null;
@@ -50,10 +65,12 @@ class ModelEmpresa
                 $this->_cnpj = $_POST["cnpj"] ?? null;
                 $this->_intervalo_tempo_padrao_entre_servicos = $_POST["intervalo_tempo_padrao_entre_servicos"] ?? null;
                 $this->_observacoes_pagamento = $_POST["observacoes_pagamento"] ?? null;
+                $this->_taxa_unica_cancelamento = $_POST["taxa_unica_cancelamento"] ?? null;
 
-                $this->_nome_usuario_instagram = $_POST["nome_usuario_instagram"] ?? null;
-                $this->_link_faceboook = $_POST["link_facebook"] ?? null;
+                // $this->_nome_usuario_instagram = $_POST["nome_usuario_instagram"] ?? null;
+                // $this->_link_faceboook = $_POST["link_facebook"] ?? null;
 
+                // endereço
                 $this->_rua_empresa = $_POST["rua"] ?? null;
                 $this->_bairro_empresa = $_POST["bairro"] ?? null;
                 $this->_numero_rua_empresa = $_POST["numero_rua"] ?? null;
@@ -61,6 +78,21 @@ class ModelEmpresa
                 $this->_cep = $_POST["cep"] ?? null;
                 $this->_id_cidade = $_POST["id_cidade"] ?? null;
 
+                // dia de funcionamento
+                $this->_hora_inicio = $_POST["hora_inicio"] ?? null;
+                $this->_hora_termino = $_POST["hora_termino"] ?? null;
+                $this->_id_dia_semana = $_POST["id_dia_semana"] ?? null;
+
+                // forma de pagamento
+                $this->_id_forma_pagamento = $_POST["id_forma_pagamento"] ?? null;
+
+                // taxa de cancelamento
+                $this->_valor_acima_de_100 = $_POST["valor_acima_de_100"] ?? null;
+                $this->_porcentagem_sobre_valor_servico = $_POST["porcentagem_sobre_valor_servico"] ?? null;
+                $this->_horas_tolerancia = $_POST["horas_tolerancia"] ?? null;
+
+                // imagem
+                $this->_imagem_salao = $_POST["imagem_salao"] ?? null;
 
                 break;
 
@@ -127,33 +159,33 @@ class ModelEmpresa
     //         tbl_dia_funcionamento.hora_termino
 
     //             from tbl_empresa 
-                    
+
     //             inner join tbl_endereco_salao
     //             on tbl_empresa.id_empresa = tbl_endereco_salao.id_empresa
-                
+
     //             inner join tbl_cidade
     //             on tbl_endereco_salao.id_empresa = tbl_cidade.id_cidade
-                
+
     //             inner join tbl_estado
     //             on tbl_cidade.id_estado = tbl_estado.id_estado
-                
+
     //             inner join tbl_empresa_forma_pagamento
     //             on tbl_empresa.id_empresa = tbl_empresa_forma_pagamento.id_empresa
-                
+
     //             inner join tbl_forma_pagamento
     //             on tbl_empresa_forma_pagamento.id_forma_pagamento = tbl_forma_pagamento.id_forma_pagamento
-                
+
     //             inner join tbl_taxa_cancelamento
     //             on tbl_empresa.id_empresa = tbl_taxa_cancelamento.id_empresa
-                
+
     //             inner join tbl_dia_funcionamento
     //             on tbl_empresa.id_empresa = tbl_dia_funcionamento.id_empresa
-                
+
     //             inner join tbl_dia_semana
     //             on tbl_dia_funcionamento.id_dia_semana = tbl_dia_semana.id_dia_semana
-                
+
     //             where tbl_empresa.id_empresa = ?";
-                
+
     //     $stm = $this->_conexao->prepare($sql);
     //     $stm->bindValue(1, $this->_id_empresa);
 
@@ -237,33 +269,24 @@ class ModelEmpresa
         $funcionamentos = $stm->fetchAll(\PDO::FETCH_ASSOC);
         $dias_funcionamento = [];
         $verificacao = [];
-        foreach ($funcionamentos as $funcionamento) 
-        {
-           $dia_semana = $funcionamento["dia_da_semana"];
+        foreach ($funcionamentos as $funcionamento) {
+            $dia_semana = $funcionamento["dia_da_semana"];
 
-           if($dias_funcionamento == null)
-           {
+            if ($dias_funcionamento == null) {
                 $dias_funcionamento[$dia_semana][] = $funcionamento;
-
-           }
-           else
-           {    
+            } else {
                 $confimacao_criacao = false;
-                foreach($dias_funcionamento as $dia_semana_que_tem_funcionamento => $infos_funcionamento)
-                {
-                    
-                    if($dia_semana_que_tem_funcionamento == $dia_semana)
-                    {
+                foreach ($dias_funcionamento as $dia_semana_que_tem_funcionamento => $infos_funcionamento) {
+
+                    if ($dia_semana_que_tem_funcionamento == $dia_semana) {
                         $dias_funcionamento[$dia_semana_que_tem_funcionamento][] = $funcionamento;
                         $confimacao_criacao = true;
                     }
                 }
-                if ($confimacao_criacao == false) 
-                {
+                if ($confimacao_criacao == false) {
                     $dias_funcionamento[$dia_semana][] = $funcionamento;
                 }
-            }          
-            
+            }
         };
         // return $verificacao;
         return $dias_funcionamento;
@@ -290,23 +313,19 @@ class ModelEmpresa
         $stm->execute();
 
         $formas_pagamento = $stm->fetchAll(\PDO::FETCH_ASSOC);
-       
-        if ($formas_pagamento == null) 
-        {
+
+        if ($formas_pagamento == null) {
             return "Nenhuma forma de pagamento encontrada";
         } else {
             // return $formas_pagamento;
             $lista_formas_pagamento = [];
-            foreach ($formas_pagamento as $forma_pagamento) 
-            {
+            foreach ($formas_pagamento as $forma_pagamento) {
                 $lista_formas_pagamento["formas_aceitas"][] = $forma_pagamento["forma_pagamento"];
             };
 
             $lista_formas_pagamento["observacoes_pagamento"] = $formas_pagamento[0]["observacoes_pagamento"];
             return $lista_formas_pagamento;
         }
-        
-
     }
 
     public function getTaxasCancelamento()
@@ -332,16 +351,12 @@ class ModelEmpresa
         $dados = $stm->fetchAll(\PDO::FETCH_ASSOC);
         $taxas = [];
 
-        if($dados[0]['taxa_unica_cancelamento'] == null)
-        {
-            foreach($dados as $taxa)
-            {
+        if ($dados[0]['taxa_unica_cancelamento'] == null) {
+            foreach ($dados as $taxa) {
                 $id_taxa =  $taxa["id_taxa_cancelamento"];
-                $taxas[$id_taxa]= $taxa;
+                $taxas[$id_taxa] = $taxa;
             }
-        }
-        else
-        {   
+        } else {
             $taxas["taxa_unica_cancelamento"] = $dados[0]["taxa_unica_cancelamento"];
         };
 
@@ -363,24 +378,23 @@ class ModelEmpresa
         $stm->execute();
 
         $imagens = $stm->fetchAll(\PDO::FETCH_ASSOC);
-        if ($imagens == null)
-        {
+        if ($imagens == null) {
             return "Nenhuma imagem de estabelecimento encontrada";
-        }
-        else
-        {
+        } else {
             return $imagens;
         }
     }
 
 
-    public function create()
+    // CREATE CONTA ADM
+
+    public function createEmpresa()
     {
 
         $sql = "INSERT INTO tbl_empresa (biografia, imagem_perfil,
-        telefone, nome_fantasia, cnpj,
-        intervalo_tempo_padrao_entre_servicos, observacoes_pagamento)
-        VALUES (?, ?, ?, ?, ?, ?, ?)";
+         telefone, nome_fantasia, cnpj,
+         intervalo_tempo_padrao_entre_servicos, observacoes_pagamento, taxa_unica_cancelamento)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_biografia);
@@ -390,13 +404,125 @@ class ModelEmpresa
         $stm->bindValue(5, $this->_cnpj);
         $stm->bindValue(6, $this->_intervalo_tempo_padrao_entre_servicos);
         $stm->bindValue(7, $this->_observacoes_pagamento);
+        $stm->bindValue(8, $this->_taxa_unica_cancelamento);
+
+        if ($stm->execute()) {
+
+            $dados_empresa["lastInsertId"] = $this->_conexao->lastInsertId();
+            $dados_empresa["taxa_unica_cancelamento"] = $this->_taxa_unica_cancelamento;
+
+            return $dados_empresa;
+        } else {
+            return "Erro ao criar empresa";
+        }
+    }
+
+    public function createEnderecoEmpresa($idEmpresaRecebido)
+    {
+        $this->_id_empresa = $idEmpresaRecebido;
+
+        $sql = "INSERT INTO tbl_endereco_salao (bairro, rua, numero, 
+         complemento, cep, id_cidade, id_empresa) 
+         VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_bairro_empresa);
+        $stm->bindValue(2, $this->_rua_empresa);
+        $stm->bindValue(3, $this->_numero_rua_empresa);
+        $stm->bindValue(4, $this->_complemento_endereco);
+        $stm->bindValue(5, $this->_cep);
+        $stm->bindValue(6, $this->_id_cidade);
+        $stm->bindValue(7, $this->_id_empresa);
 
         if ($stm->execute()) {
             return "Success";
         } else {
-            return "Error";
+            return "Erro ao criar empresa - endereço";
         }
     }
+
+    public function createFuncionamento($idEmpresaRecebido)
+    {
+        $this->_id_empresa = $idEmpresaRecebido;
+
+        $sql = "INSERT INTO tbl_dia_funcionamento (hora_inicio, hora_termino,
+         id_dia_semana, id_empresa) 
+         VALUES (?, ?, ?, ?)";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_hora_inicio);
+        $stm->bindValue(2, $this->_hora_termino);
+        $stm->bindValue(3, $this->_id_dia_semana);
+        $stm->bindValue(4, $this->_id_empresa);
+
+        if ($stm->execute()) {
+            return "Success";
+        } else {
+            return "Erro ao criar empresa - funcionamento";
+        }
+    }
+
+    public function createFormasPagamento($idEmpresaRecebido)
+    {
+
+        $this->_id_empresa = $idEmpresaRecebido;
+
+        $sql = " INSERT INTO tbl_empresa_forma_pagamento (id_empresa, id_forma_pagamento)
+         VALUES (?, ?)";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+        $stm->bindValue(2, $this->_id_forma_pagamento);
+
+        if ($stm->execute()) {
+            return "Success";
+        } else {
+            return "Erro ao criar empresa - forma de pagamento";
+        }
+    }
+
+    public function createTaxasCancelamento($idEmpresaRecebido)
+    {
+
+        $this->_id_empresa = $idEmpresaRecebido;
+
+        $sql = "INSERT INTO tbl_taxa_cancelamento (valor_acima_de_100, porcentagem_sobre_valor_servico, 
+         horas_tolerancia, id_empresa)
+         VALUES (?, ?, ?, ?)";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_valor_acima_de_100);
+        $stm->bindValue(2, $this->_porcentagem_sobre_valor_servico);
+        $stm->bindValue(3, $this->_horas_tolerancia);
+        $stm->bindValue(4, $this->_id_empresa);
+
+        if ($stm->execute()) {
+            return "Success";
+        } else {
+            return "Erro ao criar empresa - taxas de cancelamento";
+        }
+    }
+
+    public function createImagensEstabelecimento($idEmpresaRecebido)
+    {
+
+        $this->_id_empresa = $idEmpresaRecebido;
+
+        $sql = "INSERT INTO tbl_imagem_espaco_salao (imagem_salao, id_empresa)
+         VALUES (?, ?)";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_imagem_salao);
+        $stm->bindValue(2, $this->_id_empresa);
+
+        if ($stm->execute()) {
+            return "Success";
+        } else {
+            return "Erro ao criar empresa - taxas de cancelamento";
+        }
+    }
+
+
 
     public function delete()
     {
@@ -460,6 +586,5 @@ class ModelEmpresa
         if ($stm->execute()) {
             return "Dados alterados com sucesso!";
         }
-
     }
 }

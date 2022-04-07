@@ -105,10 +105,9 @@ class ModelAdministrador{
 
     }
 
-    public function create(){
+    public function createAdministrador($idEmpresaRecebido){
 
-        //cadastro
-        /* Como pegar o id de empresa? */
+        $this->_id_empresa = $idEmpresaRecebido;
 
         $sql = "INSERT INTO tbl_administrador (cpf, data_nascimento, nome_adm, id_empresa) 
         VALUES (?, ?, ?, ?)";
@@ -124,7 +123,7 @@ class ModelAdministrador{
             return "Success";
             
         } else {
-            return "Error";
+            return "Erro ao criar administrador";
         }
         
 
