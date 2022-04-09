@@ -441,43 +441,85 @@ class ModelEmpresa
         }
     }
 
-    public function createFuncionamento($idEmpresaRecebido)
+    // public function createFuncionamento($idEmpresaRecebido)
+    // {
+    //     $this->_id_empresa = $idEmpresaRecebido;
+
+    //     $sql = "INSERT INTO tbl_dia_funcionamento (hora_inicio, hora_termino,
+    //      id_dia_semana, id_empresa) 
+    //      VALUES (?, ?, ?, ?)";
+
+    //     $stm = $this->_conexao->prepare($sql);
+    //     $stm->bindValue(1, $this->_hora_inicio);
+    //     $stm->bindValue(2, $this->_hora_termino);
+    //     $stm->bindValue(3, $this->_id_dia_semana);
+    //     $stm->bindValue(4, $this->_id_empresa);
+
+    //     if ($stm->execute()) {
+    //         return "Success";
+    //     } else {
+    //         return "Erro ao criar empresa - funcionamento";
+    //     }
+    // }
+
+    public function createFuncionamento($funcionamento, $idEmpresaRecebido)
     {
+
+        /* estrutura array - dados_funcionamento->id (id_dia_semana)->hora_inicio, hora_termino */
+
         $this->_id_empresa = $idEmpresaRecebido;
 
-        $sql = "INSERT INTO tbl_dia_funcionamento (hora_inicio, hora_termino,
-         id_dia_semana, id_empresa) 
-         VALUES (?, ?, ?, ?)";
+        foreach ($funcionamento as $diaFuncionamento) {
 
-        $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_hora_inicio);
-        $stm->bindValue(2, $this->_hora_termino);
-        $stm->bindValue(3, $this->_id_dia_semana);
-        $stm->bindValue(4, $this->_id_empresa);
+            //recebendo valores dos atributos
+            $this->_hora_inicio = $funcionamento["$diaFuncionamento"]["hora_inicio"];
+            $this->_hora_termino = $funcionamento["$diaFuncionamento"]["hora_termino"];
 
-        if ($stm->execute()) {
-            return "Success";
-        } else {
-            return "Erro ao criar empresa - funcionamento";
+            $sql = "INSERT INTO tbl_dia_funcionamento (hora_inicio, hora_termino,
+            id_dia_semana, id_empresa) 
+            VALUES (?, ?, $diaFuncionamento, $idEmpresaRecebido)";
+
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_hora_inicio);
+            $stm->bindValue(2, $this->_hora_termino);
+            $stm->execute();
         }
     }
 
-    public function createFormasPagamento($idEmpresaRecebido)
+    // public function createFormasPagamento($idEmpresaRecebido)
+    // {
+
+    //     $this->_id_empresa = $idEmpresaRecebido;
+
+    //     $sql = " INSERT INTO tbl_empresa_forma_pagamento (id_empresa, id_forma_pagamento)
+    //      VALUES (?, ?)";
+
+    //     $stm = $this->_conexao->prepare($sql);
+    //     $stm->bindValue(1, $this->_id_empresa);
+    //     $stm->bindValue(2, $this->_id_forma_pagamento);
+
+    //     if ($stm->execute()) {
+    //         return "Success";
+    //     } else {
+    //         return "Erro ao criar empresa - forma de pagamento";
+    //     }
+    // }
+
+    public function createFormasPagamento($formasPagamento, $idEmpresaRecebido)
     {
 
         $this->_id_empresa = $idEmpresaRecebido;
 
-        $sql = " INSERT INTO tbl_empresa_forma_pagamento (id_empresa, id_forma_pagamento)
-         VALUES (?, ?)";
+        foreach ($formasPagamento as $formaPagamento) {
 
-        $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_id_empresa);
-        $stm->bindValue(2, $this->_id_forma_pagamento);
+            $sql = " INSERT INTO tbl_empresa_forma_pagamento (id_empresa, id_forma_pagamento)
+            VALUES ($idEmpresaRecebido, $formaPagamento)";
 
-        if ($stm->execute()) {
-            return "Success";
-        } else {
-            return "Erro ao criar empresa - forma de pagamento";
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_id_empresa);
+            $stm->bindValue(2, $this->_id_forma_pagamento);
+
+            $stm->execute();
         }
     }
 

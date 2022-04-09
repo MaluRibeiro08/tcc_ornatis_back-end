@@ -8,6 +8,8 @@ class ControllerContaAdministradora
     private $_model_empresa;
     private $_id_administrador;
     private $_id_empresa;
+    private $_array_id_funcionamento;
+    private $_array_forma_pagamento;
     private $_flag;
 
     public function __construct($model_administrador, $model_empresa)
@@ -79,25 +81,35 @@ class ControllerContaAdministradora
 
             case 'POST':
 
-                $dados_empresa["dados_empresa"] = $this->_model_empresa->createEmpresa();
-                $idEmpresaCriada = $dados_empresa["dados_empresa"]["lastInsertId"];
+                if ($this->_flag == "create") {
+                    
+                    $dados_empresa["dados_empresa"] = $this->_model_empresa->createEmpresa();
+                    $idEmpresaCriada = $dados_empresa["dados_empresa"]["lastInsertId"];
+    
+                    $dados_empresa["dados_endereco_empresa"] = $this->_model_empresa->createEnderecoEmpresa($idEmpresaCriada);
 
-                $dados_empresa["dados_endereco_empresa"] = $this->_model_empresa->createEnderecoEmpresa($idEmpresaCriada);
-                $dados_empresa["dados_funcionamento"] = $this->_model_empresa->createFuncionamento($idEmpresaCriada);
-                $dados_empresa["dados_pagamento"] = $this->_model_empresa->createFormasPagamento($idEmpresaCriada);
-                if ($dados_empresa["dados_empresa"]["taxa_unica_cancelamento"] == null) {
-                    $dados_empresa["dados_taxas_cancelamento"] = $this->_model_empresa->createTaxasCancelamento($idEmpresaCriada);
+                    
+                    
+                    $this->_array_funcionamento = $_POST["dados_funcionamento"];
+                    // var_dump($this->_array_funcionamento);
+                    $dados_empresa["dados_funcionamento"] = $this->_model_empresa->createFuncionamento($this->_array_funcionamento, $idEmpresaCriada);
+                    
+                    $this->_array_forma_pagamento = $_POST["dados_formas_pagamento"];
+                    $dados_empresa["dados_pagamento"] = $this->_model_empresa->createFormasPagamento($this->_array_forma_pagamento, $idEmpresaCriada);
+                    var_dump($this->_array_forma_pagamento);
+
+                    if ($dados_empresa["dados_empresa"]["taxa_unica_cancelamento"] == null) {
+                        $dados_empresa["dados_taxas_cancelamento"] = $this->_model_empresa->createTaxasCancelamento($idEmpresaCriada);
+                    }
+                    $dados_empresa["dados_imagem_estabelecimento"] = $this->_model_empresa->createImagensEstabelecimento($idEmpresaCriada);
+    
+                    $dados_administrador["dados_administrador"] = $this->_model_admin->createAdministrador($idEmpresaCriada);
+    
+                    return array_merge($dados_empresa, $dados_administrador);
+        
                 }
-                $dados_empresa["dados_imagem_estabelecimento"] = $this->_model_empresa->createImagensEstabelecimento($idEmpresaCriada);
-
-                $dados_administrador["dados_administrador"] = $this->_model_admin->createAdministrador($idEmpresaCriada);
-
-                return array_merge($dados_empresa, $dados_administrador);
-
-            case 'DELETE':
-                return $this->_model_admin->delete();
-                break;
-
+                
+        
             default:
                 # code...
                 break;
