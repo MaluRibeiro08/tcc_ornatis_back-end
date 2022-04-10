@@ -8,8 +8,9 @@ class ControllerContaAdministradora
     private $_model_empresa;
     private $_id_administrador;
     private $_id_empresa;
-    private $_array_id_funcionamento;
+    private $_array_funcionamento;
     private $_array_forma_pagamento;
+    private $_array_taxas_cancelamento;
     private $_flag;
 
     public function __construct($model_administrador, $model_empresa)
@@ -88,18 +89,18 @@ class ControllerContaAdministradora
     
                     $dados_empresa["dados_endereco_empresa"] = $this->_model_empresa->createEnderecoEmpresa($idEmpresaCriada);
 
-                    
-                    
                     $this->_array_funcionamento = $_POST["dados_funcionamento"];
                     // var_dump($this->_array_funcionamento);
                     $dados_empresa["dados_funcionamento"] = $this->_model_empresa->createFuncionamento($this->_array_funcionamento, $idEmpresaCriada);
                     
                     $this->_array_forma_pagamento = $_POST["dados_formas_pagamento"];
                     $dados_empresa["dados_pagamento"] = $this->_model_empresa->createFormasPagamento($this->_array_forma_pagamento, $idEmpresaCriada);
-                    var_dump($this->_array_forma_pagamento);
+                    // var_dump($this->_array_forma_pagamento);
 
                     if ($dados_empresa["dados_empresa"]["taxa_unica_cancelamento"] == null) {
-                        $dados_empresa["dados_taxas_cancelamento"] = $this->_model_empresa->createTaxasCancelamento($idEmpresaCriada);
+
+                        $this->_array_taxas_cancelamento = $_POST["dados_taxa_cancelamento"];
+                        $dados_empresa["dados_taxas_cancelamento"] = $this->_model_empresa->createTaxasCancelamento($this->_array_taxas_cancelamento, $idEmpresaCriada);
                     }
                     $dados_empresa["dados_imagem_estabelecimento"] = $this->_model_empresa->createImagensEstabelecimento($idEmpresaCriada);
     

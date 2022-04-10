@@ -441,27 +441,6 @@ class ModelEmpresa
         }
     }
 
-    // public function createFuncionamento($idEmpresaRecebido)
-    // {
-    //     $this->_id_empresa = $idEmpresaRecebido;
-
-    //     $sql = "INSERT INTO tbl_dia_funcionamento (hora_inicio, hora_termino,
-    //      id_dia_semana, id_empresa) 
-    //      VALUES (?, ?, ?, ?)";
-
-    //     $stm = $this->_conexao->prepare($sql);
-    //     $stm->bindValue(1, $this->_hora_inicio);
-    //     $stm->bindValue(2, $this->_hora_termino);
-    //     $stm->bindValue(3, $this->_id_dia_semana);
-    //     $stm->bindValue(4, $this->_id_empresa);
-
-    //     if ($stm->execute()) {
-    //         return "Success";
-    //     } else {
-    //         return "Erro ao criar empresa - funcionamento";
-    //     }
-    // }
-
     public function createFuncionamento($funcionamento, $idEmpresaRecebido)
     {
 
@@ -472,38 +451,22 @@ class ModelEmpresa
         foreach ($funcionamento as $diaFuncionamento) {
 
             //recebendo valores dos atributos
-            $this->_hora_inicio = $funcionamento["$diaFuncionamento"]["hora_inicio"];
-            $this->_hora_termino = $funcionamento["$diaFuncionamento"]["hora_termino"];
+            $this->_id_dia_semana = $diaFuncionamento["id_dia_semana"];
+            $this->_hora_inicio = $diaFuncionamento["hora_inicio"];
+            $this->_hora_termino = $diaFuncionamento["hora_termino"];
 
             $sql = "INSERT INTO tbl_dia_funcionamento (hora_inicio, hora_termino,
             id_dia_semana, id_empresa) 
-            VALUES (?, ?, $diaFuncionamento, $idEmpresaRecebido)";
+            VALUES (?, ?, ?, ?)";
 
             $stm = $this->_conexao->prepare($sql);
             $stm->bindValue(1, $this->_hora_inicio);
             $stm->bindValue(2, $this->_hora_termino);
+            $stm->bindValue(3, $this->_id_dia_semana);
+            $stm->bindValue(4, $idEmpresaRecebido);
             $stm->execute();
         }
     }
-
-    // public function createFormasPagamento($idEmpresaRecebido)
-    // {
-
-    //     $this->_id_empresa = $idEmpresaRecebido;
-
-    //     $sql = " INSERT INTO tbl_empresa_forma_pagamento (id_empresa, id_forma_pagamento)
-    //      VALUES (?, ?)";
-
-    //     $stm = $this->_conexao->prepare($sql);
-    //     $stm->bindValue(1, $this->_id_empresa);
-    //     $stm->bindValue(2, $this->_id_forma_pagamento);
-
-    //     if ($stm->execute()) {
-    //         return "Success";
-    //     } else {
-    //         return "Erro ao criar empresa - forma de pagamento";
-    //     }
-    // }
 
     public function createFormasPagamento($formasPagamento, $idEmpresaRecebido)
     {
@@ -523,25 +486,48 @@ class ModelEmpresa
         }
     }
 
-    public function createTaxasCancelamento($idEmpresaRecebido)
+    // public function createTaxasCancelamento($idEmpresaRecebido)
+    // {
+
+    //     $this->_id_empresa = $idEmpresaRecebido;
+
+    //     $sql = "INSERT INTO tbl_taxa_cancelamento (valor_acima_de_100, porcentagem_sobre_valor_servico, 
+    //      horas_tolerancia, id_empresa)
+    //      VALUES (?, ?, ?, ?)";
+
+    //     $stm = $this->_conexao->prepare($sql);
+    //     $stm->bindValue(1, $this->_valor_acima_de_100);
+    //     $stm->bindValue(2, $this->_porcentagem_sobre_valor_servico);
+    //     $stm->bindValue(3, $this->_horas_tolerancia);
+    //     $stm->bindValue(4, $this->_id_empresa);
+
+    //     if ($stm->execute()) {
+    //         return "Success";
+    //     } else {
+    //         return "Erro ao criar empresa - taxas de cancelamento";
+    //     }
+    // }
+
+    public function createTaxasCancelamento($taxasCancelamento, $idEmpresaRecebido)
     {
 
-        $this->_id_empresa = $idEmpresaRecebido;
+        foreach ($taxasCancelamento as $taxaCancelamento) {
 
-        $sql = "INSERT INTO tbl_taxa_cancelamento (valor_acima_de_100, porcentagem_sobre_valor_servico, 
-         horas_tolerancia, id_empresa)
-         VALUES (?, ?, ?, ?)";
+            $this->_valor_acima_de_100 = $taxaCancelamento["valor_acima_de_100"];
+            $this->_porcentagem_sobre_valor_servico = $taxaCancelamento["porcentagem_sobre_valor_servico"];
+            $this->_horas_tolerancia = $taxaCancelamento["horas_tolerancia"];
 
-        $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_valor_acima_de_100);
-        $stm->bindValue(2, $this->_porcentagem_sobre_valor_servico);
-        $stm->bindValue(3, $this->_horas_tolerancia);
-        $stm->bindValue(4, $this->_id_empresa);
+            $sql = "INSERT INTO tbl_taxa_cancelamento (valor_acima_de_100, porcentagem_sobre_valor_servico, 
+            horas_tolerancia, id_empresa)
+            VALUES (?, ?, ?, ?)";
 
-        if ($stm->execute()) {
-            return "Success";
-        } else {
-            return "Erro ao criar empresa - taxas de cancelamento";
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_valor_acima_de_100);
+            $stm->bindValue(2, $this->_porcentagem_sobre_valor_servico);
+            $stm->bindValue(3, $this->_horas_tolerancia);
+            $stm->bindValue(4, $idEmpresaRecebido);
+            $stm->execute();
+
         }
     }
 
