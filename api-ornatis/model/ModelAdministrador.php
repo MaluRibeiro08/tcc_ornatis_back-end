@@ -65,6 +65,7 @@ class ModelAdministrador{
             return "deu errado";
         };
     }
+
     public function findByEmpresa(){
         //listagem
 
@@ -82,6 +83,7 @@ class ModelAdministrador{
             return "Erro ao buscar dados de administrador";
         };
     }
+
     public function getLogin(int $idAdministrador)
     {
         $sql = "SELECT
@@ -129,31 +131,20 @@ class ModelAdministrador{
 
     }
 
-    public function delete(){
-
-        $sql = "DELETE FROM tbl_administrador WHERE id_administrador = ?";
-
-        $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_id_administrador);
-
-        if ($stm->execute()) {
-            return "Dados excluídos com sucesso!";
-        }
-
-    }
-
-    public function update(){
+    public function updateAdministrador($idEmpresaRecebido){
 
         $sql = "UPDATE tbl_administrador SET
         cpf = ?,
         data_nascimento = ?,
-        nome_adm = ?";
+        nome_adm = ? 
+        WHERE id_empresa = ?";
 
         $stm = $this->_conexao->prepare($sql);
         
         $stm->bindValue(1, $this->_cpf);
         $stm->bindValue(2, $this->_data_nascimento);
         $stm->bindValue(3, $this->_nome_adm);
+        $stm->bindValue(4, $idEmpresaRecebido);
 
         if ($stm->execute()) {
             return "Dados alterados com sucesso!";
