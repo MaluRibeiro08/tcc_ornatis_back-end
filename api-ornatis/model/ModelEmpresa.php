@@ -227,7 +227,8 @@ class ModelEmpresa
                 tbl_endereco_salao.numero,
                 tbl_endereco_salao.complemento,
                 tbl_cidade.nome_cidade,
-                tbl_estado.nome_estado
+                tbl_estado.nome_estado,
+                tbl_estado.sigla_estado
 
                 FROM tbl_endereco_salao
                     inner join tbl_cidade
