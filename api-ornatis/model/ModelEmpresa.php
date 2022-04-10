@@ -295,6 +295,7 @@ class ModelEmpresa
     public function getInformacoesPagamento()
     {
         $sql = "SELECT 
+                tbl_forma_pagamento.id_forma_pagamento,
                 tbl_forma_pagamento.forma_pagamento,
                 tbl_empresa.observacoes_pagamento
 
@@ -320,7 +321,7 @@ class ModelEmpresa
             // return $formas_pagamento;
             $lista_formas_pagamento = [];
             foreach ($formas_pagamento as $forma_pagamento) {
-                $lista_formas_pagamento["formas_aceitas"][] = $forma_pagamento["forma_pagamento"];
+                $lista_formas_pagamento["formas_aceitas"][$forma_pagamento["id_forma_pagamento"]] = $forma_pagamento["forma_pagamento"];
             };
 
             $lista_formas_pagamento["observacoes_pagamento"] = $formas_pagamento[0]["observacoes_pagamento"];
