@@ -11,6 +11,7 @@ class ControllerContaAdministradora
     private $_array_funcionamento;
     private $_array_forma_pagamento;
     private $_array_taxas_cancelamento;
+    private $_array_imagens_espaco_salao;
     private $_flag;
 
     public function __construct($model_administrador, $model_empresa)
@@ -83,16 +84,16 @@ class ControllerContaAdministradora
             case 'POST':
 
                 if ($this->_flag == "create") {
-                    
+
                     $dados_empresa["dados_empresa"] = $this->_model_empresa->createEmpresa();
                     $idEmpresaCriada = $dados_empresa["dados_empresa"]["lastInsertId"];
-    
+
                     $dados_empresa["dados_endereco_empresa"] = $this->_model_empresa->createEnderecoEmpresa($idEmpresaCriada);
 
                     $this->_array_funcionamento = $_POST["dados_funcionamento"];
                     // var_dump($this->_array_funcionamento);
                     $dados_empresa["dados_funcionamento"] = $this->_model_empresa->createFuncionamento($this->_array_funcionamento, $idEmpresaCriada);
-                    
+
                     $this->_array_forma_pagamento = $_POST["dados_formas_pagamento"];
                     $dados_empresa["dados_pagamento"] = $this->_model_empresa->createFormasPagamento($this->_array_forma_pagamento, $idEmpresaCriada);
                     // var_dump($this->_array_forma_pagamento);
@@ -102,15 +103,47 @@ class ControllerContaAdministradora
                         $this->_array_taxas_cancelamento = $_POST["dados_taxa_cancelamento"];
                         $dados_empresa["dados_taxas_cancelamento"] = $this->_model_empresa->createTaxasCancelamento($this->_array_taxas_cancelamento, $idEmpresaCriada);
                     }
-                    $dados_empresa["dados_imagem_estabelecimento"] = $this->_model_empresa->createImagensEstabelecimento($idEmpresaCriada);
-    
+
+                    $this->_array_imagens_espaco_salao = $_POST["dados_imagens_estabelecimento"];
+                    $dados_empresa["dados_imagens_estabelecimento"] = $this->_model_empresa->createImagensEstabelecimento($this->_array_imagens_espaco_salao, $idEmpresaCriada);
+
                     $dados_administrador["dados_administrador"] = $this->_model_admin->createAdministrador($idEmpresaCriada);
-    
+
                     return array_merge($dados_empresa, $dados_administrador);
-        
+
+                } elseif ($this->_flag == "updateContaAdministradora") {
+
+                    $dados_empresa["dados_empresa"] = $this->_model_empresa->updateEmpresa($this->_id_empresa);
+                    $dados_empresa["dados_endereco_empresa"] = $this->_model_empresa->updateEnderecoEmpresa($this->_id_empresa);
+
+                    $this->_model_empresa->deleteFuncionamento($this->_id_empresa);
+                    $this->_array_funcionamento = $_POST["dados_funcionamento"];
+                    $dados_empresa["dados_funcionamento"] = $this->_model_empresa->createFuncionamento($this->_array_funcionamento, $this->_id_empresa);
+
+                    $this->_model_empresa->deleteFormasPagamento($this->_id_empresa);
+                    $this->_array_forma_pagamento = $_POST["dados_formas_pagamento"];
+                    $dados_empresa["dados_pagamento"] = $this->_model_empresa->createFormasPagamento($this->_array_forma_pagamento, $this->_id_empresa);
+
+                    $this->_model_empresa->deleteTaxasCancelamento($this->_id_empresa);
+                    if ($dados_empresa["dados_empresa"]["taxa_unica_cancelamento"] == null) {
+
+                        $this->_array_taxas_cancelamento = $_POST["dados_taxa_cancelamento"];
+                        $dados_empresa["dados_taxas_cancelamento"] = $this->_model_empresa->createTaxasCancelamento($this->_array_taxas_cancelamento, $this->_id_empresa);
+                    
+                    }
+
+                    $dados_administrador["dados_administrador"] = $this->_model_admin->updateAdministrador($this->_id_empresa);
+
+                    return array_merge($dados_empresa, $dados_administrador);
+
+                } elseif ($this->_flag == "updateRedesSociais") {
+                    
+                    $redesSociais = $this->_model_empresa->updateRedesSociais();
+                    return $redesSociais;
+
                 }
-                
-        
+
+
             default:
                 # code...
                 break;

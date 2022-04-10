@@ -18,6 +18,7 @@ class ModelEmpresa
     private $_link_faceboook;
     private $_intervalo_tempo_padrao_entre_servicos;
     private $_observacoes_pagamento;
+    private $_taxa_unica_cancelamento;
 
     // ATRIBUTOS - ENDEREÇO EMPRESA
     private $_rua_empresa;
@@ -67,8 +68,8 @@ class ModelEmpresa
                 $this->_observacoes_pagamento = $_POST["observacoes_pagamento"] ?? null;
                 $this->_taxa_unica_cancelamento = $_POST["taxa_unica_cancelamento"] ?? null;
 
-                // $this->_nome_usuario_instagram = $_POST["nome_usuario_instagram"] ?? null;
-                // $this->_link_faceboook = $_POST["link_facebook"] ?? null;
+                $this->_nome_usuario_instagram = $_POST["nome_usuario_instagram"] ?? null;
+                $this->_link_faceboook = $_POST["link_facebook"] ?? null;
 
                 // endereço
                 $this->_rua_empresa = $_POST["rua"] ?? null;
@@ -469,6 +470,9 @@ class ModelEmpresa
             $stm->bindValue(4, $idEmpresaRecebido);
             $stm->execute();
         }
+
+        return "Success";
+
     }
 
     public function createFormasPagamento($formasPagamento, $idEmpresaRecebido)
@@ -487,29 +491,11 @@ class ModelEmpresa
 
             $stm->execute();
         }
+
+        return "Success";
+
     }
 
-    // public function createTaxasCancelamento($idEmpresaRecebido)
-    // {
-
-    //     $this->_id_empresa = $idEmpresaRecebido;
-
-    //     $sql = "INSERT INTO tbl_taxa_cancelamento (valor_acima_de_100, porcentagem_sobre_valor_servico, 
-    //      horas_tolerancia, id_empresa)
-    //      VALUES (?, ?, ?, ?)";
-
-    //     $stm = $this->_conexao->prepare($sql);
-    //     $stm->bindValue(1, $this->_valor_acima_de_100);
-    //     $stm->bindValue(2, $this->_porcentagem_sobre_valor_servico);
-    //     $stm->bindValue(3, $this->_horas_tolerancia);
-    //     $stm->bindValue(4, $this->_id_empresa);
-
-    //     if ($stm->execute()) {
-    //         return "Success";
-    //     } else {
-    //         return "Erro ao criar empresa - taxas de cancelamento";
-    //     }
-    // }
 
     public function createTaxasCancelamento($taxasCancelamento, $idEmpresaRecebido)
     {
@@ -530,46 +516,69 @@ class ModelEmpresa
             $stm->bindValue(3, $this->_horas_tolerancia);
             $stm->bindValue(4, $idEmpresaRecebido);
             $stm->execute();
-
         }
+
+        return "Success";
+
     }
 
-    public function createImagensEstabelecimento($idEmpresaRecebido)
+
+    public function createImagensEstabelecimento($imagens, $idEmpresaRecebido)
     {
+        foreach ($imagens as $imagem) {
 
-        $this->_id_empresa = $idEmpresaRecebido;
+            $this->_imagem_salao = $imagem["imagem_salao"];
 
-        $sql = "INSERT INTO tbl_imagem_espaco_salao (imagem_salao, id_empresa)
-         VALUES (?, ?)";
+            $sql = "INSERT INTO tbl_imagem_espaco_salao (imagem_salao, id_empresa)
+            VALUES (?, ?)";
+
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_imagem_salao);
+            $stm->bindValue(2, $idEmpresaRecebido);
+            $stm->execute();
+            
+        }
+
+        return "Success";
+
+    }
+
+    /** DELETE **/
+
+    public function deleteFuncionamento($idEmpresaRecebido)
+    {
+        $sql = "DELETE FROM tbl_dia_funcionamento WHERE id_empresa = ?";
 
         $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_imagem_salao);
-        $stm->bindValue(2, $this->_id_empresa);
-
-        if ($stm->execute()) {
-            return "Success";
-        } else {
-            return "Erro ao criar empresa - taxas de cancelamento";
-        }
+        $stm->bindValue(1, $idEmpresaRecebido);
+        $stm->execute();
     }
 
-
-
-    public function delete()
+    public function deleteFormasPagamento($idEmpresaRecebido)
     {
-
-        $sql = "DELETE FROM tbl_empresa WHERE id_empresa = ?";
+        $sql = "DELETE FROM tbl_empresa_forma_pagamento WHERE id_empresa = ?";
 
         $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_id_empresa);
+        $stm->bindValue(1, $idEmpresaRecebido);
+        $stm->execute();
 
-
-        if ($stm->execute()) {
-            return "Dados excluídos com sucesso!";
-        }
     }
 
-    public function update()
+
+    public function deleteTaxasCancelamento($idEmpresaRecebido)
+    {
+
+        $sql = "DELETE from tbl_taxa_cancelamento WHERE id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $idEmpresaRecebido);
+        $stm->execute();
+
+    }
+
+    /** UPDATE CONTA ADM **/
+
+    public function updateEmpresa($idEmpresaRecebido)
     {
 
         $sql = "UPDATE tbl_empresa SET
@@ -579,7 +588,8 @@ class ModelEmpresa
         nome_fantasia = ?,
         cnpj = ?,
         intervalo_tempo_padrao_entre_servicos = ?,
-        observacoes_pagamento = ?
+        observacoes_pagamento = ?,
+        taxa_unica_cancelamento = ?
         WHERE id_empresa = ?
         ";
 
@@ -592,12 +602,97 @@ class ModelEmpresa
         $stm->bindvalue(5, $this->_cnpj);
         $stm->bindvalue(6, $this->_intervalo_tempo_padrao_entre_servicos);
         $stm->bindvalue(7, $this->_observacoes_pagamento);
-        $stm->bindvalue(8, $this->_id_empresa);
+        $stm->bindvalue(8, $this->_taxa_unica_cancelamento);
+        $stm->bindvalue(9, $idEmpresaRecebido);
 
+        if ($stm->execute()) {
+
+            $dados_empresa["taxa_unica_cancelamento"] = $this->_taxa_unica_cancelamento;
+            return $dados_empresa;
+
+        }
+    }
+
+    public function updateEnderecoEmpresa($idEmpresaRecebido)
+    {
+
+        $sql = "UPDATE tbl_endereco_salao SET
+        bairro = ?,
+        rua = ?,
+        numero = ?,
+        complemento = ?,
+        cep = ?,
+        id_cidade = ?
+        WHERE id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_bairro_empresa);
+        $stm->bindValue(2, $this->_rua_empresa);
+        $stm->bindValue(3, $this->_numero_rua_empresa);
+        $stm->bindValue(4, $this->_complemento_endereco);
+        $stm->bindValue(5, $this->_cep);
+        $stm->bindValue(6, $this->_id_cidade);
+        $stm->bindValue(7, $idEmpresaRecebido);
         if ($stm->execute()) {
             return "Dados alterados com sucesso!";
         }
     }
+
+    public function updateFuncionamento($funcionamento, $idEmpresaRecebido)
+    {
+
+        /* estrutura array - dados_funcionamento->id (id_dia_semana)->hora_inicio, hora_termino */
+
+        foreach ($funcionamento as $diaFuncionamento) {
+
+            //recebendo valores dos atributos
+            $this->_id_dia_semana = $diaFuncionamento["id_dia_semana"];
+            $this->_hora_inicio = $diaFuncionamento["hora_inicio"];
+            $this->_hora_termino = $diaFuncionamento["hora_termino"];
+
+            $sql = "UPDATE tbl_dia_funcionamento SET
+            hora_inicio = ?,
+            hora_termino = ?
+            WHERE id_dia_semana = ? AND id_empresa = ?";
+
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_hora_inicio);
+            $stm->bindValue(2, $this->_hora_termino);
+            $stm->bindValue(3, $this->_id_dia_semana);
+            $stm->bindValue(4, $idEmpresaRecebido);
+            $stm->execute();
+        }
+
+        return "Dados alterados com sucesso!";
+
+    }
+
+    public function updateTaxasCancelamento($taxasCancelamento, $idEmpresaRecebido)
+    {
+
+        foreach ($taxasCancelamento as $taxaCancelamento) {
+
+            $this->_valor_acima_de_100 = $taxaCancelamento["valor_acima_de_100"];
+            $this->_porcentagem_sobre_valor_servico = $taxaCancelamento["porcentagem_sobre_valor_servico"];
+            $this->_horas_tolerancia = $taxaCancelamento["horas_tolerancia"];
+
+            $sql = "UPDATE tbl_taxa_cancelamento SET
+            porcentagem_sobre_valor_servico = ?,
+            horas_tolerancia = ?
+            WHERE valor_acima_de_100 = ? AND id_empresa = ?";
+
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_porcentagem_sobre_valor_servico);
+            $stm->bindValue(2, $this->_horas_tolerancia);
+            $stm->bindValue(3, $this->_valor_acima_de_100);
+            $stm->bindValue(4, $idEmpresaRecebido);
+            $stm->execute();
+        }
+
+        return "Dados alterados com sucesso!";
+
+    }
+
 
     public function updateRedesSociais()
     {
