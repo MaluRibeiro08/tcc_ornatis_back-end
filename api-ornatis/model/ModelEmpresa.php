@@ -253,7 +253,8 @@ class ModelEmpresa
         $sql = "SELECT 
                 tbl_dia_funcionamento.hora_inicio,
                 tbl_dia_funcionamento.hora_termino,
-                tbl_dia_semana.dia_da_semana
+                tbl_dia_semana.dia_da_semana,
+                tbl_dia_semana.id_dia_semana
 
                 FROM tbl_dia_funcionamento
                     inner join tbl_dia_semana
@@ -271,7 +272,7 @@ class ModelEmpresa
         $dias_funcionamento = [];
         $verificacao = [];
         foreach ($funcionamentos as $funcionamento) {
-            $dia_semana = $funcionamento["dia_da_semana"];
+            $dia_semana = $funcionamento["id_dia_semana"];
 
             if ($dias_funcionamento == null) {
                 $dias_funcionamento[$dia_semana][] = $funcionamento;
@@ -356,7 +357,7 @@ class ModelEmpresa
         if ($dados[0]['taxa_unica_cancelamento'] == null) {
             foreach ($dados as $taxa) {
                 $id_taxa =  $taxa["id_taxa_cancelamento"];
-                $taxas[$id_taxa] = $taxa;
+                $taxas[] = $taxa;
             }
         } else {
             $taxas["taxa_unica_cancelamento"] = $dados[0]["taxa_unica_cancelamento"];
