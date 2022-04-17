@@ -132,7 +132,10 @@ class ControllerContaAdministradora
                     
                     }
 
-                    $dados_administrador["dados_administrador"] = $this->_model_admin->updateAdministrador($this->_id_empresa);
+                    $dados_administrador[] = $this->_model_admin->findIdByEmpresa();
+                    $this->_id_administrador = $dados_administrador[0][0]["id_administrador"];
+                    $dados_administrador["id_administrador"] = $this->_model_admin->findIdByEmpresa();
+                    $dados_administrador["dados_administrador"] = $this->_model_admin->updateAdministrador($this->_id_empresa, $this->_id_administrador);
 
                     return array_merge($dados_empresa, $dados_administrador);
 
@@ -141,7 +144,7 @@ class ControllerContaAdministradora
                     $redesSociais = $this->_model_empresa->updateRedesSociais();
                     return $redesSociais;
 
-                }
+                } 
 
 
             default:
