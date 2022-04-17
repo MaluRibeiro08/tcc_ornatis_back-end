@@ -400,9 +400,14 @@ class ModelEmpresa
          intervalo_tempo_padrao_entre_servicos, observacoes_pagamento, taxa_unica_cancelamento)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
+        $extensao = pathinfo($this->_imagem_perfil, PATHINFO_EXTENSION);
+        
+        $imagemPerfil = md5(microtime()) . ".$extensao";
+        move_uploaded_file($_FILES["imagem_perfil"]["tmp_name"], "../../upload/imagem_perfil_salao/$imagemPerfil");
+
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_biografia);
-        $stm->bindValue(2, $this->_imagem_perfil);
+        $stm->bindValue(2, $imagemPerfil);
         $stm->bindValue(3, $this->_telefone);
         $stm->bindValue(4, $this->_nome_fantasia);
         $stm->bindValue(5, $this->_cnpj);
@@ -578,8 +583,32 @@ class ModelEmpresa
 
     /** UPDATE CONTA ADM **/
 
+   
     public function updateEmpresa($idEmpresaRecebido)
     {
+        //atualizar imagem do produto
+        if ($_FILES["imagem_perfil"]["error"] != UPLOAD_ERR_NO_FILE) {
+            //selecionar imagem do produto escolhido
+            $sqlImg = "SELECT imagem_perfil FROM tbl_empresa WHERE id_empresa = ?";
+
+            $stm = $this->_conexao->prepare($sqlImg);
+            $stm->bindValue(1, $idEmpresaRecebido);
+
+            $stm->execute();
+
+            $empresa = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+            //exclusão da foto antiga
+            unlink("../../upload/imagem_perfil_salao/" . $empresa[0]["imagem_perfil"]);
+
+            $nomeArquivo = $_FILES["imagem_perfil"]["name"];
+
+            $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
+            $novoNomeArquivo = md5(microtime()) . ".$extensao";
+           
+            move_uploaded_file($_FILES["imagem_perfil"]["tmp_name"], "../../upload/imagem_perfil_salao/$novoNomeArquivo");
+        }
+
 
         $sql = "UPDATE tbl_empresa SET
         biografia = ?,
@@ -596,7 +625,7 @@ class ModelEmpresa
         $stm = $this->_conexao->prepare($sql);
 
         $stm->bindvalue(1, $this->_biografia);
-        $stm->bindvalue(2, $this->_imagem_perfil);
+        $stm->bindvalue(2, $novoNomeArquivo);
         $stm->bindvalue(3, $this->_telefone);
         $stm->bindvalue(4, $this->_nome_fantasia);
         $stm->bindvalue(5, $this->_cnpj);
@@ -609,9 +638,9 @@ class ModelEmpresa
 
             $dados_empresa["taxa_unica_cancelamento"] = $this->_taxa_unica_cancelamento;
             return $dados_empresa;
-
         }
     }
+
 
     public function updateEnderecoEmpresa($idEmpresaRecebido)
     {
