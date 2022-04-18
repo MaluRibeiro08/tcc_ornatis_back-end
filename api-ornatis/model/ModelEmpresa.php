@@ -58,42 +58,42 @@ class ModelEmpresa
                 $this->_flag = $_POST["flag"] ?? null;
 
                 // empresa
-                $this->_id_empresa = $_POST["id_empresa"] ?? null;
-                $this->_biografia = $_POST["biografia"] ?? null;
-                $this->_imagem_perfil = $_POST["imagem_perfil"] ?? null;
-                $this->_telefone = $_POST["telefone"] ?? null;
-                $this->_nome_fantasia = $_POST["nome_fantasia"] ?? null;
-                $this->_cnpj = $_POST["cnpj"] ?? null;
-                $this->_intervalo_tempo_padrao_entre_servicos = $_POST["intervalo_tempo_padrao_entre_servicos"] ?? null;
-                $this->_observacoes_pagamento = $_POST["observacoes_pagamento"] ?? null;
-                $this->_taxa_unica_cancelamento = $_POST["taxa_unica_cancelamento"] ?? null;
+                $this->_id_empresa = $_POST["id_empresa"] ?? $dados_empresa->id_empresa ?? null;
+                $this->_biografia = $_POST["biografia"] ?? $dados_empresa->biografia ?? null;
+                $this->_imagem_perfil = $_FILES["imagem_perfil"] ?? null;
+                $this->_telefone = $_POST["telefone"] ?? $dados_empresa->telefone ?? null;
+                $this->_nome_fantasia = $_POST["nome_fantasia"] ?? $dados_empresa->nome_fantasia ?? null;
+                $this->_cnpj = $_POST["cnpj"] ?? $dados_empresa->cnpj ?? null;
+                $this->_intervalo_tempo_padrao_entre_servicos = $_POST["intervalo_tempo_padrao_entre_servicos"] ?? $dados_empresa->intervalo_tempo_padrao_entre_servicos ?? null;
+                $this->_observacoes_pagamento = $_POST["observacoes_pagamento"] ?? $dados_empresa->observacoes_pagamento ?? null;
+                $this->_taxa_unica_cancelamento = $_POST["taxa_unica_cancelamento"] ?? $dados_empresa->taxa_unica_cancelamento ?? null;
 
-                $this->_nome_usuario_instagram = $_POST["nome_usuario_instagram"] ?? null;
-                $this->_link_faceboook = $_POST["link_facebook"] ?? null;
+                $this->_nome_usuario_instagram = $_POST["nome_usuario_instagram"] ?? $dados_empresa->nome_usuario_instagram ?? null;
+                $this->_link_faceboook = $_POST["link_facebook"] ?? $dados_empresa->link_facebook ?? null;
 
                 // endereço
-                $this->_rua_empresa = $_POST["rua"] ?? null;
-                $this->_bairro_empresa = $_POST["bairro"] ?? null;
-                $this->_numero_rua_empresa = $_POST["numero_rua"] ?? null;
-                $this->_complemento_endereco = $_POST["complemento"] ?? null;
-                $this->_cep = $_POST["cep"] ?? null;
-                $this->_id_cidade = $_POST["id_cidade"] ?? null;
+                $this->_rua_empresa = $_POST["rua"] ?? $dados_empresa->rua ?? null;
+                $this->_bairro_empresa = $_POST["bairro"] ?? $dados_empresa->bairro ?? null;
+                $this->_numero_rua_empresa = $_POST["numero_rua"] ?? $dados_empresa->numero_rua ?? null;
+                $this->_complemento_endereco = $_POST["complemento"] ?? $dados_empresa->complemento ?? null;
+                $this->_cep = $_POST["cep"] ?? $dados_empresa->cep ?? null;
+                $this->_id_cidade = $_POST["id_cidade"] ?? $dados_empresa->id_cidade ?? null;
 
                 // dia de funcionamento
-                $this->_hora_inicio = $_POST["hora_inicio"] ?? null;
-                $this->_hora_termino = $_POST["hora_termino"] ?? null;
-                $this->_id_dia_semana = $_POST["id_dia_semana"] ?? null;
+                $this->_hora_inicio = $_POST["hora_inicio"] ?? $dados_empresa->hora_inicio ?? null;
+                $this->_hora_termino = $_POST["hora_termino"] ?? $dados_empresa->hora_termino ?? null;
+                $this->_id_dia_semana = $_POST["id_dia_semana"] ?? $dados_empresa->id_dia_semana ?? null;
 
                 // forma de pagamento
-                $this->_id_forma_pagamento = $_POST["id_forma_pagamento"] ?? null;
+                $this->_id_forma_pagamento = $_POST["id_forma_pagamento"] ?? $dados_empresa->id_forma_pagamento ?? null;
 
                 // taxa de cancelamento
-                $this->_valor_acima_de_100 = $_POST["valor_acima_de_100"] ?? null;
-                $this->_porcentagem_sobre_valor_servico = $_POST["porcentagem_sobre_valor_servico"] ?? null;
-                $this->_horas_tolerancia = $_POST["horas_tolerancia"] ?? null;
+                $this->_valor_acima_de_100 = $_POST["valor_acima_de_100"] ?? $dados_empresa->valor_acima_de_100 ?? null;
+                $this->_porcentagem_sobre_valor_servico = $_POST["porcentagem_sobre_valor_servico"] ?? $dados_empresa->porcentagem_sobre_valor_servico ?? null;
+                $this->_horas_tolerancia = $_POST["horas_tolerancia"] ?? $dados_empresa->horas_tolerancia ?? null;
 
                 // imagem
-                $this->_imagem_salao = $_POST["imagem_salao"] ?? null;
+                $this->_imagem_salao = $_FILES["imagem_salao"] ?? null;
 
                 break;
 

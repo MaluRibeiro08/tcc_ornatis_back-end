@@ -29,14 +29,14 @@ class ModelAdministrador
         switch ($this->_method) {
             case 'POST':
 
-                $this->_id_administrador = $_POST["id_administrador"] ?? null;
-                $this->_cpf = $_POST["cpf"] ?? null;
-                $this->_data_nascimento = $_POST["data_nascimento"] ?? null;
-                $this->_nome_adm = $_POST["nome_adm"] ?? null;
-                $this->_id_empresa = $_POST["id_empresa"] ?? null;
+                $this->_id_administrador = $_POST["id_administrador"] ?? $dados_admin->id_administrador ?? null;
+                $this->_cpf = $_POST["cpf"] ?? $dados_admin->cpf ?? null;
+                $this->_data_nascimento = $_POST["data_nascimento"] ?? $dados_admin->data_nascimento ?? null;
+                $this->_nome_adm = $_POST["nome_adm"] ?? $dados_admin->nome_adm ?? null;
+                $this->_id_empresa = $_POST["id_empresa"] ?? $dados_admin->_id_empresa ?? null;
 
-                $this->_email_adm = $_POST["email_adm"] ?? null;
-                $this->_senha_adm = $_POST["senha_adm"] ?? null;
+                $this->_email_adm = $_POST["email_adm"] ?? $dados_admin->email_adm ?? null;
+                $this->_senha_adm = $_POST["senha_adm"] ?? $dados_admin->senha_adm ?? null;
 
                 break;
 
