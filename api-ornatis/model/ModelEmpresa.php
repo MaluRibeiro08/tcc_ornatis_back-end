@@ -131,69 +131,6 @@ class ModelEmpresa
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    // public function getInformacoesContaEmpresa()
-    // {
-    //    //$sql = "SELECT * FROM tbl_empresa WHERE id_empresa = ?";
-
-
-    //     $sql =
-    //         "SELECT
-    //         tbl_empresa.nome_fantasia,
-    //         tbl_empresa.cnpj,
-    //         tbl_empresa.telefone,
-    //         tbl_empresa.biografia,
-    //         tbl_empresa.intervalo_tempo_padrao_entre_servicos,
-    //         tbl_empresa.taxa_unica_cancelamento,
-    //         tbl_endereco_salao.cep,
-    //         tbl_endereco_salao.bairro,
-    //         tbl_endereco_salao.rua,
-    //         tbl_endereco_salao.numero,
-    //         tbl_endereco_salao.complemento,
-    //         tbl_cidade.nome_cidade,
-    //         tbl_estado.nome_estado,
-    //         tbl_forma_pagamento.forma_pagamento,
-    //         tbl_taxa_cancelamento.valor_acima_de_100,
-    //         tbl_taxa_cancelamento.horas_tolerancia,
-    //         tbl_taxa_cancelamento.porcentagem_sobre_valor_servico,
-    //         tbl_dia_semana.dia_da_semana,
-    //         tbl_dia_funcionamento.hora_inicio,
-    //         tbl_dia_funcionamento.hora_termino
-
-    //             from tbl_empresa 
-
-    //             inner join tbl_endereco_salao
-    //             on tbl_empresa.id_empresa = tbl_endereco_salao.id_empresa
-
-    //             inner join tbl_cidade
-    //             on tbl_endereco_salao.id_empresa = tbl_cidade.id_cidade
-
-    //             inner join tbl_estado
-    //             on tbl_cidade.id_estado = tbl_estado.id_estado
-
-    //             inner join tbl_empresa_forma_pagamento
-    //             on tbl_empresa.id_empresa = tbl_empresa_forma_pagamento.id_empresa
-
-    //             inner join tbl_forma_pagamento
-    //             on tbl_empresa_forma_pagamento.id_forma_pagamento = tbl_forma_pagamento.id_forma_pagamento
-
-    //             inner join tbl_taxa_cancelamento
-    //             on tbl_empresa.id_empresa = tbl_taxa_cancelamento.id_empresa
-
-    //             inner join tbl_dia_funcionamento
-    //             on tbl_empresa.id_empresa = tbl_dia_funcionamento.id_empresa
-
-    //             inner join tbl_dia_semana
-    //             on tbl_dia_funcionamento.id_dia_semana = tbl_dia_semana.id_dia_semana
-
-    //             where tbl_empresa.id_empresa = ?";
-
-    //     $stm = $this->_conexao->prepare($sql);
-    //     $stm->bindValue(1, $this->_id_empresa);
-
-    //     $stm->execute();
-
-    //     return $stm->fetchAll(\PDO::FETCH_ASSOC);
-    //}
 
     public function getInformacoesEmpresa()
     {
@@ -460,9 +397,9 @@ class ModelEmpresa
         foreach ($funcionamento as $diaFuncionamento) {
 
             //recebendo valores dos atributos
-            $this->_id_dia_semana = $diaFuncionamento["id_dia_semana"];
-            $this->_hora_inicio = $diaFuncionamento["hora_inicio"];
-            $this->_hora_termino = $diaFuncionamento["hora_termino"];
+            $this->_id_dia_semana = $diaFuncionamento->id_dia_semana;
+            $this->_hora_inicio = $diaFuncionamento->hora_inicio;
+            $this->_hora_termino = $diaFuncionamento->hora_termino;
 
             $sql = "INSERT INTO tbl_dia_funcionamento (hora_inicio, hora_termino,
             id_dia_semana, id_empresa) 
@@ -504,12 +441,14 @@ class ModelEmpresa
 
     public function createTaxasCancelamento($taxasCancelamento, $idEmpresaRecebido)
     {
+        // return $taxasCancelamento[0];
 
         foreach ($taxasCancelamento as $taxaCancelamento) {
 
-            $this->_valor_acima_de_100 = $taxaCancelamento["valor_acima_de_100"];
-            $this->_porcentagem_sobre_valor_servico = $taxaCancelamento["porcentagem_sobre_valor_servico"];
-            $this->_horas_tolerancia = $taxaCancelamento["horas_tolerancia"];
+
+            $this->_valor_acima_de_100 = $taxaCancelamento->valor_acima_de_100;
+            $this->_porcentagem_sobre_valor_servico = $taxaCancelamento->porcentagem_sobre_valor_servico;
+            $this->_horas_tolerancia = $taxaCancelamento->horas_tolerancia;
 
             $sql = "INSERT INTO tbl_taxa_cancelamento (valor_acima_de_100, porcentagem_sobre_valor_servico, 
             horas_tolerancia, id_empresa)
@@ -550,7 +489,7 @@ class ModelEmpresa
 
     /** DELETE **/
 
-    public function deleteFuncionamento($idEmpresaRecebido)
+    public function limparFuncionamento($idEmpresaRecebido)
     {
         $sql = "DELETE FROM tbl_dia_funcionamento WHERE id_empresa = ?";
 
@@ -559,7 +498,7 @@ class ModelEmpresa
         $stm->execute();
     }
 
-    public function deleteFormasPagamento($idEmpresaRecebido)
+    public function limparFormasPagamento($idEmpresaRecebido)
     {
         $sql = "DELETE FROM tbl_empresa_forma_pagamento WHERE id_empresa = ?";
 
@@ -570,7 +509,7 @@ class ModelEmpresa
     }
 
 
-    public function deleteTaxasCancelamento($idEmpresaRecebido)
+    public function limparTaxasCancelamento($idEmpresaRecebido)
     {
 
         $sql = "DELETE from tbl_taxa_cancelamento WHERE id_empresa = ?";
@@ -586,58 +525,82 @@ class ModelEmpresa
    
     public function updateEmpresa($idEmpresaRecebido)
     {
-        //atualizar imagem do produto
-        if ($_FILES["imagem_perfil"]["error"] != UPLOAD_ERR_NO_FILE) {
-            //selecionar imagem do produto escolhido
-            $sqlImg = "SELECT imagem_perfil FROM tbl_empresa WHERE id_empresa = ?";
 
-            $stm = $this->_conexao->prepare($sqlImg);
-            $stm->bindValue(1, $idEmpresaRecebido);
+        if(isset($_POST["envio_form"])) {
+                        
+            $envio_form = $_POST["envio_form"];
 
-            $stm->execute();
+            if ($envio_form == "true")
+            {
+                if ($_FILES["imagem_perfil"]["error"] == 4)
+                {
+                    //não faz nada pq não veio img
+                    return "estariamos fazendo nada porque não veio img";
+                }
+                else
+                {
+                    //selecionar imagem do produto escolhido
+                    $sqlImg = "SELECT imagem_perfil FROM tbl_empresa WHERE id_empresa = ?";
 
-            $empresa = $stm->fetchAll(\PDO::FETCH_ASSOC);
+                    $stm = $this->_conexao->prepare($sqlImg);
+                    $stm->bindValue(1, $idEmpresaRecebido);
 
-            //exclusão da foto antiga
-            unlink("../../upload/imagem_perfil_salao/" . $empresa[0]["imagem_perfil"]);
+                    $stm->execute();
 
-            $nomeArquivo = $_FILES["imagem_perfil"]["name"];
+                    $empresa = $stm->fetchAll(\PDO::FETCH_ASSOC);
 
-            $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
-            $novoNomeArquivo = md5(microtime()) . ".$extensao";
-           
-            move_uploaded_file($_FILES["imagem_perfil"]["tmp_name"], "../../upload/imagem_perfil_salao/$novoNomeArquivo");
-        }
+                    //exclusão da foto antiga
+                    unlink("../../upload/imagem_perfil_salao/" . $empresa[0]["imagem_perfil"]);
 
+                    $nomeArquivo = $_FILES["imagem_perfil"]["name"];
 
-        $sql = "UPDATE tbl_empresa SET
-        biografia = ?,
-        imagem_perfil = ?,
-        telefone = ?,
-        nome_fantasia = ?,
-        cnpj = ?,
-        intervalo_tempo_padrao_entre_servicos = ?,
-        observacoes_pagamento = ?,
-        taxa_unica_cancelamento = ?
-        WHERE id_empresa = ?
-        ";
+                    $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
+                    $novoNomeArquivo = md5(microtime()) . ".$extensao";
+                
+                    move_uploaded_file($_FILES["imagem_perfil"]["tmp_name"], "../../upload/imagem_perfil_salao/$novoNomeArquivo");
 
-        $stm = $this->_conexao->prepare($sql);
+                    $sql = "UPDATE tbl_empresa SET
+                    imagem_perfil = ? WHERE id_empresa = ? ";
+            
+                    $stm = $this->_conexao->prepare($sql);
+            
+                    $stm->bindvalue(1, $this->$novoNomeArquivo);
+                    $stm->bindvalue(2, $idEmpresaRecebido);
 
-        $stm->bindvalue(1, $this->_biografia);
-        $stm->bindvalue(2, $novoNomeArquivo);
-        $stm->bindvalue(3, $this->_telefone);
-        $stm->bindvalue(4, $this->_nome_fantasia);
-        $stm->bindvalue(5, $this->_cnpj);
-        $stm->bindvalue(6, $this->_intervalo_tempo_padrao_entre_servicos);
-        $stm->bindvalue(7, $this->_observacoes_pagamento);
-        $stm->bindvalue(8, $this->_taxa_unica_cancelamento);
-        $stm->bindvalue(9, $idEmpresaRecebido);
+                    $stm->execute();
 
-        if ($stm->execute()) {
+                }
+            }
+        } 
+        else {
+            //só chega aqui se a variavel $_POST["envio_form"] não existir, ou seja, quando for uma req fetch (só dados)
+            $sql = "UPDATE tbl_empresa SET
+            biografia = ?,
+            telefone = ?,
+            nome_fantasia = ?,
+            cnpj = ?,
+            intervalo_tempo_padrao_entre_servicos = ?,
+            observacoes_pagamento = ?,
+            taxa_unica_cancelamento = ?
+            WHERE id_empresa = ?
+            ";
 
-            $dados_empresa["taxa_unica_cancelamento"] = $this->_taxa_unica_cancelamento;
-            return $dados_empresa;
+            $stm = $this->_conexao->prepare($sql);
+
+            $stm->bindvalue(1, $this->_biografia);
+            $stm->bindvalue(2, $this->_telefone);
+            $stm->bindvalue(3, $this->_nome_fantasia);
+            $stm->bindvalue(4, $this->_cnpj);
+            $stm->bindvalue(5, $this->_intervalo_tempo_padrao_entre_servicos);
+            $stm->bindvalue(6, $this->_observacoes_pagamento);
+            $stm->bindvalue(7, $this->_taxa_unica_cancelamento);
+            $stm->bindvalue(8, $idEmpresaRecebido);
+
+            if ($stm->execute()) {
+
+                $dados_empresa["taxa_unica_cancelamento"] = $this->_taxa_unica_cancelamento;
+                return $dados_empresa;
+            }
         }
     }
 
@@ -667,34 +630,34 @@ class ModelEmpresa
         }
     }
 
-    public function updateFuncionamento($funcionamento, $idEmpresaRecebido)
-    {
+    // public function updateFuncionamento($funcionamento, $idEmpresaRecebido)
+    // {
 
-        /* estrutura array - dados_funcionamento->id (id_dia_semana)->hora_inicio, hora_termino */
+    //     /* estrutura array - dados_funcionamento->id (id_dia_semana)->hora_inicio, hora_termino */
 
-        foreach ($funcionamento as $diaFuncionamento) {
+    //     foreach ($funcionamento as $diaFuncionamento) {
 
-            //recebendo valores dos atributos
-            $this->_id_dia_semana = $diaFuncionamento["id_dia_semana"];
-            $this->_hora_inicio = $diaFuncionamento["hora_inicio"];
-            $this->_hora_termino = $diaFuncionamento["hora_termino"];
+    //         //recebendo valores dos atributos
+    //         $this->_id_dia_semana = $diaFuncionamento->id_dia_semana;
+    //         $this->_hora_inicio = $diaFuncionamento->hora_inicio;
+    //         $this->_hora_termino = $diaFuncionamento->hora_termino;
 
-            $sql = "UPDATE tbl_dia_funcionamento SET
-            hora_inicio = ?,
-            hora_termino = ?
-            WHERE id_dia_semana = ? AND id_empresa = ?";
+    //         $sql = "UPDATE tbl_dia_funcionamento SET
+    //         hora_inicio = ?,
+    //         hora_termino = ?
+    //         WHERE id_dia_semana = ? AND id_empresa = ?";
 
-            $stm = $this->_conexao->prepare($sql);
-            $stm->bindValue(1, $this->_hora_inicio);
-            $stm->bindValue(2, $this->_hora_termino);
-            $stm->bindValue(3, $this->_id_dia_semana);
-            $stm->bindValue(4, $idEmpresaRecebido);
-            $stm->execute();
-        }
+    //         $stm = $this->_conexao->prepare($sql);
+    //         $stm->bindValue(1, $this->_hora_inicio);
+    //         $stm->bindValue(2, $this->_hora_termino);
+    //         $stm->bindValue(3, $this->_id_dia_semana);
+    //         $stm->bindValue(4, $idEmpresaRecebido);
+    //         $stm->execute();
+    //     }
 
-        return "Dados alterados com sucesso!";
+    //     return "Dados alterados com sucesso!";
 
-    }
+    // }
 
     public function updateTaxasCancelamento($taxasCancelamento, $idEmpresaRecebido)
     {

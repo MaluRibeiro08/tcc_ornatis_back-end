@@ -25,6 +25,7 @@ class ControllerContaAdministradora
         //PEGANDO DADOS DA REQ
         $json = file_get_contents("php://input");
         $dados_requisicao = json_decode($json);
+        $this->_dados_requisicao = json_decode($json);
 
         $this->_flag =  $_GET["acao"] ?? $dados_requisicao->acao ?? $_POST["acao"] ?? null;
 
@@ -85,8 +86,6 @@ class ControllerContaAdministradora
             case 'POST':
                 
                 //PEGANDO DADOS DA REQ
-                $json = file_get_contents("php://input");
-                $this->_dados_requisicao = json_decode($json);
 
                 if ($this->_flag == "create") {
 
@@ -115,32 +114,67 @@ class ControllerContaAdministradora
                     $dados_administrador["dados_administrador"] = $this->_model_admin->createAdministrador($idEmpresaCriada);
 
                     return array_merge($dados_empresa, $dados_administrador);
+
                 } elseif ($this->_flag == "updateContaAdministradora") {
+                    
+                    if(isset($_POST["envio_form"])) {
 
-                    $dados_empresa["dados_empresa"] = $this->_model_empresa->updateEmpresa($this->_id_empresa);
-                    $dados_empresa["dados_endereco_empresa"] = $this->_model_empresa->updateEnderecoEmpresa($this->_id_empresa);
+                        $envio_form = $_POST["envio_form"];
 
-                    $this->_model_empresa->deleteFuncionamento($this->_id_empresa);
-                    $this->_array_funcionamento = $this->_dados_requisicao->dados_funcionamento;
-                    $dados_empresa["dados_funcionamento"] = $this->_model_empresa->createFuncionamento($this->_array_funcionamento, $this->_id_empresa);
+                        if ($envio_form == "true")
+                        {
+                            if ($_FILES["imagem_perfil"]["error"] == 4)
+                            {
+                            }
+                            else
+                            {
+                                //atualiza a img
+                                $this->_model_empresa->updateEmpresa($this->_id_empresa);
 
-                    $this->_model_empresa->deleteFormasPagamento($this->_id_empresa);
-                    $this->_array_forma_pagamento = $this->_dados_requisicao->dados_formas_pagamento;
-                    $dados_empresa["dados_pagamento"] = $this->_model_empresa->createFormasPagamento($this->_array_forma_pagamento, $this->_id_empresa);
+                            }
+                        }
+                    } 
+                    else {
 
-                    $this->_model_empresa->deleteTaxasCancelamento($this->_id_empresa);
-                    if ($dados_empresa["dados_empresa"]["taxa_unica_cancelamento"] == null) {
+                        return "esse retinr é só uma garantia de que nada vai mudar no bd. Estou no else do case POST";
 
-                        $this->_array_taxas_cancelamento = $this->_dados_requisicao->dados_taxa_cancelamento;
-                        $dados_empresa["dados_taxas_cancelamento"] = $this->_model_empresa->createTaxasCancelamento($this->_array_taxas_cancelamento, $this->_id_empresa);
+                        //RESUMO:
+                        /*JÁ ESTAMOS CONSEGUINDO PEGAR OS DADOS DE REGRA DE CANCELAMENTO (E PROVAVELMENTE DOS OUTROS TBM). MUDAMOS A FORMA DE PEGA-LOS (DE INDICE ([]) PARA OBJETO (->))
+
+                            QUANDO ÍAMOS TESTAR, APARECERAM PROBLEMAS COM ADM. O ID DA EMPRESA SÃO ESTÁ CHEGANDO NA MODEL ADM, O QUE IMPOSSIBILITA O USO DO GETIDBYEMPRESA.
+                            É NECESSÁRIO ARRUMAR ESSA PARTE
+                        */
+                        
+                        // só chega aqui se a variavel $_POST["envio_form"] não existir, ou seja, quando for uma req fetch (só dados)
+                        $dados_empresa["dados_empresa"] = $this->_model_empresa->updateEmpresa($this->_id_empresa);
+                        $dados_empresa["dados_endereco_empresa"] = $this->_model_empresa->updateEnderecoEmpresa($this->_id_empresa);
+    
+                        $this->_model_empresa->limparFuncionamento($this->_id_empresa);
+                        $this->_array_funcionamento = $this->_dados_requisicao->dados_funcionamento;
+                        $dados_empresa["dados_funcionamento"] = $this->_model_empresa->createFuncionamento($this->_array_funcionamento, $this->_id_empresa);
+    
+                        $this->_model_empresa->limparFormasPagamento($this->_id_empresa);
+                        $this->_array_forma_pagamento = $this->_dados_requisicao->dados_formas_pagamento;
+                        $dados_empresa["dados_pagamento"] = $this->_model_empresa->createFormasPagamento($this->_array_forma_pagamento, $this->_id_empresa);
+    
+                        $this->_model_empresa->limparTaxasCancelamento($this->_id_empresa);
+                        if ($dados_empresa["dados_empresa"]["taxa_unica_cancelamento"] == null) {
+    
+                            $this->_array_taxas_cancelamento = $this->_dados_requisicao->dados_taxa_cancelamento;
+                            $dados_empresa["dados_taxas_cancelamento"] = $this->_model_empresa->createTaxasCancelamento($this->_array_taxas_cancelamento, $this->_id_empresa);
+                            // return $this->_model_empresa->createTaxasCancelamento($this->_array_taxas_cancelamento, $this->_id_empresa);
+
+                        }
+    
+
+                        $dados_administrador = $this->_model_admin->findIdByEmpresa();
+                        $this->_id_administrador = $dados_administrador[0][0]["id_administrador"];
+                        $dados_administrador["id_administrador"] = $this->_model_admin->findIdByEmpresa();
+                        $dados_administrador["dados_administrador"] = $this->_model_admin->updateAdministrador($this->_id_empresa, $this->_id_administrador);
+    
+                        // return array_merge($dados_empresa, $dados_administrador);
                     }
 
-                    $dados_administrador[] = $this->_model_admin->findIdByEmpresa();
-                    $this->_id_administrador = $dados_administrador[0][0]["id_administrador"];
-                    $dados_administrador["id_administrador"] = $this->_model_admin->findIdByEmpresa();
-                    $dados_administrador["dados_administrador"] = $this->_model_admin->updateAdministrador($this->_id_empresa, $this->_id_administrador);
-
-                    return array_merge($dados_empresa, $dados_administrador);
                 } elseif ($this->_flag == "updateRedesSociais") {
 
                     $redesSociais = $this->_model_empresa->updateRedesSociais();
