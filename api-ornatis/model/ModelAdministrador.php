@@ -23,26 +23,26 @@ class ModelAdministrador
         $this->_method = $_SERVER['REQUEST_METHOD'];
 
         $json = file_get_contents("php://input");
-        $dados_admin = json_decode($json);
-        // var_dump($dados_admin);
+        $dados_adm = json_decode($json);
+
 
         switch ($this->_method) {
             case 'POST':
 
-                $this->_id_administrador = $_POST["id_administrador"] ?? $dados_admin->id_administrador ?? null;
-                $this->_cpf = $_POST["cpf"] ?? $dados_admin->cpf ?? null;
-                $this->_data_nascimento = $_POST["data_nascimento"] ?? $dados_admin->data_nascimento ?? null;
-                $this->_nome_adm = $_POST["nome_adm"] ?? $dados_admin->nome_adm ?? null;
-                $this->_id_empresa = $_POST["id_empresa"] ?? $dados_admin->_id_empresa ?? null;
+                $this->_id_administrador = $_POST["id_administrador"] ?? $dados_adm->id_administrador ?? null;
+                $this->_cpf = $_POST["cpf"] ?? $dados_adm->cpf ?? null;
+                $this->_data_nascimento = $_POST["data_nascimento"] ?? $dados_adm->data_nascimento ?? null;
+                $this->_nome_adm = $_POST["nome_adm"] ?? $dados_adm->nome_adm ?? null;
+                $this->_id_empresa = $_POST["id_empresa"] ?? $dados_adm->id_empresa ?? null;
 
-                $this->_email_adm = $_POST["email_adm"] ?? $dados_admin->email_adm ?? null;
-                $this->_senha_adm = $_POST["senha_adm"] ?? $dados_admin->senha_adm ?? null;
+                $this->_email_adm = $_POST["email_adm"] ?? $dados_adm->email_adm ?? null;
+                $this->_senha_adm = $_POST["senha_adm"] ?? $dados_adm->senha_adm ?? null;
 
                 break;
 
             default:
-                $this->_id_administrador = $_GET["id_administrador"] ?? $dados_admin->id_administrador ?? null;
-                $this->_id_empresa =  $_GET["id_empresa"] ?? $dados_admin->id_empresa ?? null;
+                $this->_id_administrador = $_GET["id_administrador"] ?? $dados_adm->id_administrador ?? null;
+                $this->_id_empresa =  $_GET["id_empresa"] ?? $dados_adm->id_empresa ?? null;
                 // $this->_cpf = $dados_admin->cpf ?? null;
                 // $this->_data_nascimento = $dados_admin->data_nascimento ?? null;
                 // $this->_nome_adm = $dados_admin->nome_adm ?? null;
@@ -88,13 +88,13 @@ class ModelAdministrador
         };
     }
 
-    public function findIdByEmpresa()
+    public function findIdByEmpresa($idEmpresaRecebido)
     {
 
         $sql = "SELECT id_administrador FROM tbl_administrador WHERE id_empresa = ?";
 
         $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_id_empresa);
+        $stm->bindValue(1, $idEmpresaRecebido);
         $stm->execute();
 
         return $stm->fetchAll(\PDO::FETCH_ASSOC);

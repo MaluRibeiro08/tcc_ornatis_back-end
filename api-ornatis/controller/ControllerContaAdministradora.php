@@ -76,6 +76,7 @@ class ControllerContaAdministradora
                     //CANCELAMENTO (taxa unica ou taxas de cobrança)
                     $dados_empresa["taxa_cancelamento_empresa"] = $this->_model_empresa->getTaxasCancelamento();
 
+
                     return array_merge($dados_empresa);
                 } else {
                     return "Não foi possível realizar ação! Verifique as informações de requeisição (ids, flags)";
@@ -136,13 +137,13 @@ class ControllerContaAdministradora
                     } 
                     else {
 
-                        return "esse retinr é só uma garantia de que nada vai mudar no bd. Estou no else do case POST";
+                        // return "esse return é só uma garantia de que nada vai mudar no bd. Estou no else do case POST";
 
                         //RESUMO:
-                        /*JÁ ESTAMOS CONSEGUINDO PEGAR OS DADOS DE REGRA DE CANCELAMENTO (E PROVAVELMENTE DOS OUTROS TBM). MUDAMOS A FORMA DE PEGA-LOS (DE INDICE ([]) PARA OBJETO (->))
+                        /*JÁ ESTAMOS CONSEGUINDO PEGAR OS DADOS DE REGRA DE CANCELAMENTO (E DOS OUTROS TBM). MUDAMOS A FORMA DE PEGA-LOS (DE INDICE ([]) PARA OBJETO (->))
+                            PROBLEMAS COM ADM RESOLVIDOS
 
-                            QUANDO ÍAMOS TESTAR, APARECERAM PROBLEMAS COM ADM. O ID DA EMPRESA SÃO ESTÁ CHEGANDO NA MODEL ADM, O QUE IMPOSSIBILITA O USO DO GETIDBYEMPRESA.
-                            É NECESSÁRIO ARRUMAR ESSA PARTE
+                            RESOLVER UPLOAD DE IMAGEM PARA A PASTA
                         */
                         
                         // só chega aqui se a variavel $_POST["envio_form"] não existir, ou seja, quando for uma req fetch (só dados)
@@ -167,9 +168,9 @@ class ControllerContaAdministradora
                         }
     
 
-                        $dados_administrador = $this->_model_admin->findIdByEmpresa();
-                        $this->_id_administrador = $dados_administrador[0][0]["id_administrador"];
-                        $dados_administrador["id_administrador"] = $this->_model_admin->findIdByEmpresa();
+                        $dados_administrador = $this->_model_admin->findIdByEmpresa($this->_id_empresa);
+                        $this->_id_administrador = $dados_administrador[0]["id_administrador"];
+                        // $dados_administrador["id_administrador"] = $this->_model_admin->findIdByEmpresa($this->_id_empresa);
                         $dados_administrador["dados_administrador"] = $this->_model_admin->updateAdministrador($this->_id_empresa, $this->_id_administrador);
     
                         // return array_merge($dados_empresa, $dados_administrador);
