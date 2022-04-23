@@ -164,6 +164,7 @@ class ModelEmpresa
                 tbl_endereco_salao.rua,
                 tbl_endereco_salao.numero,
                 tbl_endereco_salao.complemento,
+                tbl_cidade.id_cidade,
                 tbl_cidade.nome_cidade,
                 tbl_estado.nome_estado,
                 tbl_estado.sigla_estado
@@ -349,7 +350,6 @@ class ModelEmpresa
                 $id_taxa =  $taxa["id_taxa_cancelamento"];
                 $taxas[] = $taxa;
             }
-
         } else {
             $taxas["taxa_unica_cancelamento"] = $dados[0]["taxa_unica_cancelamento"];
         };
@@ -390,7 +390,9 @@ class ModelEmpresa
          intervalo_tempo_padrao_entre_servicos, observacoes_pagamento, taxa_unica_cancelamento)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        $extensao = pathinfo($this->_imagem_perfil, PATHINFO_EXTENSION);
+        $extensao = pathinfo($this->_imagem_perfil["name"], PATHINFO_EXTENSION);
+
+        // return $this->_imagem_perfil;
 
         $imagemPerfil = md5(microtime()) . ".$extensao";
         move_uploaded_file($_FILES["imagem_perfil"]["tmp_name"], "../../upload/imagem_perfil_salao/$imagemPerfil");
@@ -566,6 +568,19 @@ class ModelEmpresa
         $stm->execute();
     }
 
+    public function desabilitarEmpresa()
+    {
+
+        $sql = "UPDATE tbl_empresa SET
+        habilitado = 0
+        WHERE id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+        $stm->execute();
+
+    }
+
     /** UPDATE CONTA ADM **/
 
 
@@ -595,6 +610,8 @@ class ModelEmpresa
                     unlink("../../upload/imagem_perfil_salao/" . $empresa[0]["imagem_perfil"]);
 
                     $nomeArquivo = $_FILES["imagem_perfil"]["name"];
+
+                    // return $nomeArquivo;
 
                     $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
                     $novoNomeArquivo = md5(microtime()) . ".$extensao";
