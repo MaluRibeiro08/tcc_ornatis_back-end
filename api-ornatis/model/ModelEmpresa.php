@@ -568,11 +568,24 @@ class ModelEmpresa
         $stm->execute();
     }
 
-    public function desabilitarEmpresa()
+    public function desabilitarEmpresa($idEmpresaRecebido)
     {
+        $this->_id_empresa = $idEmpresaRecebido;
 
         $sql = "UPDATE tbl_empresa SET
         habilitado = 0
+        WHERE id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+        $stm->execute();
+    }
+
+    public function deleteRedesSociais($idEmpresaRecebido)
+    {
+        $this->_id_empresa = $idEmpresaRecebido;
+
+        $sql = "DELETE nome_usuario_instagram, link_facebook FROM tbl_empresa
         WHERE id_empresa = ?";
 
         $stm = $this->_conexao->prepare($sql);
@@ -623,7 +636,7 @@ class ModelEmpresa
 
                     $stm = $this->_conexao->prepare($sql);
 
-                    $stm->bindvalue(1, $this->$novoNomeArquivo);
+                    $stm->bindvalue(1, $novoNomeArquivo);
                     $stm->bindvalue(2, $idEmpresaRecebido);
 
                     $stm->execute();

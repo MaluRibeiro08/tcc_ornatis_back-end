@@ -4,22 +4,31 @@ class ControllerContaAdministradora
 {
 
     private $_method;
+
     private $_model_admin;
+    private $_model_funcionario;
     private $_model_empresa;
+    
     private $_id_administrador;
+    private $_id_funcionario;
     private $_id_empresa;
+    
     private $_array_funcionamento;
     private $_array_forma_pagamento;
     private $_array_taxas_cancelamento;
     private $_array_imagens_espaco_salao;
+    private $_array_dias_trabalho;
+
     private $_dados_requisicao;
+    
     private $_flag;
 
-    public function __construct($model_administrador, $model_empresa)
+    public function __construct($model_administrador, $model_empresa, $model_funcionario)
     {
 
         $this->_model_admin = $model_administrador;
         $this->_model_empresa = $model_empresa;
+        $this->_model_funcionario = $model_funcionario;
         $this->_method = $_SERVER['REQUEST_METHOD'];
 
         //PEGANDO DADOS DA REQ
@@ -60,7 +69,7 @@ class ControllerContaAdministradora
 
                     return array_merge($dados_administrador, $dados_empresa, $dados_login);
                 } else if ($this->_id_empresa != null && $this->_flag == 'carregarPerfil') {
-                    //dados da empresa
+                    //dados da empresa 
                     //INFORMAÇÕES FALTANTES: tipo de atendimento (relacionado a servicos),  funcionários (relacionado a funcionários), 
 
                     //DADOS DO SALAO (nome, foto de perfil, biografia, contato, taxa única)
@@ -78,7 +87,14 @@ class ControllerContaAdministradora
 
 
                     return array_merge($dados_empresa);
-                } else {
+
+                } elseif ($this->_flag == "listarFuncionarios") {
+                    
+                    $dados_funcionario = $this->_model_funcionario->getFuncionariosEmpresa();
+                    return $dados_funcionario;
+
+                }
+                 else {
                     return "Não foi possível realizar ação! Verifique as informações de requeisição (ids, flags)";
                 };
 
@@ -87,7 +103,6 @@ class ControllerContaAdministradora
             case 'POST':
 
                 //PEGANDO DADOS DA REQ
-
 
                 if ($this->_flag == "create") {
 
@@ -197,15 +212,39 @@ class ControllerContaAdministradora
 
                         // return array_merge($dados_empresa, $dados_administrador);
                     }
+
                 } elseif ($this->_flag == "updateRedesSociais") {
 
                     $redesSociais = $this->_model_empresa->updateRedesSociais();
                     return $redesSociais;
+
+                } elseif ($this->_flag == "createFuncionario") {
+
+                    $this->_id_funcionario = $this->_model_funcionario->createFuncionario();
+
+                    $this->_array_dias_trabalho = $this->_dados_requisicao->dados_dias_trabalho;
+                    $resultado = $this->_model_funcionario->createDiaTrabalhoFuncionario($this->_array_dias_trabalho, $this->_id_funcionario);
+
+                    return $resultado;
+
+                } elseif ($this->_flag == "updateFuncionario") {
+
+                    $this->_model_funcionario->updateFuncionario();
+
+                    $this->_model_funcionario->limparDiasTrabalho();
+                    $this->_array_dias_trabalho = $this->_dados_requisicao->dados_dias_trabalho;
+                    $this->_model_funcionario->createDiasTrabalhoFuncionario($this->_array_dias_trabalho, $this->_id_funcionario);
+
                 }
+
 
             case 'DELETE':
 
-                $this->_model_empresa->desabilitarEmpresa();
+                if ($this->_flag == "desabilitarEmpresa") {
+                    $this->_model_empresa->desabilitarEmpresa($this->_id_empresa);
+                } elseif ($this->_flag = "deleteRedesSociais") {
+                    $this->_model_empresa->deleteRedesSociais($this->_id_empresa);
+                }
                 break;
                 
             default:
