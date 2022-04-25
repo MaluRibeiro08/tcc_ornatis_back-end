@@ -220,7 +220,7 @@ class ControllerContaAdministradora
 
                 } elseif ($this->_flag == "createFuncionario") {
 
-                    $this->_id_funcionario = $this->_model_funcionario->createFuncionario();
+                    $this->_model_funcionario->createFuncionario();
 
                     $this->_array_dias_trabalho = $this->_dados_requisicao->dados_dias_trabalho;
                     $resultado = $this->_model_funcionario->createDiaTrabalhoFuncionario($this->_array_dias_trabalho, $this->_id_funcionario);

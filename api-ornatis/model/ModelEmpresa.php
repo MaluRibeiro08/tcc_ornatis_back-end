@@ -585,7 +585,9 @@ class ModelEmpresa
     {
         $this->_id_empresa = $idEmpresaRecebido;
 
-        $sql = "DELETE nome_usuario_instagram, link_facebook FROM tbl_empresa
+        $sql = "UPDATE tbl_empresa SET 
+        nome_usuario_instagram = null, 
+        link_facebook = null
         WHERE id_empresa = ?";
 
         $stm = $this->_conexao->prepare($sql);
