@@ -50,7 +50,7 @@ class ModelFuncionario
                 break;
 
             default:
-
+                //RESOLVER PROBLEMA QUE AFETA NA LISTAGEM - comentar linha 
                 $this->_id_funcionario = $_GET["id_funcionario"] ?? $dados_funcionario->id_funcionario;
                 $this->_id_empresa = $_GET["id_empresa"] ?? $dados_funcionario->id_empresa;
 
@@ -99,13 +99,13 @@ class ModelFuncionario
             on tbl_dia_trabalho.id_dia_semana = tbl_dia_semana.id_dia_semana
             
 		WHERE id_funcionario = ?";
-        
+
+
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_funcionario);
 
         $stm->execute();
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
-
     }
 
     public function createFuncionario()
@@ -219,11 +219,11 @@ class ModelFuncionario
 
         $sql = "UPDATE tbl_funcionario SET 
         nome_funcionario = ?
-        WHERE id_empresa = ?";
+        WHERE id_funcionario = ?";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_nome_funcionario);
-        $stm->bindValue(2, $this->_id_empresa);
+        $stm->bindValue(2, $this->_id_funcionario);
         $stm->execute();
     }
 
@@ -233,12 +233,12 @@ class ModelFuncionario
         $sql = "UPDATE tbl_login_funcionario SET
         cod_funcionario = ?,
         senha = ?
-        WHERE id_empresa = ?";
+        WHERE id_funcionario = ?";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_cod_funcionario);
         $stm->bindValue(2, $this->_senha);
-        $stm->bindValue(3, $this->_id_empresa);
+        $stm->bindValue(3, $this->_id_funcionario);
         $stm->execute();
 
         return "Dados atualizados com sucesso!";

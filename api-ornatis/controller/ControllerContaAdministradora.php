@@ -237,8 +237,8 @@ class ControllerContaAdministradora
                     $this->_model_funcionario->updateFuncionario();
 
                     $this->_model_funcionario->limparDiasTrabalho();
-                    $this->_array_dias_trabalho = $this->_dados_requisicao->dados_dias_trabalho;
-                    $this->_model_funcionario->createDiasTrabalhoFuncionario($this->_array_dias_trabalho, $this->_id_funcionario);
+                    $this->_array_dias_trabalho = $this->_dados_requisicao->dados_dia_trabalho;
+                    $this->_model_funcionario->createDiaTrabalhoFuncionario($this->_array_dias_trabalho, $this->_id_funcionario);
                 }
 
 
