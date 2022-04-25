@@ -124,12 +124,10 @@ class ModelFuncionario
         $stm->bindValue(1, $this->_cod_funcionario);
         $stm->bindValue(2, $this->_senha);
         $stm->bindValue(3, $idFuncionario);
+        $stm->execute();
+        
+        return $idFuncionario;
 
-        if ($stm->execute()) {
-            return "Create funcionario completo";
-        } else {
-            return "Erro ao criar funcionário";
-        }
     }
 
     public function createDiaTrabalhoFuncionario($diasTrabalho, $idFuncionarioRecebido)
@@ -137,10 +135,10 @@ class ModelFuncionario
 
         foreach ($diasTrabalho as $diaTrabalho) {
 
-            // $this->_hora_inicio = $diaTrabalho->hora_inicio;
-            // $this->_hora_termino = $diaTrabalho->hora_termino;
-            // $this->_id_dia_semana = $diaTrabalho->id_dia_semana;
-            // $this->_id_funcionario = $idFuncionarioRecebido;
+            $this->_hora_inicio = $diaTrabalho->hora_inicio;
+            $this->_hora_termino = $diaTrabalho->hora_termino;
+            $this->_id_dia_semana = $diaTrabalho->id_dia_semana;
+            $this->_id_funcionario = $idFuncionarioRecebido;
 
             $sql = "INSERT INTO tbl_dia_trabalho (hora_inicio, hora_termino, 
             id_dia_semana, id_funcionario)
