@@ -46,7 +46,7 @@ class ControllerContaAdministradora
     
         //ID_FUNCIONARIO
         $this->_id_funcionario = $_GET["id_funcionario"] ?? $dados_requisicao->id_funcionario ?? $_POST["id_funcionario"] ?? null;
-        
+
     }
 
     function router()
@@ -89,12 +89,20 @@ class ControllerContaAdministradora
                     //CANCELAMENTO (taxa unica ou taxas de cobrança)
                     $dados_empresa["taxa_cancelamento_empresa"] = $this->_model_empresa->getTaxasCancelamento();
 
-
                     return array_merge($dados_empresa);
+
                 } elseif ($this->_flag == "listarFuncionarios") {
 
                     $dados_funcionario = $this->_model_funcionario->getFuncionariosEmpresa();
                     return $dados_funcionario;
+
+                } elseif ($this->_flag == "listarDetalhesFuncionario") {
+                    
+                    $dados_funcionario["dados_funcionario"] = $this->_model_funcionario->getInformacoesFuncionario();
+                    $dados_funcionario["dados_dias_trabalho"] = $this->_model_funcionario->getDiaTrabalho();
+
+                    return $dados_funcionario;
+
                 } else {
                     return "Não foi possível realizar ação! Verifique as informações de requeisição (ids, flags)";
                 };

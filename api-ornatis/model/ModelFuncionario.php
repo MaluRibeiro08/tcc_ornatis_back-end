@@ -72,10 +72,40 @@ class ModelFuncionario
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function getInformacoesFuncionarios()
+    public function getInformacoesFuncionario()
+    {
+        $sql = "SELECT tbl_funcionario.nome_funcionario, 
+        tbl_funcionario.foto_perfil 
+        FROM tbl_funcionario
+        WHERE id_funcionario = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_funcionario);
+
+        $stm->execute();
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getDiaTrabalho()
     {
 
-        $sql = "";
+        $sql = "SELECT tbl_dia_trabalho.hora_inicio, 
+		tbl_dia_trabalho.hora_termino, 
+		tbl_dia_semana.dia_da_semana,
+		tbl_dia_semana.id_dia_semana
+        
+		FROM tbl_dia_trabalho
+			inner join tbl_dia_semana 
+            on tbl_dia_trabalho.id_dia_semana = tbl_dia_semana.id_dia_semana
+            
+		WHERE id_funcionario = ?";
+        
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_funcionario);
+
+        $stm->execute();
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+
     }
 
     public function createFuncionario()
@@ -111,7 +141,7 @@ class ModelFuncionario
         $idFuncionario = $this->_conexao->lastInsertId();
 
         $primeiroNomeFuncionario = strtok($this->_nome_funcionario, " ");
-        $codigo = substr(md5($primeiroNomeFuncionario), 0, 3);
+        $codigo = substr(uniqid(rand()), 0, 3);
 
         $this->_cod_funcionario = $primeiroNomeFuncionario . $codigo;
 
@@ -157,7 +187,7 @@ class ModelFuncionario
 
     public function desabilitarFuncionario($idFuncionarioRecebido)
     {
-        
+
         $this->_id_funcionario = $idFuncionarioRecebido;
 
         $sql = "UPDATE tbl_funcionario SET
@@ -167,8 +197,7 @@ class ModelFuncionario
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_funcionario);
 
-        if ($stm->execute()) 
-        {
+        if ($stm->execute()) {
             return "success";
         }
     }
