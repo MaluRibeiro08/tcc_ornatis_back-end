@@ -8,11 +8,11 @@ class ControllerContaAdministradora
     private $_model_admin;
     private $_model_funcionario;
     private $_model_empresa;
-    
+
     private $_id_administrador;
     private $_id_funcionario;
     private $_id_empresa;
-    
+
     private $_array_funcionamento;
     private $_array_forma_pagamento;
     private $_array_taxas_cancelamento;
@@ -20,7 +20,7 @@ class ControllerContaAdministradora
     private $_array_dias_trabalho;
 
     private $_dados_requisicao;
-    
+
     private $_flag;
 
     public function __construct($model_administrador, $model_empresa, $model_funcionario)
@@ -43,6 +43,10 @@ class ControllerContaAdministradora
 
         //ID_ADM
         $this->_id_administrador = $_GET["id_administrador"] ?? $dados_requisicao->id_administrador ?? $_POST["id_administrador"] ?? null;
+    
+        //ID_FUNCIONARIO
+        $this->_id_funcionario = $_GET["id_funcionario"] ?? $dados_requisicao->id_funcionario ?? $_POST["id_funcionario"] ?? null;
+        
     }
 
     function router()
@@ -87,14 +91,11 @@ class ControllerContaAdministradora
 
 
                     return array_merge($dados_empresa);
-
                 } elseif ($this->_flag == "listarFuncionarios") {
-                    
+
                     $dados_funcionario = $this->_model_funcionario->getFuncionariosEmpresa();
                     return $dados_funcionario;
-
-                }
-                 else {
+                } else {
                     return "Não foi possível realizar ação! Verifique as informações de requeisição (ids, flags)";
                 };
 
@@ -158,7 +159,6 @@ class ControllerContaAdministradora
 
                         return array_merge($dados_empresa, $dados_administrador);
                     }
-                    
                 } elseif ($this->_flag == "updateContaAdministradora") {
 
                     if (isset($_POST["envio_form"])) {
@@ -212,12 +212,10 @@ class ControllerContaAdministradora
 
                         // return array_merge($dados_empresa, $dados_administrador);
                     }
-
                 } elseif ($this->_flag == "updateRedesSociais") {
 
                     $redesSociais = $this->_model_empresa->updateRedesSociais();
                     return $redesSociais;
-
                 } elseif ($this->_flag == "createFuncionario") {
 
                     $this->_id_funcionario = $this->_model_funcionario->createFuncionario();
@@ -226,7 +224,6 @@ class ControllerContaAdministradora
                     $resultado = $this->_model_funcionario->createDiaTrabalhoFuncionario($this->_array_dias_trabalho, $this->_id_funcionario);
 
                     return $resultado;
-
                 } elseif ($this->_flag == "updateFuncionario") {
 
                     $this->_model_funcionario->updateFuncionario();
@@ -234,7 +231,6 @@ class ControllerContaAdministradora
                     $this->_model_funcionario->limparDiasTrabalho();
                     $this->_array_dias_trabalho = $this->_dados_requisicao->dados_dias_trabalho;
                     $this->_model_funcionario->createDiasTrabalhoFuncionario($this->_array_dias_trabalho, $this->_id_funcionario);
-
                 }
 
 
@@ -242,11 +238,13 @@ class ControllerContaAdministradora
 
                 if ($this->_flag == "desabilitarEmpresa") {
                     $this->_model_empresa->desabilitarEmpresa($this->_id_empresa);
-                } elseif ($this->_flag = "deleteRedesSociais") {
+                } elseif ($this->_flag == "deleteRedesSociais") {
                     $this->_model_empresa->deleteRedesSociais($this->_id_empresa);
+                } elseif ($this->_flag == "desabilitarFuncionario") {
+                    return $this->_model_funcionario->desabilitarFuncionario($this->_id_funcionario);
                 }
                 break;
-                
+
             default:
                 # code...
                 break;

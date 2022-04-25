@@ -62,7 +62,7 @@ class ModelFuncionario
 
     public function getFuncionariosEmpresa()
     {
-            
+
         $sql = "SELECT * from tbl_funcionario WHERE id_empresa = ?";
 
         $stm = $this->_conexao->prepare($sql);
@@ -70,14 +70,12 @@ class ModelFuncionario
 
         $stm->execute();
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
-
     }
 
     public function getInformacoesFuncionarios()
     {
 
         $sql = "";
-
     }
 
     public function createFuncionario()
@@ -125,9 +123,8 @@ class ModelFuncionario
         $stm->bindValue(2, $this->_senha);
         $stm->bindValue(3, $idFuncionario);
         $stm->execute();
-        
-        return $idFuncionario;
 
+        return $idFuncionario;
     }
 
     public function createDiaTrabalhoFuncionario($diasTrabalho, $idFuncionarioRecebido)
@@ -158,6 +155,24 @@ class ModelFuncionario
 
     //DELETE
 
+    public function desabilitarFuncionario($idFuncionarioRecebido)
+    {
+        
+        $this->_id_funcionario = $idFuncionarioRecebido;
+
+        $sql = "UPDATE tbl_funcionario SET
+        habilitado = 0
+        WHERE id_funcionario = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_funcionario);
+
+        if ($stm->execute()) 
+        {
+            return "success";
+        }
+    }
+
     public function limparDiasTrabalho()
     {
         $sql = "DELETE FROM tbl_dia_trabalho WHERE id_funcionario = ?";
@@ -166,7 +181,6 @@ class ModelFuncionario
         $stm->bindValue(1, $this->_id_funcionario);
 
         $stm->execute();
-
     }
 
     //UPDATE
@@ -199,7 +213,5 @@ class ModelFuncionario
         $stm->execute();
 
         return "Dados atualizados com sucesso!";
-
     }
-
 }
