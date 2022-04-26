@@ -416,7 +416,7 @@ class ModelEmpresa
         // return $this->_imagem_perfil;
 
         $imagemPerfil = md5(microtime()) . ".$extensao";
-        move_uploaded_file($_FILES["imagem_perfil"]["tmp_name"], "../../upload/imagem_perfil_salao/$imagemPerfil");
+        move_uploaded_file($_FILES["imagem_perfil"]["tmp_name"], "../../../upload/imagem_perfil_salao/$imagemPerfil");
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_biografia);
@@ -645,7 +645,7 @@ class ModelEmpresa
 
                     //exclusão da imagem antiga se tiver
                     if ($empresa[0]["imagem_perfil"] != null) {
-                        unlink("../../upload/imagem_perfil_salao/" . $empresa[0]["imagem_perfil"]);
+                        unlink("../../../upload/imagem_perfil_salao/" . $empresa[0]["imagem_perfil"]);
                     }
 
                     //nova imagem
@@ -655,7 +655,7 @@ class ModelEmpresa
                     $novoNomeArquivo = md5(microtime()) . ".$extensao";
 
 
-                    move_uploaded_file($_FILES["imagem_perfil"]["tmp_name"], "../../upload/imagem_perfil_salao/$novoNomeArquivo");
+                    move_uploaded_file($_FILES["imagem_perfil"]["tmp_name"], "../../../upload/imagem_perfil_salao/$novoNomeArquivo");
 
                     $sql = "UPDATE tbl_empresa SET
                     imagem_perfil = ? WHERE id_empresa = ? ";

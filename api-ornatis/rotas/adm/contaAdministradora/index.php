@@ -5,19 +5,17 @@ header("Access-Control-Allow-Headers: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Content-Type: aplication/json");
 
-include("../../Connection.php");
-include("../../model/ModelAdministrador.php");
-include("../../model/ModelEmpresa.php");
-include("../../model/ModelFuncionario.php");
-include("../../controller/ControllerContaAdministradora.php");
+include("../../../Connection.php");
+include("../../../model/ModelEmpresa.php");
+include("../../../model/ModelAdministrador.php");
+include("../../../controller/ControllerContaAdministradora.php");
 
 $conexao = new Connection();
 
 $model_administrador = new ModelAdministrador($conexao->returnConnection());
 $model_empresa = new ModelEmpresa($conexao->returnConnection());
-$model_funcionario = new ModelFuncionario($conexao->returnConnection());
 
-$controller = new ControllerContaAdministradora($model_administrador, $model_empresa, $model_funcionario);
+$controller = new ControllerContaAdministradora($model_administrador, $model_empresa);
 
 $dados = $controller->router();
  
