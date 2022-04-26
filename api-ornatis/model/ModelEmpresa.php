@@ -385,6 +385,27 @@ class ModelEmpresa
     public function createEmpresa()
     {
 
+        if (isset($_POST["formulario_imagem"])) {
+
+            $envio_form = $_POST["formulario_imagem"];
+
+            if ($envio_form == "true") {
+                if ($_FILES["formulario_imagem"]["error"] == 4) {
+                    //não faz nada pq não veio img
+                    return "estariamos fazendo nada porque não veio img";
+                } else {
+
+                    //sql de imagem
+
+                }
+
+            }
+        } else {
+            # code...
+        }
+        
+
+
         $sql = "INSERT INTO tbl_empresa (biografia, imagem_perfil,
          telefone, nome_fantasia, cnpj,
          intervalo_tempo_padrao_entre_servicos, observacoes_pagamento, taxa_unica_cancelamento)
@@ -607,11 +628,12 @@ class ModelEmpresa
             $envio_form = $_POST["envio_form"];
 
             if ($envio_form == "true") {
+
                 if ($_FILES["imagem_perfil"]["error"] == 4) {
                     //não faz nada pq não veio img
                     return "estariamos fazendo nada porque não veio img";
                 } else {
-                    //selecionar imagem do produto escolhido
+                    //selecionar imagem de perfil 
                     $sqlImg = "SELECT imagem_perfil FROM tbl_empresa WHERE id_empresa = ?";
 
                     $stm = $this->_conexao->prepare($sqlImg);
@@ -621,15 +643,17 @@ class ModelEmpresa
 
                     $empresa = $stm->fetchAll(\PDO::FETCH_ASSOC);
 
-                    //exclusão da foto antiga
-                    unlink("../../upload/imagem_perfil_salao/" . $empresa[0]["imagem_perfil"]);
+                    //exclusão da imagem antiga se tiver
+                    if ($empresa[0]["imagem_perfil"] != null) {
+                        unlink("../../upload/imagem_perfil_salao/" . $empresa[0]["imagem_perfil"]);
+                    }
 
+                    //nova imagem
                     $nomeArquivo = $_FILES["imagem_perfil"]["name"];
-
-                    // return $nomeArquivo;
 
                     $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
                     $novoNomeArquivo = md5(microtime()) . ".$extensao";
+
 
                     move_uploaded_file($_FILES["imagem_perfil"]["tmp_name"], "../../upload/imagem_perfil_salao/$novoNomeArquivo");
 

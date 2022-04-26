@@ -169,6 +169,7 @@ class ControllerContaAdministradora
                     }
                 } elseif ($this->_flag == "updateContaAdministradora") {
 
+
                     if (isset($_POST["envio_form"])) {
 
                         $envio_form = $_POST["envio_form"];
@@ -177,7 +178,7 @@ class ControllerContaAdministradora
                             if ($_FILES["imagem_perfil"]["error"] == 4) {
                             } else {
                                 //atualiza a img
-                                $this->_model_empresa->updateEmpresa($this->_id_empresa);
+                                 return $this->_model_empresa->updateEmpresa($this->_id_empresa);
                             }
                         }
                     } else {
@@ -192,6 +193,7 @@ class ControllerContaAdministradora
                         */
 
                         // só chega aqui se a variavel $_POST["envio_form"] não existir, ou seja, quando for uma req fetch (só dados)
+                                                
                         $dados_empresa["dados_empresa"] = $this->_model_empresa->updateEmpresa($this->_id_empresa);
                         $dados_empresa["dados_endereco_empresa"] = $this->_model_empresa->updateEnderecoEmpresa($this->_id_empresa);
 

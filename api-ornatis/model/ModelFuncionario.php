@@ -33,26 +33,26 @@ class ModelFuncionario
         switch ($this->_method) {
             case 'POST':
 
-                $this->_id_funcionario = $_POST["id_funcionario"] ?? $dados_funcionario->id_funcionario;
-                $this->_nome_funcionario = $_POST["nome_funcionario"] ?? $dados_funcionario->nome_funcionario;
-                $this->_foto_perfil = $_FILES["foto_perfil"] ?? null;
+                // $this->_id_funcionario = $_POST["id_funcionario"] ?? $dados_funcionario->id_funcionario;
+                // $this->_nome_funcionario = $_POST["nome_funcionario"] ?? $dados_funcionario->nome_funcionario;
+                // $this->_foto_perfil = $_FILES["foto_perfil"] ?? null;
 
-                $this->_id_empresa = $_POST["id_empresa"] ?? $dados_funcionario->id_empresa;
+                // $this->_id_empresa = $_POST["id_empresa"] ?? $dados_funcionario->id_empresa;
 
-                //login
-                // $this->_cod_funcionario = $_POST["cod_funcionario"] ?? $dados_funcionario->cod_funcionario;
-                $this->_senha = $_POST["senha"] ?? $dados_funcionario->senha;
+                // //login
+                // // $this->_cod_funcionario = $_POST["cod_funcionario"] ?? $dados_funcionario->cod_funcionario;
+                // $this->_senha = $_POST["senha"] ?? $dados_funcionario->senha;
 
-                $this->_hora_inicio = $_POST["hora_inicio"] ?? $dados_funcionario->hora_inicio;
-                $this->_hora_termino = $_POST["hora_termino"] ?? $dados_funcionario->hora_termino;
-                $this->_id_dia_semana = $_POST["id_dia_semana"] ?? $dados_funcionario->id_dia_semana;
+                // $this->_hora_inicio = $_POST["hora_inicio"] ?? $dados_funcionario->hora_inicio;
+                // $this->_hora_termino = $_POST["hora_termino"] ?? $dados_funcionario->hora_termino;
+                // $this->_id_dia_semana = $_POST["id_dia_semana"] ?? $dados_funcionario->id_dia_semana;
 
                 break;
 
             default:
                 //RESOLVER PROBLEMA QUE AFETA NA LISTAGEM - comentar linha 
-                $this->_id_funcionario = $_GET["id_funcionario"] ?? $dados_funcionario->id_funcionario;
-                $this->_id_empresa = $_GET["id_empresa"] ?? $dados_funcionario->id_empresa;
+                // $this->_id_funcionario = $_GET["id_funcionario"] ?? $dados_funcionario->id_funcionario;
+                // $this->_id_empresa = $_GET["id_empresa"] ?? $dados_funcionario->id_empresa;
 
                 break;
         }
