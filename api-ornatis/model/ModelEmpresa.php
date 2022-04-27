@@ -9,6 +9,7 @@ class ModelEmpresa
 
     // ATRIBUTOS DE EMPRESA 
     private $_id_empresa;
+    
     private $_biografia;
     private $_imagem_perfil;
     private $_telefone;
@@ -385,57 +386,58 @@ class ModelEmpresa
     public function createEmpresa()
     {
 
-        if (isset($_POST["formulario_imagem"])) {
+        if (isset($_POST["envio_form"])) {
 
-            $envio_form = $_POST["formulario_imagem"];
+            $envio_form = $_POST["envio_form"];
 
             if ($envio_form == "true") {
-                if ($_FILES["formulario_imagem"]["error"] == 4) {
+                if ($_FILES["imagem_perfil"]["error"] == 4) {
                     //não faz nada pq não veio img
                     return "estariamos fazendo nada porque não veio img";
                 } else {
 
-                    //sql de imagem
+                    $nomeArquivo = $_FILES["imagem_perfil"]["name"];
 
+                    $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
+                    $novoNomeArquivo = md5(microtime()) . ".$extensao";
+
+                    move_uploaded_file($_FILES["imagem_perfil"]["tmp_name"], "../../../upload/imagem_perfil_salao/$novoNomeArquivo");
+
+                    $sql = "INSERT INTO tbl_empresa (imagem_perfil) VALUES (?) WHERE id_empresa = ? ";
+
+                    $stm = $this->_conexao->prepare($sql);
+
+                    $stm->bindvalue(1, $novoNomeArquivo);
+                    $stm->bindvalue(2, $this->_id_empresa);
+
+                    $stm->execute();
                 }
-
             }
         } else {
-            # code...
-        }
-        
 
+            $sql = "INSERT INTO tbl_empresa (biografia,
+            telefone, nome_fantasia, cnpj,
+            intervalo_tempo_padrao_entre_servicos, observacoes_pagamento, taxa_unica_cancelamento)
+            VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        $sql = "INSERT INTO tbl_empresa (biografia, imagem_perfil,
-         telefone, nome_fantasia, cnpj,
-         intervalo_tempo_padrao_entre_servicos, observacoes_pagamento, taxa_unica_cancelamento)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_biografia);
+            $stm->bindValue(2, $this->_telefone);
+            $stm->bindValue(3, $this->_nome_fantasia);
+            $stm->bindValue(4, $this->_cnpj);
+            $stm->bindValue(5, $this->_intervalo_tempo_padrao_entre_servicos);
+            $stm->bindValue(6, $this->_observacoes_pagamento);
+            $stm->bindValue(7, $this->_taxa_unica_cancelamento);
 
-        $extensao = pathinfo($this->_imagem_perfil["name"], PATHINFO_EXTENSION);
+            if ($stm->execute()) {
 
-        // return $this->_imagem_perfil;
+                $dados_empresa["lastInsertId"] = $this->_conexao->lastInsertId();
+                $dados_empresa["taxa_unica_cancelamento"] = $this->_taxa_unica_cancelamento;
 
-        $imagemPerfil = md5(microtime()) . ".$extensao";
-        move_uploaded_file($_FILES["imagem_perfil"]["tmp_name"], "../../../upload/imagem_perfil_salao/$imagemPerfil");
-
-        $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_biografia);
-        $stm->bindValue(2, $imagemPerfil);
-        $stm->bindValue(3, $this->_telefone);
-        $stm->bindValue(4, $this->_nome_fantasia);
-        $stm->bindValue(5, $this->_cnpj);
-        $stm->bindValue(6, $this->_intervalo_tempo_padrao_entre_servicos);
-        $stm->bindValue(7, $this->_observacoes_pagamento);
-        $stm->bindValue(8, $this->_taxa_unica_cancelamento);
-
-        if ($stm->execute()) {
-
-            $dados_empresa["lastInsertId"] = $this->_conexao->lastInsertId();
-            $dados_empresa["taxa_unica_cancelamento"] = $this->_taxa_unica_cancelamento;
-
-            return $dados_empresa;
-        } else {
-            return "Erro ao criar empresa";
+                return $dados_empresa;
+            } else {
+                return "Erro ao criar empresa";
+            }
         }
     }
 
@@ -614,7 +616,6 @@ class ModelEmpresa
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_empresa);
         $stm->execute();
-
     }
 
     /** UPDATE CONTA ADM **/

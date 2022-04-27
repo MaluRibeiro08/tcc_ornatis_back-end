@@ -10,6 +10,9 @@ class ModelFuncionario
 
     //ATRIBUTOS DE FUNCIONÁRIO
     private $_id_funcionario;
+
+    private $_dados_funcionario;
+
     private $_nome_funcionario;
     private $_foto_perfil;
 
@@ -28,31 +31,31 @@ class ModelFuncionario
         $this->_method = $_SERVER['REQUEST_METHOD'];
 
         $json = file_get_contents("php://input");
-        $dados_funcionario  = json_decode($json);
+        $this->_dados_funcionario  = json_decode($json);
 
         switch ($this->_method) {
             case 'POST':
 
-                $this->_id_funcionario = $_POST["id_funcionario"] ?? $dados_funcionario->id_funcionario;
-                $this->_nome_funcionario = $_POST["nome_funcionario"] ?? $dados_funcionario->nome_funcionario;
+                $this->_id_funcionario = $_POST["id_funcionario"] ?? $this->_dados_funcionario->id_funcionario ?? null;
+                $this->_nome_funcionario = $_POST["nome_funcionario"] ?? $this->_dados_funcionario->nome_funcionario;
                 $this->_foto_perfil = $_FILES["foto_perfil"] ?? null;
 
-                $this->_id_empresa = $_POST["id_empresa"] ?? $dados_funcionario->id_empresa;
+                $this->_id_empresa = $_POST["id_empresa"] ?? $this->_dados_funcionario->id_empresa;
 
                 //login
-                // $this->_cod_funcionario = $_POST["cod_funcionario"] ?? $dados_funcionario->cod_funcionario;
-                $this->_senha = $_POST["senha"] ?? $dados_funcionario->senha;
+                // $this->_cod_funcionario = $_POST["cod_funcionario"] ?? $this->_dados_funcionario->cod_funcionario;
+                $this->_senha = $_POST["senha"] ?? $this->_dados_funcionario->senha;
 
-                $this->_hora_inicio = $_POST["hora_inicio"] ?? $dados_funcionario->hora_inicio;
-                $this->_hora_termino = $_POST["hora_termino"] ?? $dados_funcionario->hora_termino;
-                $this->_id_dia_semana = $_POST["id_dia_semana"] ?? $dados_funcionario->id_dia_semana;
+                $this->_hora_inicio = $_POST["hora_inicio"] ?? $this->_dados_funcionario->hora_inicio ?? null;
+                $this->_hora_termino = $_POST["hora_termino"] ?? $this->_dados_funcionario->hora_termino ?? null;
+                $this->_id_dia_semana = $_POST["id_dia_semana"] ?? $this->_dados_funcionario->id_dia_semana ?? null;
 
                 break;
 
             default:
-            
-                $this->_id_funcionario = $_GET["id_funcionario"] ?? $dados_funcionario->id_funcionario;
-                $this->_id_empresa = $_GET["id_empresa"] ?? $dados_funcionario->id_empresa;
+
+                $this->_id_funcionario = $_GET["id_funcionario"] ?? $this->_dados_funcionario->id_funcionario;
+                $this->_id_empresa = $_GET["id_empresa"] ?? $this->_dados_funcionario->id_empresa;
 
                 break;
         }
@@ -111,50 +114,63 @@ class ModelFuncionario
     public function createFuncionario()
     {
 
-        // if ("condition") {
+        if (isset($_POST["envio_form"])) {
 
-        //     $sql = "INSERT INTO tbl_funcionario (foto_perfil) 
-        //     VALUES (?)";
+            $envio_form = $_POST["envio_form"];
 
-        //     $extensao = pathinfo($this->_foto_perfil["name"], PATHINFO_EXTENSION);
+            if ($envio_form == "true") {
+                if ($_FILES["foto_perfil"]["error"] == 4) {
+                    //não faz nada pq não veio img
+                    return "estariamos fazendo nada porque não veio img";
+                } else {
 
-        //     $fotoPerfil = md5(microtime()) . ".$extensao";
-        //     move_uploaded_file($_FILES["imagem_perfil"]["tmp_name"], "../../upload/imagem_perfil_salao/$fotoPerfil");
+                    $nomeArquivo = $_FILES["foto_perfil"]["name"];
 
-        //     $stm = $this->_conexao->prepare($sql);
-        //     $stm->bindValue(1, $this->_nome_funcionario);
-        //     $stm->bindValue(2, $fotoPerfil);
-        //     $stm->bindValue(3, $this->_id_empresa);
-        //     $stm->execute();
-        // } else {
-        //     # code...
-        // }
+                    $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
+                    $novoNomeArquivo = md5(microtime()) . ".$extensao";
 
-        $sql = "INSERT INTO tbl_funcionario (nome_funcionario, id_empresa)
-        VALUES (?, ?)";
+                    move_uploaded_file($_FILES["foto_perfil"]["tmp_name"], "../../../upload/imagem_perfil_salao/$novoNomeArquivo");
 
-        $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_nome_funcionario);
-        $stm->bindValue(2, $this->_id_empresa);
-        $stm->execute();
+                    $sql = "INSERT INTO tbl_funcionario (foto_perfil) 
+                    VALUES (?) 
+                    WHERE id_funcionario = ?";
 
-        $idFuncionario = $this->_conexao->lastInsertId();
+                    $stm = $this->_conexao->prepare($sql);
 
-        $primeiroNomeFuncionario = strtok($this->_nome_funcionario, " ");
-        $codigo = substr(uniqid(rand()), 0, 3);
+                    $stm->bindvalue(1, $novoNomeArquivo);
+                    $stm->bindvalue(2, $this->_id_funcionario);
 
-        $this->_cod_funcionario = $primeiroNomeFuncionario . $codigo;
+                    $stm->execute();
+                }
+            }
+        } else {
 
-        $sql = "INSERT INTO tbl_login_funcionario (cod_funcionario, senha, id_funcionario)
-        VALUES (?, ?, ?)";
+            $sql = "INSERT INTO tbl_funcionario (nome_funcionario, id_empresa)
+            VALUES (?, ?)";
 
-        $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_cod_funcionario);
-        $stm->bindValue(2, $this->_senha);
-        $stm->bindValue(3, $idFuncionario);
-        $stm->execute();
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_nome_funcionario);
+            $stm->bindValue(2, $this->_id_empresa);
+            $stm->execute();
 
-        return $idFuncionario;
+            $idFuncionario = $this->_conexao->lastInsertId();
+
+            $primeiroNomeFuncionario = strtok($this->_nome_funcionario, " ");
+            $codigo = substr(uniqid(rand()), 0, 4);
+
+            $this->_cod_funcionario = $primeiroNomeFuncionario . $codigo;
+
+            $sql = "INSERT INTO tbl_login_funcionario (cod_funcionario, senha, id_funcionario)
+            VALUES (?, ?, ?)";
+
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_cod_funcionario);
+            $stm->bindValue(2, $this->_senha);
+            $stm->bindValue(3, $idFuncionario);
+            $stm->execute();
+
+            return $idFuncionario;
+        }
     }
 
     public function createDiaTrabalhoFuncionario($diasTrabalho, $idFuncionarioRecebido)
@@ -214,17 +230,64 @@ class ModelFuncionario
 
     //UPDATE
 
-    public function updateFuncionario()
+    public function updateFuncionarioAdm()
     {
+        if (isset($_POST["envio_form"])) {
 
-        $sql = "UPDATE tbl_funcionario SET 
-        nome_funcionario = ?
-        WHERE id_funcionario = ?";
+            $envio_form = $_POST["envio_form"];
 
-        $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_nome_funcionario);
-        $stm->bindValue(2, $this->_id_funcionario);
-        $stm->execute();
+            if ($envio_form == "true") {
+
+                if ($_FILES["foto_perfil"]["error"] == 4) {
+                    //não faz nada pq não veio img
+                    return "estariamos fazendo nada porque não veio img";
+                } else {
+                    //selecionar imagem de perfil 
+                    $sqlImg = "SELECT foto_perfil FROM tbl_funcionario WHERE id_funcionario = ?";
+
+                    $stm = $this->_conexao->prepare($sqlImg);
+                    $stm->bindValue(1, $this->_id_funcionario);
+
+                    $stm->execute();
+
+                    $funcionario = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+                    //exclusão da imagem antiga se tiver
+                    if ($funcionario[0]["foto_perfil"] != null) {
+                        unlink("../../../upload/foto_perfil_funcionario/" . $funcionario[0]["foto_perfil"]);
+                    }
+
+                    //nova imagem
+                    $nomeArquivo = $_FILES["foto_perfil"]["name"];
+
+                    $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
+                    $novoNomeArquivo = md5(microtime()) . ".$extensao";
+
+
+                    move_uploaded_file($_FILES["foto_perfil"]["tmp_name"], "../../../upload/foto_perfil_funcionario/$novoNomeArquivo");
+
+                    $sql = "UPDATE tbl_funcionario SET
+                    foto_perfil = ? WHERE id_funcionario = ? ";
+
+                    $stm = $this->_conexao->prepare($sql);
+
+                    $stm->bindvalue(1, $novoNomeArquivo);
+                    $stm->bindvalue(2, $this->_id_funcionario);
+
+                    $stm->execute();
+                }
+            }
+        } else {
+
+            $sql = "UPDATE tbl_funcionario SET 
+            nome_funcionario = ?
+            WHERE id_funcionario = ?";
+
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_nome_funcionario);
+            $stm->bindValue(2, $this->_id_funcionario);
+            $stm->execute();
+        }
     }
 
     public function updateLoginFuncionario()

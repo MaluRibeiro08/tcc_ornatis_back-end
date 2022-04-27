@@ -8,6 +8,7 @@ class ControllerAdmFuncionario
     private $_model_funcionario;
 
     private $_id_funcionario;
+    private $_array_dias_trabalho;
 
     private $_dados_requisicao;
 
@@ -60,7 +61,7 @@ class ControllerAdmFuncionario
                     
                 } elseif ($this->_flag == "updateFuncionario") {
 
-                    $this->_model_funcionario->updateFuncionario();
+                    $this->_model_funcionario->updateFuncionarioAdm();
 
                     $this->_model_funcionario->limparDiasTrabalho();
                     $this->_array_dias_trabalho = $this->_dados_requisicao->dados_dia_trabalho;

@@ -15,7 +15,6 @@ class ControllerContaAdministradora
     private $_array_forma_pagamento;
     private $_array_taxas_cancelamento;
     private $_array_imagens_espaco_salao;
-    private $_array_dias_trabalho;
 
     private $_dados_requisicao;
 
