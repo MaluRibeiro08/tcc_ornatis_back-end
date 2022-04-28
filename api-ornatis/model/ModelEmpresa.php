@@ -505,8 +505,8 @@ class ModelEmpresa
             VALUES ($idEmpresaRecebido, $formaPagamento)";
 
             $stm = $this->_conexao->prepare($sql);
-            $stm->bindValue(1, $this->_id_empresa);
-            $stm->bindValue(2, $this->_id_forma_pagamento);
+            // $stm->bindValue(1, $this->_id_empresa);
+            // $stm->bindValue(2, $this->_id_forma_pagamento);
 
             $stm->execute();
         }
@@ -630,7 +630,7 @@ class ModelEmpresa
 
             if ($envio_form == "true") {
 
-                if ($_FILES["imagem_perfil"]["error"] == 4) {
+                if ($_FILES["imagem_perfil_salao"]["error"] == 4) {
                     //não faz nada pq não veio img
                     return "estariamos fazendo nada porque não veio img";
                 } else {
@@ -645,18 +645,22 @@ class ModelEmpresa
                     $empresa = $stm->fetchAll(\PDO::FETCH_ASSOC);
 
                     //exclusão da imagem antiga se tiver
-                    if ($empresa[0]["imagem_perfil"] != null) {
-                        unlink("../../../upload/imagem_perfil_salao/" . $empresa[0]["imagem_perfil"]);
+                    if (isset($empresa[0]["imagem_perfil_salao"]))
+                    {
+                        if($empresa[0]["imagem_perfil_salao"] != null)
+                        {
+                            unlink("../../../upload/imagem_perfil_salao/" . $empresa[0]["imagem_perfil_salao"]);
+                        }
                     }
 
                     //nova imagem
-                    $nomeArquivo = $_FILES["imagem_perfil"]["name"];
+                    $nomeArquivo = $_FILES["imagem_perfil_salao"]["name"];
 
                     $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
                     $novoNomeArquivo = md5(microtime()) . ".$extensao";
 
 
-                    move_uploaded_file($_FILES["imagem_perfil"]["tmp_name"], "../../../upload/imagem_perfil_salao/$novoNomeArquivo");
+                    move_uploaded_file($_FILES["imagem_perfil_salao"]["tmp_name"], "../../../upload/imagem_perfil_salao/$novoNomeArquivo");
 
                     $sql = "UPDATE tbl_empresa SET
                     imagem_perfil = ? WHERE id_empresa = ? ";
@@ -667,6 +671,8 @@ class ModelEmpresa
                     $stm->bindvalue(2, $idEmpresaRecebido);
 
                     $stm->execute();
+
+                    return "imagem do salao salva com sucesso!";
                 }
             }
         } else {
