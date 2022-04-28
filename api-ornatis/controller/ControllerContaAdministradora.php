@@ -105,17 +105,17 @@ class ControllerContaAdministradora
                                 if ($_FILES["imagem_perfil_adm"]["error"] == 4) {
                                     return ("chegou a req sem imagem do adm");
                                 } else {
-                                    return ("chegou a req com imagem do adm");
+                                    // return ("chegou a req com imagem do adm");
                                     //atualiza a img
-                                    $this->_model_empresa->updateEmpresa($this->_id_empresa);
+                                   return $this->_model_empresa->updateEmpresa($this->_id_empresa);
                                 }
                             } else if (isset($_FILES["imagem_perfil_salao"])) {
                                 if ($_FILES["imagem_perfil_salao"]["error"] == 4) {
                                     return ("chegou a req sem imagem do salao");
                                 } else {
-                                    return ("chegou a req com imagem do salao");
+                                    // return ("chegou a req com imagem do salao");
                                     //atualiza a img
-                                    $this->_model_empresa->updateEmpresa($this->_id_empresa);
+                                    return $this->_model_empresa->updateEmpresa($this->_id_empresa);
                                 }
                             }
                         }
@@ -141,8 +141,8 @@ class ControllerContaAdministradora
                             $dados_empresa["dados_taxas_cancelamento"] = $this->_model_empresa->createTaxasCancelamento($this->_array_taxas_cancelamento, $idEmpresaCriada);
                         }
 
-                        $this->_array_imagens_espaco_salao = $this->_dados_requisicao->dados_imagens_estabelecimento;
-                        $dados_empresa["dados_imagens_estabelecimento"] = $this->_model_empresa->createImagensEstabelecimento($this->_array_imagens_espaco_salao, $idEmpresaCriada);
+                        // $this->_array_imagens_espaco_salao = $this->_dados_requisicao->dados_imagens_estabelecimento;
+                        // $dados_empresa["dados_imagens_estabelecimento"] = $this->_model_empresa->createImagensEstabelecimento($this->_array_imagens_espaco_salao, $idEmpresaCriada);
 
                         $dados_administrador["dados_administrador"] = $this->_model_admin->createAdministrador($idEmpresaCriada);
 
