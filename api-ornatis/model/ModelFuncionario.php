@@ -54,8 +54,8 @@ class ModelFuncionario
 
             default:
 
-                $this->_id_funcionario = $_GET["id_funcionario"] ?? $this->_dados_funcionario->id_funcionario;
-                $this->_id_empresa = $_GET["id_empresa"] ?? $this->_dados_funcionario->id_empresa;
+                $this->_id_funcionario = $_GET["id_funcionario"] ?? $this->_dados_funcionario->id_funcionario ?? null;
+                $this->_id_empresa = $_GET["id_empresa"] ?? $this->_dados_funcionario->id_empresa ?? null;
 
                 break;
         }
