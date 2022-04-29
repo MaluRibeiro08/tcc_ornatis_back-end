@@ -141,63 +141,62 @@ class ModelFuncionario
     public function createFuncionario()
     {
 
-        if (isset($_POST["envio_form"])) {
+        // if (isset($_POST["envio_form"])) {
 
-            $envio_form = $_POST["envio_form"];
+        //     $envio_form = $_POST["envio_form"];
 
-            if ($envio_form == "true") {
-                if ($_FILES["foto_perfil"]["error"] == 4) {
-                    //não faz nada pq não veio img
-                    return "estariamos fazendo nada porque não veio img";
-                } else {
+        //     if ($envio_form == "true") {
+        //         if ($_FILES["foto_perfil"]["error"] == 4) {
+        //             //não faz nada pq não veio img
+        //             return "estariamos fazendo nada porque não veio img";
+        //         } else {
 
-                    $nomeArquivo = $_FILES["foto_perfil"]["name"];
+        //             $nomeArquivo = $_FILES["foto_perfil"]["name"];
 
-                    $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
-                    $novoNomeArquivo = md5(microtime()) . ".$extensao";
+        //             $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
+        //             $novoNomeArquivo = md5(microtime()) . ".$extensao";
 
-                    move_uploaded_file($_FILES["foto_perfil"]["tmp_name"], "../../../upload/imagem_perfil_salao/$novoNomeArquivo");
+        //             move_uploaded_file($_FILES["foto_perfil"]["tmp_name"], "../../../upload/imagem_perfil_salao/$novoNomeArquivo");
 
-                    $sql = "INSERT INTO tbl_funcionario (foto_perfil) 
-                    VALUES (?) 
-                    WHERE id_funcionario = ?";
+        //             $sql = "INSERT INTO tbl_funcionario (foto_perfil) 
+        //             VALUES (?) 
+        //             WHERE id_funcionario = ?";
 
-                    $stm = $this->_conexao->prepare($sql);
+        //             $stm = $this->_conexao->prepare($sql);
 
-                    $stm->bindvalue(1, $novoNomeArquivo);
-                    $stm->bindvalue(2, $this->_id_funcionario);
+        //             $stm->bindvalue(1, $novoNomeArquivo);
+        //             $stm->bindvalue(2, $this->_id_funcionario);
 
-                    $stm->execute();
-                }
-            }
-        } else {
+        //             $stm->execute();
+        //         }
+        //     }
+        // } else {}
 
-            $sql = "INSERT INTO tbl_funcionario (nome_funcionario, id_empresa)
+        $sql = "INSERT INTO tbl_funcionario (nome_funcionario, id_empresa)
             VALUES (?, ?)";
 
-            $stm = $this->_conexao->prepare($sql);
-            $stm->bindValue(1, $this->_nome_funcionario);
-            $stm->bindValue(2, $this->_id_empresa);
-            $stm->execute();
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_nome_funcionario);
+        $stm->bindValue(2, $this->_id_empresa);
+        $stm->execute();
 
-            $idFuncionario = $this->_conexao->lastInsertId();
+        $idFuncionario = $this->_conexao->lastInsertId();
 
-            $primeiroNomeFuncionario = strtok($this->_nome_funcionario, " ");
-            $codigo = substr(uniqid(rand()), 0, 4);
+        $primeiroNomeFuncionario = strtok($this->_nome_funcionario, " ");
+        $codigo = substr(uniqid(rand()), 0, 4);
 
-            $this->_cod_funcionario = $primeiroNomeFuncionario . $codigo;
+        $this->_cod_funcionario = $primeiroNomeFuncionario . $codigo;
 
-            $sql = "INSERT INTO tbl_login_funcionario (cod_funcionario, senha, id_funcionario)
+        $sql = "INSERT INTO tbl_login_funcionario (cod_funcionario, senha, id_funcionario)
             VALUES (?, ?, ?)";
 
-            $stm = $this->_conexao->prepare($sql);
-            $stm->bindValue(1, $this->_cod_funcionario);
-            $stm->bindValue(2, $this->_senha);
-            $stm->bindValue(3, $idFuncionario);
-            $stm->execute();
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_cod_funcionario);
+        $stm->bindValue(2, $this->_senha);
+        $stm->bindValue(3, $idFuncionario);
+        $stm->execute();
 
-            return $idFuncionario;
-        }
+        return $idFuncionario;
     }
 
     public function createDiaTrabalhoFuncionario($diasTrabalho, $idFuncionarioRecebido)

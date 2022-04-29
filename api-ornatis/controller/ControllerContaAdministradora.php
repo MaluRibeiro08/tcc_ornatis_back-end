@@ -156,7 +156,7 @@ class ControllerContaAdministradora
                         $envio_form = $_POST["envio_form"];
 
                         if ($envio_form == "true") {
-                            if ($_FILES["imagem_perfil"]["error"] == 4) {
+                            if ($_FILES["imagem_perfil_salao"]["error"] == 4) {
                             } else {
                                 //atualiza a img
                                  return $this->_model_empresa->updateEmpresa($this->_id_empresa);
