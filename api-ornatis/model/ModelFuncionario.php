@@ -78,9 +78,12 @@ class ModelFuncionario
     public function getInformacoesFuncionario()
     {
         $sql = "SELECT tbl_funcionario.nome_funcionario, 
-        tbl_funcionario.foto_perfil 
-        FROM tbl_funcionario
-        WHERE id_funcionario = ?";
+        tbl_funcionario.foto_perfil, tbl_login_funcionario.cod_funcionario, tbl_login_funcionario.senha
+        FROM tbl_funcionario 
+        
+        inner join tbl_login_funcionario
+        on tbl_funcionario.id_funcionario =  tbl_login_funcionario.id_funcionario
+        WHERE tbl_funcionario.id_funcionario = ?";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_funcionario);
@@ -108,7 +111,31 @@ class ModelFuncionario
         $stm->bindValue(1, $this->_id_funcionario);
 
         $stm->execute();
-        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+        $trabalhos = $stm->fetchAll(\PDO::FETCH_ASSOC);
+        $dias_trabalho = [];
+        $verificacao = [];
+        foreach ($trabalhos as $trabalho) {
+            $dia_semana = $trabalho["id_dia_semana"];
+
+            if ($dias_trabalho == null) {
+                $dias_trabalho[$dia_semana][] = $trabalho;
+            } else {
+                $confimacao_criacao = false;
+                foreach ($dias_trabalho as $dia_semana_que_tem_trabalho => $infos_trabalho) {
+
+                    if ($dia_semana_que_tem_trabalho == $dia_semana) {
+                        $dias_trabalho[$dia_semana_que_tem_trabalho][] = $trabalho;
+                        $confimacao_criacao = true;
+                    }
+                }
+                if ($confimacao_criacao == false) {
+                    $dias_trabalho[$dia_semana][] = $trabalho;
+                }
+            }
+        };
+        // return $verificacao;
+        return $dias_trabalho;
     }
 
     public function createFuncionario()
