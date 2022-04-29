@@ -37,14 +37,14 @@ class ModelFuncionario
             case 'POST':
 
                 $this->_id_funcionario = $_POST["id_funcionario"] ?? $this->_dados_funcionario->id_funcionario ?? null;
-                $this->_nome_funcionario = $_POST["nome_funcionario"] ?? $this->_dados_funcionario->nome_funcionario;
+                $this->_nome_funcionario = $_POST["nome_funcionario"] ?? $this->_dados_funcionario->nome_funcionario ?? null;
                 $this->_foto_perfil = $_FILES["foto_perfil"] ?? null;
 
-                $this->_id_empresa = $_POST["id_empresa"] ?? $this->_dados_funcionario->id_empresa;
+                $this->_id_empresa = $_POST["id_empresa"] ?? $this->_dados_funcionario->id_empresa ?? null;
 
                 //login
                 // $this->_cod_funcionario = $_POST["cod_funcionario"] ?? $this->_dados_funcionario->cod_funcionario;
-                $this->_senha = $_POST["senha"] ?? $this->_dados_funcionario->senha;
+                $this->_senha = $_POST["senha"] ?? $this->_dados_funcionario->senha ?? null;
 
                 $this->_hora_inicio = $_POST["hora_inicio"] ?? $this->_dados_funcionario->hora_inicio ?? null;
                 $this->_hora_termino = $_POST["hora_termino"] ?? $this->_dados_funcionario->hora_termino ?? null;
