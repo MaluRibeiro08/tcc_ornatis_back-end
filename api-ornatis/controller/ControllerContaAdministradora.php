@@ -212,7 +212,7 @@ class ControllerContaAdministradora
             case 'DELETE':
 
                 if ($this->_flag == "desabilitarEmpresa") {
-                    $this->_model_empresa->desabilitarEmpresa($this->_id_empresa);
+                    return $this->_model_empresa->desabilitarEmpresa($this->_id_empresa);
                 } elseif ($this->_flag == "deleteRedesSociais") {
                     $this->_model_empresa->deleteRedesSociais($this->_id_empresa);
                 } 

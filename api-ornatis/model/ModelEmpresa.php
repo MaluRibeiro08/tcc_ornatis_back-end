@@ -601,7 +601,14 @@ class ModelEmpresa
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_empresa);
-        $stm->execute();
+        if($stm->execute())
+        {
+            return "sucess";
+        }
+        else
+        {
+            return "Erro na execução da execução";
+        }
     }
 
     public function deleteRedesSociais($idEmpresaRecebido)
