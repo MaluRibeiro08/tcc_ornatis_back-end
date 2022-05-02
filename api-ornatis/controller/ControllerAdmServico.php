@@ -9,6 +9,10 @@ class ControllerAdmServico
 
     private $_id_servico;
 
+    private $_dados_requisicao;
+    private $_array_funcionarios;
+    private $_array_genero;
+
     public function __construct($model_servico)
     {
         $this->_model_servico = $model_servico;
@@ -36,7 +40,15 @@ class ControllerAdmServico
             case 'POST':
 
                 if ($this->_flag == "createServico") {
-                    $dados_servico = $this->_model_servico->createServico();
+
+                    $this->_id_servico = $this->_model_servico->createServico();
+                    $dados_servico["dados_servico"] = $this->_model_servico->addEspecialidadePartesCorpo($this->_id_servico);
+
+                    $this->_array_funcionarios = $this->_dados_requisicao->funcionarios;
+                    $dados_servico["dados_servico_funcionarios"] = $this->_model_servico->addFuncionariosServico($this->_array_funcionarios, $this->_id_servico);
+
+                    $this->_array_genero = $this->_dados_requisicao->generos;
+                    $dados_servico["dados_servico_funcionarios"] = $this->_model_servico->addGeneroServico($this->_array_genero, $this->_id_servico);
 
                     return $dados_servico;
                 }
@@ -44,7 +56,14 @@ class ControllerAdmServico
                 break;
 
             case 'DELETE':
-                # code...
+
+                if ($this->_flag == "desabilitarServico") {
+
+                    return $this->_model_servico->desabilitarServico();
+
+                }
+
+
                 break;
             default:
                 # code...
