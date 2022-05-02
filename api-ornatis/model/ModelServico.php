@@ -9,6 +9,8 @@ class ModelServico
     private $_id_servico;
     private $_id_empresa;
     private $_id_funcionario;
+    private $_id_especialidade;
+    private $_id_parte_corpo;
 
     private $_dados_servico;
 
@@ -65,8 +67,7 @@ class ModelServico
     {
 
         $sql = "INSERT INTO tbl_servico (nome_servico, tempo_duracao, desconto, intervalo, preco, detalhes, id_empresa)
-        VALUES (?, ?, ?, ?, ?, ?, ?) 
-        WHERE id_empresa = ?";
+        VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         $stm = $this->_conexao->prepare($sql);
 
@@ -84,6 +85,7 @@ class ModelServico
             return "Erro ao criar serviço";
         }
     }
+
 
     public function desabilitarServico()
     {
