@@ -75,6 +75,39 @@ class ModelServico
         $this->_conexao = $conexao;
     }
 
+    public function getEspecialidades()
+    {
+        $sql = "SELECT * from tbl_especialidade";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->execute();
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getEspecialidadesPartesCorpo()
+    {
+        $sql = "SELECT 
+                tbl_partes_corpo.nome_parte_corpo, 
+                tbl_partes_corpo.id_parte_corpo 
+                FROM tbl_partes_corpo
+
+                inner join tbl_especialidade_partes_corpo
+                on tbl_partes_corpo.id_parte_corpo = tbl_especialidade_partes_corpo.id_parte_corpo 
+                
+                inner join tbl_especialidade
+                on tbl_especialidade_partes_corpo.id_especialidade = tbl_especialidade.id_especialidade
+                
+                WHERE tbl_especialidade.id_especialidade = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_especialidade);
+
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /** CREATE **/
     public function createServico()
     {
 
