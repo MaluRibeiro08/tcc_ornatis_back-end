@@ -10,10 +10,10 @@ class ModelServico
 
     private $_id_empresa;
     private $_id_funcionario;
-    private $_id_especialidade_parte_corpo;
     private $_id_especialidade;
     private $_id_parte_corpo;
     private $_id_genero;
+    private $_id_tipo_atendimento;
 
     private $_dados_servico;
 
@@ -36,6 +36,7 @@ class ModelServico
         switch ($this->_method) {
             case 'POST':
 
+                //ID's
                 $this->_id_servico = $_POST["id_servico"] ?? $this->_dados_servico->id_servico ?? null;
 
                 $this->_id_funcionario = $_POST["id_funcionario"] ?? $this->_dados_servico->id_funcionario ?? null;
@@ -43,8 +44,10 @@ class ModelServico
 
                 $this->_id_especialidade = $_POST["id_especialidade"] ?? $this->_dados_servico->id_especialidade ?? null;
                 $this->_id_parte_corpo = $_POST["id_parte_corpo"] ?? $this->_dados_servico->id_parte_corpo ?? null;
-                $this->_id_especialidade_parte_corpo = $_POST["id_especialidade_parte_corpo"] ?? $this->_dados_servico->id_especialidade_parte_corpo ?? null;
 
+                $this->_id_tipo_atendimento = $_POST["id_tipo_atendimento"] ?? $this->_dados_servico->id_tipo_atendimento ?? null;
+
+                //campos
                 $this->_nome_servico = $_POST["nome_servico"] ?? $this->_dados_servico->nome_servico ?? null;
                 $this->_tempo_duracao = $_POST["tempo_duracao"] ?? $this->_dados_servico->tempo_duracao ?? null;
                 $this->_desconto = $_POST["desconto"] ?? $this->_dados_servico->desconto ?? null;
@@ -64,7 +67,7 @@ class ModelServico
 
                 $this->_id_especialidade = $_GET["id_especialidade"] ?? $this->_dados_servico->id_especialidade ?? null;
                 $this->_id_parte_corpo = $_GET["id_parte_corpo"] ?? $this->_dados_servico->id_parte_corpo ?? null;
-                $this->_id_especialidade_parte_corpo = $_GET["id_especialidade_parte_corpo"] ?? $this->_dados_servico->id_especialidade_parte_corpo ?? null;
+
 
                 break;
         }
@@ -141,11 +144,9 @@ class ModelServico
             $stm->bindValue(1, $this->_id_servico);
             $stm->bindValue(2, $this->_id_funcionario);
             $stm->execute();
-
         }
 
         return "Success";
-
     }
 
     public function addGeneroServico($generos, $idServicoRecebido)
@@ -154,21 +155,38 @@ class ModelServico
         $this->_id_servico = $idServicoRecebido;
 
         foreach ($generos as $genero) {
-            
-            $this->_id_genero = $genero->_id_genero;
 
-            $sql = "INSERT INTO tbl_servico_empresa (id_servico, id_genero)
+            $this->_id_genero = $genero->id_genero;
+
+            $sql = "INSERT INTO tbl_servico_genero (id_servico, id_genero)
             VALUES (?, ?)";
             $stm = $this->_conexao->prepare($sql);
             $stm->bindValue(1, $this->_id_servico);
             $stm->bindValue(2, $this->_id_genero);
             $stm->execute();
-
         }
 
         return "Success";
+    }
 
+    public function addTipoAtendimentoServico($tiposAtendimento, $idServicoRecebido)
+    {
+        $this->_id_servico = $idServicoRecebido;
 
+        foreach ($tiposAtendimento as $tipoAtendimento) {
+
+            $this->_id_tipo_atendimento = $tipoAtendimento->id_tipo_atendimento;
+
+            $sql = "INSERT INTO tbl_servico_tipo_atendimento (id_servico, id_tipo_atendimento)
+            VALUES (?, ?)";
+
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_id_servico);
+            $stm->bindValue(2, $this->_id_tipo_atendimento);
+            $stm->execute();
+        }
+
+        return "Success";
     }
 
 
@@ -188,30 +206,82 @@ class ModelServico
         }
     }
 
-    public function updateServico()
+    public function updateServico($idServicoRecebido)
     {
 
-        $sql = "UPDATE tbl_servico SET
-        nome_servico = ?,
-        tempo_duracao = ?,
-        desconto = ?,
-        intervalo = ?,
-        preco = ?,
-        detalhes = ?
-        WHERE id_servico = ?";
+        if (isset($_POST["envio_form"])) {
 
-        $stm = $this->_conexao->prepare($sql);
+            $envio_form = $_POST["envio_form"];
 
-        $stm->bindvalue(1, $this->_nome_servico);
-        $stm->bindvalue(2, $this->_tempo_duracao);
-        $stm->bindvalue(3, $this->_desconto);
-        $stm->bindvalue(4, $this->_intervalo);
-        $stm->bindvalue(5, $this->_preco);
-        $stm->bindvalue(6, $this->_detalhes);
-        $stm->bindvalue(7, $this->_id_servico);
+            if ($envio_form == "true") {
 
-        if ($stm->execute()) {
-            return "Success";
+                if ($_FILES["imagem_servico"]["error"] == 4) {
+                    //não faz nada pq não veio img
+                    return "estariamos fazendo nada porque não veio img";
+                } else {
+                    //selecionar imagem de perfil 
+                    $sqlImg = "SELECT imagem_servico FROM tbl_servico WHERE id_servico = ?";
+
+                    $stm = $this->_conexao->prepare($sqlImg);
+                    $stm->bindValue(1, $idServicoRecebido);
+
+                    $stm->execute();
+
+                    $servico = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+                    //exclusão da imagem antiga se tiver
+                    if (isset($servico[0]["imagem_servico"])) {
+                        if ($servico[0]["imagem_servico"] != null) {
+                            unlink("../../../upload/imagem_servico/" . $servico[0]["imagem_servico"]);
+                        }
+                    }
+
+                    //nova imagem
+                    $nomeArquivo = $_FILES["imagem_servico"]["name"];
+
+                    $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
+                    $novoNomeArquivo = md5(microtime()) . ".$extensao";
+
+
+                    move_uploaded_file($_FILES["imagem_servico"]["tmp_name"], "../../../upload/imagem_servico/$novoNomeArquivo");
+
+                    $sql = "UPDATE tbl_servico SET
+                    imagem_servico = ? WHERE id_servico = ?";
+
+                    $stm = $this->_conexao->prepare($sql);
+
+                    $stm->bindvalue(1, $novoNomeArquivo);
+                    $stm->bindvalue(2, $idServicoRecebido);
+
+                    $stm->execute();
+
+                    return "imagem do serviço salva com sucesso!";
+                }
+            }
+        } else {
+
+            $sql = "UPDATE tbl_servico SET
+            nome_servico = ?,
+            tempo_duracao = ?,
+            desconto = ?,
+            intervalo = ?,
+            preco = ?,
+            detalhes = ?
+            WHERE id_servico = ?";
+
+            $stm = $this->_conexao->prepare($sql);
+
+            $stm->bindvalue(1, $this->_nome_servico);
+            $stm->bindvalue(2, $this->_tempo_duracao);
+            $stm->bindvalue(3, $this->_desconto);
+            $stm->bindvalue(4, $this->_intervalo);
+            $stm->bindvalue(5, $this->_preco);
+            $stm->bindvalue(6, $this->_detalhes);
+            $stm->bindvalue(7, $this->_id_servico);
+
+            if ($stm->execute()) {
+                return "Success";
+            }
         }
     }
 }
