@@ -8,6 +8,8 @@ class ControllerAdmServico
     private $_model_servico;
 
     private $_id_servico;
+    
+    private $_id_empresa;
 
     private $_dados_requisicao;
     private $_array_funcionarios;
@@ -26,6 +28,9 @@ class ControllerAdmServico
 
         $this->_flag =  $_GET["acao"] ?? $this->_dados_requisicao->acao ?? $_POST["acao"] ?? null;
         $this->_id_servico =  $_GET["id_servico"] ?? $this->_dados_requisicao->id_servico ?? $_POST["id_servico"] ?? null;
+
+        $this->_id_empresa =  $_GET["id_empresa"] ?? $this->_dados_requisicao->id_empresa ?? $_POST["id_empresa"] ?? null;
+
     }
 
     function router()
@@ -33,7 +38,25 @@ class ControllerAdmServico
 
         switch ($this->_method) {
             case 'GET':
-                # code...
+                
+                if ($this->_id_empresa != null && $this->_flag == "listarEspecialidades") {
+                    
+                    return $this->_model_servico->getEspecialidades();
+
+                } elseif ($this->_id_empresa != null && $this->_flag == "listarEspecialidadePartesCorpo") {
+                    
+                    return $this->_model_servico->getEspecialidadesPartesCorpo();
+
+                } elseif ($this->_id_empresa != null && $this->_flag == "listarCategoriaServicos") {
+                    
+                    return $this->_model_servico->getServicosEmpresaByCategoria();
+
+                } elseif ($this->_id_empresa != null && $this->_flag == "listarDetalhesServico") {
+                    
+                    return $this->_model_servico->getDetalhesServico();
+
+                }
+
                 break;
 
             case 'POST':
