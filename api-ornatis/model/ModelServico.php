@@ -310,6 +310,7 @@ class ModelServico
         return "Success";
     }
 
+    /** DELETES - DESABILITAR **/
 
     public function desabilitarServico()
     {
@@ -326,6 +327,39 @@ class ModelServico
             return "Success";
         }
     }
+
+    public function removerFuncionarios()
+    {
+        $sql = "DELETE FROM tbl_servico_funcionario WHERE id_servico = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindvalue(1, $this->_id_servico);
+        $stm->execute();
+
+    }
+
+    public function limparGeneros()
+    {
+        $sql = "DELETE FROM tbl_servico_genero WHERE id_servico = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindvalue(1, $this->_id_servico);
+        $stm->execute();
+
+    }
+
+    public function limparTipoAtendimento()
+    {
+        $sql = "DELETE FROM tbl_servico_tipo_atendimento WHERE id_servico = ?";
+        
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindvalue(1, $this->_id_servico);
+        $stm->execute();
+
+    }
+
+
+    /** UPDATE **/
 
     public function updateServico($idServicoRecebido)
     {
@@ -379,7 +413,10 @@ class ModelServico
                     return "imagem do serviço salva com sucesso!";
                 }
             }
+
         } else {
+
+            $this->_id_servico = $idServicoRecebido;
 
             $sql = "UPDATE tbl_servico SET
             nome_servico = ?,
@@ -405,4 +442,36 @@ class ModelServico
             }
         }
     }
+
+    public function updateEspecialidadePartesCorpo()
+    {
+
+        $sql = "SELECT id_especialidade_partes_corpo 
+        from tbl_especialidade_partes_corpo 
+        WHERE id_especialidade = ? AND id_parte_corpo = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_especialidade);
+        $stm->bindValue(2, $this->_id_parte_corpo);
+        $stm->execute();
+
+        $id = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+        $idEspecialidadePartesCorpo = $id[0]["id_especialidade_partes_corpo"];
+
+        $sql = "UPDATE tbl_servico_especialidade_partesCorpo SET 
+        id_especialidade_partes_corpo = ?
+        WHERE id_servico = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $idEspecialidadePartesCorpo);
+        $stm->bindValue(2, $this->_id_servico);
+        if ($stm->execute()) {
+            return "Success";
+        } else {
+            return "Erro ao atualizar - updateEspecialidadePartesCorpo";
+        }
+
+    }
+
 }
