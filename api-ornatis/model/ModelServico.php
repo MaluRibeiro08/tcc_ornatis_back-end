@@ -78,55 +78,14 @@ class ModelServico
     public function getDetalhesServico()
     {
         $sql = "SELECT tbl_servico.nome_servico,
-        tbl_servico.preco,
-        tbl_servico.desconto,
-        tbl_servico.tempo_duracao,
-        tbl_servico.habilitado,
-        tbl_servico.intervalo,
-        tbl_servico.imagem_servico,
-        
-        tbl_especialidade.nome_especialidade,
-        
-        tbl_partes_corpo.nome_parte_corpo,
-        
-        tbl_funcionario.nome_funcionario,
-        
-        tbl_genero.genero,
-        
-        tbl_tipo_atendimento.tipo_atendimento
-        from tbl_servico
-        
-        inner join tbl_servico_especialidade_partescorpo
-        on tbl_servico.id_servico = tbl_servico_especialidade_partescorpo.id_servico
-        
-        inner join tbl_especialidade_partes_corpo
-        on tbl_servico_especialidade_partescorpo.id_especialidade_partes_corpo = tbl_especialidade_partes_corpo.id_especialidade_partes_corpo
-        
-        inner join tbl_especialidade
-        on tbl_especialidade_partes_corpo.id_especialidade = tbl_especialidade.id_especialidade
-        
-        inner join tbl_partes_corpo
-        on tbl_especialidade_partes_corpo.id_parte_corpo = tbl_partes_corpo.id_parte_corpo
-        
-        inner join tbl_servico_tipo_atendimento
-        on tbl_servico.id_servico = tbl_servico_tipo_atendimento.id_servico
-        
-        inner join tbl_tipo_atendimento
-        on tbl_servico_tipo_atendimento.id_tipo_atendimento = tbl_tipo_atendimento.id_tipo_atendimento
-        
-        inner join tbl_servico_genero
-        on tbl_servico.id_servico = tbl_servico_genero.id_servico
-        
-        inner join tbl_genero
-        on tbl_servico_genero.id_genero = tbl_genero.id_genero
-        
-        inner join tbl_servico_funcionario
-        on tbl_servico.id_servico = tbl_servico_funcionario.id_servico
-        
-        inner join tbl_funcionario
-        on tbl_servico_funcionario.id_funcionario = tbl_funcionario.id_funcionario
-        
-        WHERE tbl_servico.id_servico = ?";
+                tbl_servico.preco,
+                tbl_servico.desconto,
+                tbl_servico.tempo_duracao,
+                tbl_servico.habilitado,
+                tbl_servico.intervalo,
+                tbl_servico.imagem_servico
+                from tbl_servico
+                WHERE tbl_servico.id_servico = ?";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_servico);
@@ -135,6 +94,104 @@ class ModelServico
 
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+    public function getDetalhesServicoEspecialidade()
+    {
+        $sql = "SELECT tbl_especialidade.id_especialidade, 
+                tbl_especialidade.nome_especialidade,
+                tbl_partes_corpo.id_parte_corpo,
+                tbl_partes_corpo.nome_parte_corpo
+                FROM tbl_especialidade
+                
+                inner join tbl_especialidade_partes_corpo
+                on tbl_especialidade.id_especialidade = tbl_especialidade_partes_corpo.id_especialidade
+                
+                inner join tbl_partes_corpo
+                on tbl_especialidade_partes_corpo.id_parte_corpo = tbl_partes_corpo.id_parte_corpo
+                
+                inner join tbl_servico_especialidade_partesCorpo
+                on tbl_especialidade_partes_corpo.id_especialidade_partes_corpo = tbl_servico_especialidade_partesCorpo.id_especialidade_partes_corpo
+                
+                inner join tbl_servico
+                on tbl_servico_especialidade_partesCorpo.id_servico = tbl_servico.id_servico
+                
+                WHERE tbl_servico.id_servico = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_servico);
+
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getDetalhesServicoFuncionarios()
+    {
+        $sql = "SELECT tbl_funcionario.id_funcionario,
+                tbl_funcionario.nome_funcionario
+                from tbl_funcionario
+                
+                inner join tbl_servico_funcionario
+                on tbl_funcionario.id_funcionario = tbl_servico_funcionario.id_funcionario
+                
+                inner join tbl_servico
+                on tbl_servico_funcionario.id_servico = tbl_servico.id_servico
+                
+                WHERE tbl_servico.id_servico = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_servico);
+
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getDetalhesServicoGeneros()
+    {
+        $sql = "SELECT tbl_genero.id_genero,
+                tbl_genero.genero
+                FROM tbl_genero
+                
+                inner join tbl_servico_genero
+                on tbl_genero.id_genero = tbl_servico_genero.id_genero
+                
+                inner join tbl_servico
+                on tbl_servico_genero.id_servico = tbl_servico.id_servico
+                
+                WHERE tbl_servico.id_servico = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_servico);
+
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getDetalhesServicoTipoAtendimento()
+    {
+        $sql = "SELECT tbl_tipo_atendimento.id_tipo_atendimento,
+                tbl_tipo_atendimento.tipo_atendimento
+                FROM tbl_tipo_atendimento
+                
+                inner join tbl_servico_tipo_atendimento
+                on tbl_tipo_atendimento.id_tipo_atendimento = tbl_servico_tipo_atendimento.id_tipo_atendimento
+                
+                inner join tbl_servico
+                on tbl_servico_tipo_atendimento.id_servico = tbl_servico.id_servico
+                
+                WHERE tbl_servico.id_servico = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_servico);
+
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /************************************************************************/
 
     public function getServicosEmpresaByCategoria()
     {
@@ -335,7 +392,6 @@ class ModelServico
         $stm = $this->_conexao->prepare($sql);
         $stm->bindvalue(1, $this->_id_servico);
         $stm->execute();
-
     }
 
     public function limparGeneros()
@@ -345,17 +401,15 @@ class ModelServico
         $stm = $this->_conexao->prepare($sql);
         $stm->bindvalue(1, $this->_id_servico);
         $stm->execute();
-
     }
 
     public function limparTipoAtendimento()
     {
         $sql = "DELETE FROM tbl_servico_tipo_atendimento WHERE id_servico = ?";
-        
+
         $stm = $this->_conexao->prepare($sql);
         $stm->bindvalue(1, $this->_id_servico);
         $stm->execute();
-
     }
 
 
@@ -413,7 +467,6 @@ class ModelServico
                     return "imagem do serviço salva com sucesso!";
                 }
             }
-
         } else {
 
             $this->_id_servico = $idServicoRecebido;
@@ -471,7 +524,5 @@ class ModelServico
         } else {
             return "Erro ao atualizar - updateEspecialidadePartesCorpo";
         }
-
     }
-
 }

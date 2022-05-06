@@ -49,7 +49,13 @@ class ControllerAdmServico
                     return $this->_model_servico->getServicosEmpresaByCategoria();
                 } elseif ($this->_id_empresa != null && $this->_flag == "listarDetalhesServico") {
 
-                    return $this->_model_servico->getDetalhesServico();
+                    $dados_servico["dados_servico"] = $this->_model_servico->getDetalhesServico();
+                    $dados_servico["dados_servico_especialidade"] = $this->_model_servico->getDetalhesServicoEspecialidade();
+                    $dados_servico["dados_servico_funcionarios"] = $this->_model_servico->getDetalhesServicoFuncionarios();
+                    $dados_servico["dados_servico_generos"] = $this->_model_servico->getDetalhesServicoGeneros();
+                    $dados_servico["dados_servico_tipo_atendimento"] = $this->_model_servico->getDetalhesServicoTipoAtendimento();
+
+                    return $dados_servico;
                 }
 
                 break;
