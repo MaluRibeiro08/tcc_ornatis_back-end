@@ -5,6 +5,8 @@ class ControllerConsumidor
 
     private $_method;
 
+    private $_flag;
+
     private $_model_consumidor;
 
     private $_id_consumidor;
@@ -30,9 +32,32 @@ class ControllerConsumidor
             case 'GET':
                 # code...
                 break;
-            
+
             case 'POST':
-                # code...
+
+                if ($this->_flag == "createConsumidor") {
+
+                    if (isset($_POST["envio_form"])) {
+
+                        $envio_form = $_POST["envio_form"];
+
+                        if ($envio_form == "true") {
+                            if (isset($_FILES["foto_perfil_consumidor"])) {
+                                if ($_FILES["foto_perfil_consumidor"]["error"] == 4) {
+                                    return ("chegou a req sem foto consumidor");
+                                } else {
+                                    return $this->_model_consumidor->updateConsumidor($this->_id_consumidor);
+                                }
+                            }
+                        }
+                    } else {
+
+                        return $this->_id_consumidor = $this->_model_consumidor->createConsumidor();
+                        
+
+                    }
+                }
+
                 break;
 
             case 'DELETE':
@@ -43,9 +68,5 @@ class ControllerConsumidor
                 # code...
                 break;
         }
-
     }
-
 }
-
-?>

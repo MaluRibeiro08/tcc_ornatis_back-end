@@ -5,6 +5,7 @@ class ModelServico
 
     private $_conexao;
     private $_method;
+    private $_flag;
 
     private $_id_servico;
 
