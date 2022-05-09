@@ -82,37 +82,56 @@ class ModelConsumidor
 
     public function createConsumidor()
     {
-        $sql = "INSERT INTO tbl_consumidor (nome_consumidor, data_nascimento, cpf_consumidor, 
-        telefone, id_genero, id_cor_cabelo, id_tipo_cabelo, id_comprimento_cabelo) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-        $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_nome_consumidor);
-        $stm->bindValue(2, $this->_data_nascimento);
-        $stm->bindValue(3, $this->_cpf_consumidor);
-        $stm->bindValue(4, $this->_telefone);
-        $stm->bindValue(5, $this->_id_genero);
-        $stm->bindValue(6, $this->_id_cor_cabelo);
-        $stm->bindValue(7, $this->_id_tipo_cabelo);
-        $stm->bindValue(8, $this->_id_comprimento_cabelo);
-        $stm->execute();
-
-        $this->_id_consumidor = $this->_conexao->lastInsertId();
 
         // realizar verificação de login com o email dps
-
-        $sql = "INSERT INTO tbl_login_consumidor (id_consumidor, email_consumidor, senha_consumidor)
-        VALUES (?, ?, ?)";
-
+        $sql = "SELECT email_consumidor FROM tbl_login_consumidor";
         $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_id_consumidor);
-        $stm->bindValue(2, $this->_email_consumidor);
-        $stm->bindValue(3, $this->_senha_consumidor);
+        $stm->execute();
+        $emails = $stm->fetchAll(\PDO::FETCH_ASSOC);
 
-        if ($stm->execute()) {
-            return $this->_id_consumidor;
+        $emailValido = true;
+
+        foreach ($emails as $email) {
+
+            if ($this->_email_consumidor == $email["email_consumidor"]) {
+                $emailValido = false;
+            }
+        }
+
+        if ($emailValido) {
+
+            $sql = "INSERT INTO tbl_consumidor (nome_consumidor, data_nascimento, cpf_consumidor, 
+            telefone, id_genero, id_cor_cabelo, id_tipo_cabelo, id_comprimento_cabelo) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_nome_consumidor);
+            $stm->bindValue(2, $this->_data_nascimento);
+            $stm->bindValue(3, $this->_cpf_consumidor);
+            $stm->bindValue(4, $this->_telefone);
+            $stm->bindValue(5, $this->_id_genero);
+            $stm->bindValue(6, $this->_id_cor_cabelo);
+            $stm->bindValue(7, $this->_id_tipo_cabelo);
+            $stm->bindValue(8, $this->_id_comprimento_cabelo);
+            $stm->execute();
+
+            $this->_id_consumidor = $this->_conexao->lastInsertId();
+
+            $sql = "INSERT INTO tbl_login_consumidor (id_consumidor, email_consumidor, senha_consumidor)
+            VALUES (?, ?, ?)";
+
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_id_consumidor);
+            $stm->bindValue(2, $this->_email_consumidor);
+            $stm->bindValue(3, $this->_senha_consumidor);
+
+            if ($stm->execute()) {
+                return $this->_id_consumidor;
+            } else {
+                return "Erro no cadastro de consumidor";
+            }
         } else {
-            return "Erro no cadastro de consumidor";
+            return "Email já cadastrado";
         }
     }
 
@@ -128,7 +147,6 @@ class ModelConsumidor
         if ($stm->execute()) {
             return "Success";
         }
-
     }
 
     public function updateConsumidor($idConsumidorRecebido)
