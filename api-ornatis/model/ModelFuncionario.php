@@ -66,7 +66,8 @@ class ModelFuncionario
     public function getFuncionariosEmpresa()
     {
 
-        $sql = "SELECT * from tbl_funcionario WHERE id_empresa = ?";
+        $sql = "SELECT * from tbl_funcionario WHERE habilitado = 1 
+        AND id_empresa = ?";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_empresa);

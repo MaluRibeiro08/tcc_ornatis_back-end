@@ -30,7 +30,13 @@ class ControllerConsumidor
 
         switch ($this->_method) {
             case 'GET':
-                # code...
+                
+                if ($this->_flag == "listarCoresCabelo") {
+                    return $this->_model_consumidor->getCoresCabelo();
+                } elseif ($this->_flag == "listarGeneros") {
+                    return $this->_model_consumidor->getGeneros();
+                }
+
                 break;
 
             case 'POST':
@@ -61,7 +67,11 @@ class ControllerConsumidor
                 break;
 
             case 'DELETE':
-                # code...
+
+                if ($this->_flag == "desabilitarConsumidor") {
+                    return $this->_model_consumidor->desabilitarConsumidor();
+                }
+
                 break;
 
             default:

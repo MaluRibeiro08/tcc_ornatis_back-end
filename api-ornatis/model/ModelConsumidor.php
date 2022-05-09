@@ -62,6 +62,24 @@ class ModelConsumidor
         $this->_conexao = $conexao;
     }
 
+    public function getCoresCabelo()
+    {
+        $sql = "SELECT * from tbl_cor_cabelo";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->execute();
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getGeneros()
+    {
+        $sql = "SELECT * FROM tbl_genero";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->execute();
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public function createConsumidor()
     {
         $sql = "INSERT INTO tbl_consumidor (nome_consumidor, data_nascimento, cpf_consumidor, 
@@ -95,6 +113,20 @@ class ModelConsumidor
             return $this->_id_consumidor;
         } else {
             return "Erro no cadastro de consumidor";
+        }
+    }
+
+    public function desabilitarConsumidor()
+    {
+        $sql = "UPDATE tbl_consumidor SET
+        habilitado = 0 
+        WHERE id_consumidor = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_consumidor);
+
+        if ($stm->execute()) {
+            return "Success";
         }
 
     }
@@ -148,10 +180,7 @@ class ModelConsumidor
                     $stm->execute();
                 }
             }
-        } else {}
-
+        } else {
+        }
     }
-
-
-
 }
