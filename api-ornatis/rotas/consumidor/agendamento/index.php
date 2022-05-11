@@ -7,7 +7,9 @@ header("Content-Type: aplication/json");
 
 include("../../Connection.php");
 include("../../model/ModelConsumidor.php");
+include("../../../model/ModelAgendamento.php");
 include("../../controller/ControllerConsumidor.php");
+include("../../../controller/ControllerAgendamento.php");
 
 $conexao = new Connection();
 
@@ -18,6 +20,5 @@ $controller = new ControllerConsumidor($model_consumidor);
 $dados = $controller->router();
  
 echo json_encode(array("status"=>"Success","data"=>$dados));
-
 
 ?>
