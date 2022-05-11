@@ -199,6 +199,65 @@ class ModelConsumidor
                 }
             }
         } else {
+
+            // realizar verificação de login com o email dps
+            $sql = "SELECT email_consumidor, id_consumidor FROM tbl_login_consumidor";
+            $stm = $this->_conexao->prepare($sql);
+            $stm->execute();
+            $emails = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+            $emailValido = true;
+
+            foreach ($emails as $email) {
+
+                if ($this->_email_consumidor == $email["email_consumidor"] && $this->_id_consumidor != $email["id_consumidor"]) {
+                    $emailValido = false;
+                }
+            }
+
+            if ($emailValido) {
+
+
+                $sql = "UPDATE tbl_consumidor SET
+                nome_consumidor = ?,
+                data_nascimento = ?,
+                cpf_consumidor = ?,
+                telefone = ?,
+                id_genero = ?,
+                id_cor_cabelo = ?,
+                id_tipo_cabelo = ?,
+                id_comprimento_cabelo = ?
+                WHERE id_consumidor = ?";
+
+                $stm = $this->_conexao->prepare($sql);
+                $stm->bindValue(1, $this->_nome_consumidor);
+                $stm->bindValue(2, $this->_data_nascimento);
+                $stm->bindValue(3, $this->_cpf_consumidor);
+                $stm->bindValue(4, $this->_telefone);
+                $stm->bindValue(5, $this->_id_genero);
+                $stm->bindValue(6, $this->_id_cor_cabelo);
+                $stm->bindValue(7, $this->_id_tipo_cabelo);
+                $stm->bindValue(8, $this->_id_comprimento_cabelo);
+                $stm->bindvalue(9, $this->_id_consumidor);
+
+                $stm->execute();
+
+                $sql = "UPDATE tbl_login_consumidor SET
+                email_consumidor = ?,
+                senha_consumidor = ?
+                WHERE id_consumidor = ?";
+
+                $stm = $this->_conexao->prepare($sql);
+                $stm->bindValue(1, $this->_email_consumidor);
+                $stm->bindValue(2, $this->_senha_consumidor);
+                $stm->bindValue(3, $this->_id_consumidor);
+
+                if ($stm->execute()) {
+                    return "Success";
+                }
+            } else {
+                return "Email já cadastrado";
+            }
         }
     }
 }

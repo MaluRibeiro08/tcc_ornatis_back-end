@@ -30,7 +30,7 @@ class ControllerConsumidor
 
         switch ($this->_method) {
             case 'GET':
-                
+
                 if ($this->_flag == "listarCoresCabelo") {
                     return $this->_model_consumidor->getCoresCabelo();
                 } elseif ($this->_flag == "listarGeneros") {
@@ -59,8 +59,24 @@ class ControllerConsumidor
                     } else {
 
                         return $this->_id_consumidor = $this->_model_consumidor->createConsumidor();
-                        
+                    }
+                } elseif ($this->_flag == "updateConsumidor") {
+                    
+                    if (isset($_POST["envio_form"])) {
 
+                        $envio_form = $_POST["envio_form"];
+
+                        if ($envio_form == "true") {
+                            if (isset($_FILES["foto_perfil_consumidor"])) {
+                                if ($_FILES["foto_perfil_consumidor"]["error"] == 4) {
+                                    return ("chegou a req sem foto consumidor");
+                                } else {
+                                    return $this->_model_consumidor->updateConsumidor($this->_id_consumidor);
+                                }
+                            }
+                        }
+                    } else {
+                        return $this->_model_consumidor->updateConsumidor($this->_id_consumidor);
                     }
                 }
 
