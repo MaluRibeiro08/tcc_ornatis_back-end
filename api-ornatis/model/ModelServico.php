@@ -25,6 +25,7 @@ class ModelServico
     private $_preco;
     private $_imagem_servico;
     private $_detalhes;
+    private $_ativo_para_uso;
 
     public function __construct($conexao)
     {
@@ -56,6 +57,7 @@ class ModelServico
                 $this->_preco = $_POST["preco"] ?? $this->_dados_servico->preco ?? null;
                 $this->_imagem_servico = $_FILES["imagem_servico"] ?? null;
                 $this->_detalhes = $_POST["detalhes"] ?? $this->_dados_servico->detalhes ?? null;
+                $this->_ativo_para_uso = $_POST["ativo_para_uso"] ?? $this->_dados_servico->ativo_para_uso ?? null;
 
                 break;
 
@@ -211,7 +213,7 @@ class ModelServico
                 inner join tbl_especialidade
                 on tbl_especialidade_partes_corpo.id_especialidade = tbl_especialidade.id_especialidade
                 
-                WHERE id_empresa = ?";
+                WHERE id_empresa = ? AND habilitado = 1";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_empresa);
@@ -257,8 +259,8 @@ class ModelServico
     public function createServico()
     {
 
-        $sql = "INSERT INTO tbl_servico (nome_servico, tempo_duracao, desconto, intervalo, preco, detalhes, id_empresa)
-        VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO tbl_servico (nome_servico, tempo_duracao, desconto, intervalo, preco, detalhes, id_empresa, ativo_para_uso)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stm = $this->_conexao->prepare($sql);
 
@@ -269,6 +271,7 @@ class ModelServico
         $stm->bindvalue(5, $this->_preco);
         $stm->bindvalue(6, $this->_detalhes);
         $stm->bindvalue(7, $this->_id_empresa);
+        $stm->bindvalue(8, $this->_ativo_para_uso);
 
         if ($stm->execute()) {
             return $this->_conexao->lastInsertId();
@@ -478,7 +481,8 @@ class ModelServico
             desconto = ?,
             intervalo = ?,
             preco = ?,
-            detalhes = ?
+            detalhes = ?,
+            ativo_para_uso = ?
             WHERE id_servico = ?";
 
             $stm = $this->_conexao->prepare($sql);
@@ -489,7 +493,8 @@ class ModelServico
             $stm->bindvalue(4, $this->_intervalo);
             $stm->bindvalue(5, $this->_preco);
             $stm->bindvalue(6, $this->_detalhes);
-            $stm->bindvalue(7, $this->_id_servico);
+            $stm->bindvalue(7, $this->_ativo_para_uso);
+            $stm->bindvalue(8, $this->_id_servico);
 
             if ($stm->execute()) {
                 return "Success";
