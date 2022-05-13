@@ -207,6 +207,10 @@ class ControllerContaAdministradora
 
                     $redesSociais = $this->_model_empresa->updateRedesSociais();
                     return $redesSociais;
+                }
+                else
+                {
+                    return 'chegou sem acao';
                 } 
 
             case 'DELETE':
@@ -219,7 +223,7 @@ class ControllerContaAdministradora
                 break;
 
             default:
-                # code...
+                return 'chgeou sem nada';
                 break;
         }
     }
