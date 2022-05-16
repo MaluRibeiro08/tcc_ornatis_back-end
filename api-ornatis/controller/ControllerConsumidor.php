@@ -6,6 +6,7 @@ class ControllerConsumidor
     private $_method;
 
     private $_flag;
+    private $_dados_requisicao;
 
     private $_model_consumidor;
 
