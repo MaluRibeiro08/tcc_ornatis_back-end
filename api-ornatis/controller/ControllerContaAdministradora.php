@@ -84,7 +84,11 @@ class ControllerContaAdministradora
 
                     return array_merge($dados_empresa);
 
-                } else {
+                } 
+                else if($this->_id_empresa != null && $this->_flag == 'carregarRedesSociais') 
+                {
+                    return $this->_model_empresa->getRedesSociais();
+                }else {
                     return "Não foi possível realizar ação! Verifique as informações de requeisição (ids, flags)";
                 };
 
