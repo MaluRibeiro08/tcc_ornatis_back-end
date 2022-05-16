@@ -1,6 +1,6 @@
 <?php
 
-class ControllerAgendamento
+class ControllerAgendamentoConsumidor
 {
 
     private $_method;
@@ -37,7 +37,15 @@ class ControllerAgendamento
 
         switch ($this->_method) {
             case 'GET':
-                # code...
+                
+                if ($this->_flag == "listarFuncionariosPorServico") {
+
+                    return $this->_model_funcionario->getFuncionariosPorServico($this->_id_servico);
+                
+                } elseif ($this->_flag == "listar") {
+                    # code...
+                }
+
                 break;
             
             case 'POST':

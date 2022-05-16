@@ -76,6 +76,29 @@ class ModelFuncionario
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    public function getFuncionariosPorServico($idServico)
+    {
+        $sql = "SELECT tbl_funcionario.id_funcionario,
+        tbl_funcionario.nome_funcionario,
+        tbl_funcionario.foto_perfil
+        
+        FROM tbl_funcionario
+        
+        inner join tbl_servico_funcionario
+        on tbl_funcionario.id_funcionario = tbl_servico_funcionario.id_funcionario
+        
+        inner join tbl_servico
+        on tbl_servico_funcionario.id_servico = tbl_servico.id_servico
+        
+        WHERE tbl_servico_funcionario.id_servico = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $idServico);
+
+        $stm->execute();
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public function getInformacoesFuncionario()
     {
         $sql = "SELECT tbl_funcionario.nome_funcionario, 
