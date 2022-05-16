@@ -797,7 +797,7 @@ class ModelEmpresa
 
     public function updateRedesSociais()
     {
-
+        // return $this->_nome_usuario_instagram;
         $sql = "UPDATE tbl_empresa SET
         nome_usuario_instagram = ?,
         link_facebook = ?
@@ -812,6 +812,19 @@ class ModelEmpresa
 
         if ($stm->execute()) {
             return "Dados alterados com sucesso!";
+        }
+    }
+    public function getRedesSociais()
+    {
+        $sql = "SELECT link_facebook, nome_usuario_instagram FROM tbl_empresa WHERE id_empresa =?";
+
+        $stm = $this->_conexao->prepare($sql);
+
+        $stm->bindvalue(1, $this->_id_empresa);
+
+
+        if ($stm->execute()) {
+            return $stm->fetchAll(\PDO::FETCH_ASSOC);
         }
     }
 }
