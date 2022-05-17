@@ -31,7 +31,8 @@ class ControllerAgendamentoConsumidor
 
         $this->_flag =  $_GET["acao"] ?? $this->_dados_requisicao->acao ?? $_POST["acao"] ?? null;
         $this->_id_servico =  $_GET["id_servico"] ?? $this->_dados_requisicao->id_servico ?? $_POST["id_servico"] ?? null;
-        
+
+
     }
 
     function router()
@@ -55,7 +56,11 @@ class ControllerAgendamentoConsumidor
                 break;
             
             case 'POST':
-                # code...
+
+                if ($this->_flag = "createAgendamento") {
+                    return $this->_model_agendamento->createAgendamento();
+                }
+
                 break;
 
             default:
