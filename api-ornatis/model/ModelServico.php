@@ -196,6 +196,12 @@ class ModelServico
 
     /************************************************************************/
 
+    public function getServicosPorCategoria()
+    {
+        $sql = "";
+
+    }
+
     public function getServicosEmpresaByCategoria()
     {
         $sql = "SELECT tbl_servico.nome_servico, 
