@@ -99,6 +99,49 @@ class ModelFuncionario
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    public function getFuncionariosDiaTrabalho($funcionarios)
+    {
+
+        foreach ($funcionarios as $funcionario) {
+
+            $this->_id_funcionario = $funcionario["id_funcionario"];
+
+            $sql = "SELECT hora_inicio, hora_termino, id_dia_semana, id_funcionario 
+                    FROM tbl_dia_trabalho 
+                    WHERE id_funcionario = ?";
+
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_id_funcionario);
+
+            $stm->execute();
+            $array[] = $stm->fetchAll(\PDO::FETCH_ASSOC);
+        }
+
+        return $array;
+    }
+
+    public function getAgendamentosFuncionario($funcionarios)
+    {
+        foreach ($funcionarios as $funcionario) {
+
+            $this->_id_funcionario = $funcionario["id_funcionario"];
+
+            $sql = "SELECT hora_inicio, hora_fim, data_agendamento, id_funcionario 
+                    FROM tbl_agendamento 
+                    WHERE id_funcionario = ? 
+                    AND confirmado != 1";
+
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_id_funcionario);
+
+            $stm->execute();
+            $array[] = $stm->fetchAll(\PDO::FETCH_ASSOC);
+        }
+
+        return $array;
+
+    }
+
     public function getInformacoesFuncionario()
     {
         $sql = "SELECT tbl_funcionario.nome_funcionario, 

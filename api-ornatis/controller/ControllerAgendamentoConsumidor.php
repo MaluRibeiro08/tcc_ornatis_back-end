@@ -12,6 +12,8 @@ class ControllerAgendamentoConsumidor
     private $_model_servico;
     private $_model_funcionario;
 
+    private $_array_funcionarios;
+
     private $_id_servico;
 
 
@@ -40,8 +42,12 @@ class ControllerAgendamentoConsumidor
                 
                 if ($this->_flag == "listarFuncionariosPorServico") {
 
-                    return $this->_model_funcionario->getFuncionariosPorServico($this->_id_servico);
-                
+                    $this->_array_funcionarios = $this->_model_funcionario->getFuncionariosPorServico($this->_id_servico);
+                    $dados_funcionario["dias_trabalho"] = $this->_model_funcionario->getFuncionariosDiaTrabalho($this->_array_funcionarios);
+                    $dados_funcionario["agendamentos"] = $this->_model_funcionario->getAgendamentosFuncionario($this->_array_funcionarios);
+
+                    return $dados_funcionario;
+
                 } elseif ($this->_flag == "listar") {
                     # code...
                 }
