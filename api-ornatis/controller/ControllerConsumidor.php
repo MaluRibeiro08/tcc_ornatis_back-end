@@ -45,7 +45,7 @@ class ControllerConsumidor
                     return $this->_model_servico->getServicoPorEspecialidade();
                 } elseif ($this->_flag == "buscarServico") {
                     return $this->_model_servico->getServicoPorPesquisa();
-                }
+                } 
 
                 break;
 

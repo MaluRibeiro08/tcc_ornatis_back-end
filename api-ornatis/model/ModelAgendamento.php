@@ -65,6 +65,36 @@ class ModelAgendamento
         $this->_conexao = $conexao;
     }
 
+    public function getAgendamentosConsumidor()
+    {
+        $sql = "SELECT tbl_agendamento.*,
+                tbl_funcionario.nome_funcionario,
+                tbl_forma_pagamento.forma_pagamento,
+                tbl_tipo_atendimento.tipo_atendimento,
+                tbl_servico.nome_servico
+                FROM tbl_agendamento 
+                
+                inner join tbl_funcionario
+                on tbl_agendamento.id_funcionario = tbl_funcionario.id_funcionario
+                
+                inner join tbl_forma_pagamento
+                on tbl_agendamento.id_forma_pagamento = tbl_forma_pagamento.id_forma_pagamento
+                
+                inner join tbl_tipo_atendimento
+                on tbl_agendamento.id_tipo_atendimento = tbl_tipo_atendimento.id_tipo_atendimento
+                
+                inner join tbl_servico
+                on tbl_agendamento.id_servico = tbl_servico.id_servico
+                
+                WHERE id_consumidor = ? AND confirmado = 0";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_consumidor);
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public function createAgendamento()
     {
         $sql = "INSERT INTO tbl_agendamento (data_agendamento, 
@@ -88,6 +118,5 @@ class ModelAgendamento
         } else {
             return "Erro ao cadastrar agendamento";
         }
-
     }
 }

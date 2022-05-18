@@ -49,8 +49,8 @@ class ControllerAgendamentoConsumidor
 
                     return $dados_funcionario;
 
-                } elseif ($this->_flag == "listar") {
-                    # code...
+                } elseif ($this->_flag == "listarAgendamentos") {
+                    return $this->_model_agendamento->getAgendamentosConsumidor();
                 }
 
                 break;
