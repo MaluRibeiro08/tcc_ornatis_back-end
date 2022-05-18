@@ -81,7 +81,6 @@ class ControllerAdmServico
                     } else {
 
                         $this->_id_servico = $this->_model_servico->createServico();
-                        $dados_servico["dados_servico"] = $this->_model_servico->addEspecialidadePartesCorpo($this->_id_servico);
 
                         $this->_array_funcionarios = $this->_dados_requisicao->funcionarios;
                         $dados_servico["dados_servico_funcionarios"] = $this->_model_servico->addFuncionariosServico($this->_array_funcionarios, $this->_id_servico);
@@ -117,8 +116,6 @@ class ControllerAdmServico
                         $this->_model_servico->removerFuncionarios();
                         $this->_array_funcionarios = $this->_dados_requisicao->funcionarios;
                         $dados_servico["dados_servico_funcionarios"] = $this->_model_servico->addFuncionariosServico($this->_array_funcionarios, $this->_id_servico);
-
-                        $dados_servico["dados_servico_especialidadePartesCorpo"] = $this->_model_servico->updateEspecialidadePartesCorpo();
 
                         $this->_model_servico->limparGeneros();
                         $this->_array_genero = $this->_dados_requisicao->generos;

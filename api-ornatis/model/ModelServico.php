@@ -100,25 +100,19 @@ class ModelServico
 
     public function getDetalhesServicoEspecialidade()
     {
-        $sql = "SELECT tbl_especialidade.id_especialidade, 
+        $sql = "SELECT tbl_servico.id_especialidade, 
+                tbl_servico.id_parte_corpo,
                 tbl_especialidade.nome_especialidade,
-                tbl_partes_corpo.id_parte_corpo,
                 tbl_partes_corpo.nome_parte_corpo
-                FROM tbl_especialidade
+                FROM tbl_servico
                 
-                inner join tbl_especialidade_partes_corpo
-                on tbl_especialidade.id_especialidade = tbl_especialidade_partes_corpo.id_especialidade
+                inner join tbl_especialidade
+                on tbl_servico.id_especialidade = tbl_especialidade.id_especialidade
                 
-                inner join tbl_partes_corpo
-                on tbl_especialidade_partes_corpo.id_parte_corpo = tbl_partes_corpo.id_parte_corpo
+                inner join tbl_partes_corpo 
+                on tbl_servico.id_parte_corpo = tbl_partes_corpo.id_parte_corpo
                 
-                inner join tbl_servico_especialidade_partesCorpo
-                on tbl_especialidade_partes_corpo.id_especialidade_partes_corpo = tbl_servico_especialidade_partesCorpo.id_especialidade_partes_corpo
-                
-                inner join tbl_servico
-                on tbl_servico_especialidade_partesCorpo.id_servico = tbl_servico.id_servico
-                
-                WHERE tbl_servico.id_servico = ?";
+                where id_servico = ?";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_servico);
@@ -199,7 +193,6 @@ class ModelServico
     public function getServicosPorCategoria()
     {
         $sql = "";
-
     }
 
     public function getServicosEmpresaByCategoria()
@@ -265,8 +258,10 @@ class ModelServico
     public function createServico()
     {
 
-        $sql = "INSERT INTO tbl_servico (nome_servico, tempo_duracao, desconto, intervalo, preco, detalhes, id_empresa, ativo_para_uso)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO tbl_servico (nome_servico, tempo_duracao, desconto, 
+        intervalo, preco, detalhes, id_empresa, ativo_para_uso, id_especialidade, 
+        id_parte_corpo)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stm = $this->_conexao->prepare($sql);
 
@@ -278,42 +273,13 @@ class ModelServico
         $stm->bindvalue(6, $this->_detalhes);
         $stm->bindvalue(7, $this->_id_empresa);
         $stm->bindvalue(8, $this->_ativo_para_uso);
+        $stm->bindvalue(9, $this->_id_especialidade);
+        $stm->bindvalue(10, $this->_id_parte_corpo);
 
         if ($stm->execute()) {
             return $this->_conexao->lastInsertId();
         } else {
             return "Erro ao criar serviço";
-        }
-    }
-
-    public function addEspecialidadePartesCorpo($idServicoRecebido)
-    {
-
-        $this->_id_servico = $idServicoRecebido;
-
-        $sql = "SELECT id_especialidade_partes_corpo 
-        from tbl_especialidade_partes_corpo 
-        WHERE id_especialidade = ? AND id_parte_corpo = ?";
-
-        $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_id_especialidade);
-        $stm->bindValue(2, $this->_id_parte_corpo);
-        $stm->execute();
-
-        $id = $stm->fetchAll(\PDO::FETCH_ASSOC);
-
-        $idEspecialidadePartesCorpo = $id[0]["id_especialidade_partes_corpo"];
-
-        $sql = "INSERT INTO tbl_servico_especialidade_partesCorpo (id_servico, id_especialidade_partes_corpo)
-        VALUES (?, ?)";
-
-        $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_id_servico);
-        $stm->bindValue(2, $idEspecialidadePartesCorpo);
-        if ($stm->execute()) {
-            return "Success";
-        } else {
-            return "Erro ao criar serviço - addEspecialidadePartesCorpo";
         }
     }
 
@@ -488,7 +454,9 @@ class ModelServico
             intervalo = ?,
             preco = ?,
             detalhes = ?,
-            ativo_para_uso = ?
+            ativo_para_uso = ?,
+            id_especialidade = ?,
+            id_parte_corpo = ?
             WHERE id_servico = ?";
 
             $stm = $this->_conexao->prepare($sql);
@@ -500,7 +468,10 @@ class ModelServico
             $stm->bindvalue(5, $this->_preco);
             $stm->bindvalue(6, $this->_detalhes);
             $stm->bindvalue(7, $this->_ativo_para_uso);
-            $stm->bindvalue(8, $this->_id_servico);
+            $stm->bindvalue(8, $this->_id_especialidade);
+            $stm->bindvalue(9, $this->_id_parte_corpo);
+            $stm->bindvalue(10, $this->_id_servico);
+
 
             if ($stm->execute()) {
                 return "Success";
@@ -508,33 +479,4 @@ class ModelServico
         }
     }
 
-    public function updateEspecialidadePartesCorpo()
-    {
-
-        $sql = "SELECT id_especialidade_partes_corpo 
-        from tbl_especialidade_partes_corpo 
-        WHERE id_especialidade = ? AND id_parte_corpo = ?";
-
-        $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_id_especialidade);
-        $stm->bindValue(2, $this->_id_parte_corpo);
-        $stm->execute();
-
-        $id = $stm->fetchAll(\PDO::FETCH_ASSOC);
-
-        $idEspecialidadePartesCorpo = $id[0]["id_especialidade_partes_corpo"];
-
-        $sql = "UPDATE tbl_servico_especialidade_partesCorpo SET 
-        id_especialidade_partes_corpo = ?
-        WHERE id_servico = ?";
-
-        $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $idEspecialidadePartesCorpo);
-        $stm->bindValue(2, $this->_id_servico);
-        if ($stm->execute()) {
-            return "Success";
-        } else {
-            return "Erro ao atualizar - updateEspecialidadePartesCorpo";
-        }
-    }
 }
