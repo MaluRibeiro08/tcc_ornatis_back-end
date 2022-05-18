@@ -67,11 +67,42 @@ class ModelAgendamento
 
     public function getAgendamentosConsumidor()
     {
+        $sql = "SELECT tbl_agendamento.data_agendamento, 
+        tbl_agendamento.hora_inicio,
+        tbl_servico.nome_servico,
+        tbl_servico.preco,
+        tbl_empresa.nome_fantasia
+        FROM tbl_agendamento
+        
+        inner join tbl_servico 
+        on tbl_agendamento.id_servico = tbl_servico.id_servico
+        
+        inner join tbl_funcionario
+        on tbl_agendamento.id_funcionario = tbl_funcionario.id_funcionario
+        
+        inner join tbl_empresa
+        on tbl_funcionario.id_empresa = tbl_empresa.id_empresa
+        
+        WHERE id_consumidor = ? AND confirmado = 0 ";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_consumidor);
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+        
+    }
+
+    public function getDetalhesAgendamentosConsumidor()
+    {
         $sql = "SELECT tbl_agendamento.*,
                 tbl_funcionario.nome_funcionario,
                 tbl_forma_pagamento.forma_pagamento,
                 tbl_tipo_atendimento.tipo_atendimento,
-                tbl_servico.nome_servico
+                tbl_servico.nome_servico,
+                tbl_empresa.nome_fantasia,
+                tbl_endereco_salao.rua,
+                tbl_endereco_salao.numero
                 FROM tbl_agendamento 
                 
                 inner join tbl_funcionario
@@ -85,6 +116,12 @@ class ModelAgendamento
                 
                 inner join tbl_servico
                 on tbl_agendamento.id_servico = tbl_servico.id_servico
+                
+                inner join tbl_empresa
+                on tbl_funcionario.id_empresa = tbl_empresa.id_empresa
+                
+                inner join tbl_endereco_salao
+                on tbl_empresa.id_empresa = tbl_endereco_salao.id_empresa
                 
                 WHERE id_consumidor = ? AND confirmado = 0";
 
