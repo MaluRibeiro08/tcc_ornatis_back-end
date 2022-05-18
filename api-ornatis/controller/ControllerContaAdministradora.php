@@ -211,6 +211,8 @@ class ControllerContaAdministradora
 
                     $redesSociais = $this->_model_empresa->updateRedesSociais();
                     return $redesSociais;
+                } elseif ($this->_flag == "adicionarImagemSalao") {
+                    return $this->_model_empresa->createImagensEstabelecimento();
                 }
                 else
                 {

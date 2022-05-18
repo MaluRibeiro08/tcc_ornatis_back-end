@@ -9,7 +9,7 @@ class ModelEmpresa
 
     // ATRIBUTOS DE EMPRESA 
     private $_id_empresa;
-    
+
     private $_biografia;
     private $_imagem_perfil;
     private $_telefone;
@@ -131,7 +131,6 @@ class ModelEmpresa
 
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
-
 
     public function getInformacoesEmpresa()
     {
@@ -380,9 +379,22 @@ class ModelEmpresa
         }
     }
 
+    public function getRedesSociais()
+    {
+        $sql = "SELECT link_facebook, nome_usuario_instagram FROM tbl_empresa WHERE id_empresa =?";
 
-    // CREATE CONTA ADM
+        $stm = $this->_conexao->prepare($sql);
 
+        $stm->bindvalue(1, $this->_id_empresa);
+
+
+        if ($stm->execute()) {
+            return $stm->fetchAll(\PDO::FETCH_ASSOC);
+        }
+    }
+
+
+    // ** CREATE **
     public function createEmpresa()
     {
 
@@ -514,7 +526,6 @@ class ModelEmpresa
         return "Success";
     }
 
-
     public function createTaxasCancelamento($taxasCancelamento, $idEmpresaRecebido)
     {
         // return $taxasCancelamento[0];
@@ -541,27 +552,37 @@ class ModelEmpresa
         return "Success";
     }
 
-
-    public function createImagensEstabelecimento($imagens, $idEmpresaRecebido)
+    public function createImagensEstabelecimento()
     {
-        foreach ($imagens as $imagem) {
+        $envio_form = $_POST["envio_form"];
 
-            $this->_imagem_salao = $imagem["imagem_salao"];
+        if ($envio_form == "true") {
 
-            $sql = "INSERT INTO tbl_imagem_espaco_salao (imagem_salao, id_empresa)
-            VALUES (?, ?)";
+            if ($_FILES["imagem_salao"]["error"] != 4) {
+                
+                $nomeArquivo = $_FILES["imagem_salao"]["name"];
 
-            $stm = $this->_conexao->prepare($sql);
-            $stm->bindValue(1, $this->_imagem_salao);
-            $stm->bindValue(2, $idEmpresaRecebido);
-            $stm->execute();
+                $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
+                $novoNomeArquivo = md5(microtime()) . ".$extensao";
+
+                move_uploaded_file($_FILES["imagem_salao"]["tmp_name"], "../../../upload/imagens_salao/$novoNomeArquivo");
+
+                $sql = "INSERT INTO tbl_imagem_espaco_salao (imagem_salao, id_empresa)
+                VALUES (?, ?)";
+
+                $stm = $this->_conexao->prepare($sql);
+
+                $stm->bindvalue(1, $novoNomeArquivo);
+                $stm->bindvalue(2, $this->_id_empresa);
+
+                $stm->execute();
+
+                return "imagem do salao salva com sucesso!";
+            }
         }
-
-        return "Success";
     }
 
-    /** DELETE **/
-
+    // ** DELETE **
     public function limparFuncionamento($idEmpresaRecebido)
     {
         $sql = "DELETE FROM tbl_dia_funcionamento WHERE id_empresa = ?";
@@ -579,7 +600,6 @@ class ModelEmpresa
         $stm->bindValue(1, $idEmpresaRecebido);
         $stm->execute();
     }
-
 
     public function limparTaxasCancelamento($idEmpresaRecebido)
     {
@@ -601,12 +621,9 @@ class ModelEmpresa
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_empresa);
-        if($stm->execute())
-        {
+        if ($stm->execute()) {
             return "sucess";
-        }
-        else
-        {
+        } else {
             return "Erro na execução da execução";
         }
     }
@@ -625,9 +642,7 @@ class ModelEmpresa
         $stm->execute();
     }
 
-    /** UPDATE CONTA ADM **/
-
-
+    //** UPDATE **
     public function updateEmpresa($idEmpresaRecebido)
     {
 
@@ -652,10 +667,8 @@ class ModelEmpresa
                     $empresa = $stm->fetchAll(\PDO::FETCH_ASSOC);
 
                     //exclusão da imagem antiga se tiver
-                    if (isset($empresa[0]["imagem_perfil_salao"]))
-                    {
-                        if($empresa[0]["imagem_perfil_salao"] != null)
-                        {
+                    if (isset($empresa[0]["imagem_perfil_salao"])) {
+                        if ($empresa[0]["imagem_perfil_salao"] != null) {
                             unlink("../../../upload/imagem_perfil_salao/" . $empresa[0]["imagem_perfil_salao"]);
                         }
                     }
@@ -714,7 +727,6 @@ class ModelEmpresa
         }
     }
 
-
     public function updateEnderecoEmpresa($idEmpresaRecebido)
     {
 
@@ -739,35 +751,6 @@ class ModelEmpresa
             return "Dados alterados com sucesso!";
         }
     }
-
-    // public function updateFuncionamento($funcionamento, $idEmpresaRecebido)
-    // {
-
-    //     /* estrutura array - dados_funcionamento->id (id_dia_semana)->hora_inicio, hora_termino */
-
-    //     foreach ($funcionamento as $diaFuncionamento) {
-
-    //         //recebendo valores dos atributos
-    //         $this->_id_dia_semana = $diaFuncionamento->id_dia_semana;
-    //         $this->_hora_inicio = $diaFuncionamento->hora_inicio;
-    //         $this->_hora_termino = $diaFuncionamento->hora_termino;
-
-    //         $sql = "UPDATE tbl_dia_funcionamento SET
-    //         hora_inicio = ?,
-    //         hora_termino = ?
-    //         WHERE id_dia_semana = ? AND id_empresa = ?";
-
-    //         $stm = $this->_conexao->prepare($sql);
-    //         $stm->bindValue(1, $this->_hora_inicio);
-    //         $stm->bindValue(2, $this->_hora_termino);
-    //         $stm->bindValue(3, $this->_id_dia_semana);
-    //         $stm->bindValue(4, $idEmpresaRecebido);
-    //         $stm->execute();
-    //     }
-
-    //     return "Dados alterados com sucesso!";
-
-    // }
 
     public function updateTaxasCancelamento($taxasCancelamento, $idEmpresaRecebido)
     {
@@ -794,7 +777,6 @@ class ModelEmpresa
         return "Dados alterados com sucesso!";
     }
 
-
     public function updateRedesSociais()
     {
         // return $this->_nome_usuario_instagram;
@@ -812,19 +794,6 @@ class ModelEmpresa
 
         if ($stm->execute()) {
             return "Dados alterados com sucesso!";
-        }
-    }
-    public function getRedesSociais()
-    {
-        $sql = "SELECT link_facebook, nome_usuario_instagram FROM tbl_empresa WHERE id_empresa =?";
-
-        $stm = $this->_conexao->prepare($sql);
-
-        $stm->bindvalue(1, $this->_id_empresa);
-
-
-        if ($stm->execute()) {
-            return $stm->fetchAll(\PDO::FETCH_ASSOC);
         }
     }
 }
