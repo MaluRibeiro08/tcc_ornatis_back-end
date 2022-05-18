@@ -27,6 +27,8 @@ class ModelServico
     private $_detalhes;
     private $_ativo_para_uso;
 
+    private $_pesquisa_servico;
+
     public function __construct($conexao)
     {
 
@@ -59,6 +61,7 @@ class ModelServico
                 $this->_detalhes = $_POST["detalhes"] ?? $this->_dados_servico->detalhes ?? null;
                 $this->_ativo_para_uso = $_POST["ativo_para_uso"] ?? $this->_dados_servico->ativo_para_uso ?? null;
 
+
                 break;
 
             default:
@@ -71,6 +74,7 @@ class ModelServico
                 $this->_id_especialidade = $_GET["id_especialidade"] ?? $this->_dados_servico->id_especialidade ?? null;
                 $this->_id_parte_corpo = $_GET["id_parte_corpo"] ?? $this->_dados_servico->id_parte_corpo ?? null;
 
+                $this->_pesquisa_servico = $_GET["pesquisa_servico"] ?? null;
 
                 break;
         }
@@ -78,6 +82,34 @@ class ModelServico
         $this->_conexao = $conexao;
     }
 
+    // ** FILTROS **
+    public function getServicoPorEspecialidade()
+    {
+        $sql = "SELECT * FROM tbl_servico WHERE id_especialidade = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_especialidade);
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+    }
+
+    public function getServicoPorPesquisa()
+    {
+        $sql = "SELECT tbl_servico.nome_servico, tbl_servico.id_servico 
+                FROM tbl_servico 
+                WHERE locate(?, nome_servico)";
+        
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_pesquisa_servico);
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+    }
+
+    // ** DETALHES DE SERVIÇO **
     public function getDetalhesServico()
     {
         $sql = "SELECT tbl_servico.nome_servico,
@@ -188,13 +220,6 @@ class ModelServico
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    /************************************************************************/
-
-    public function getServicosPorCategoria()
-    {
-        $sql = "";
-    }
-
     public function getServicosEmpresaByCategoria()
     {
         $sql = "SELECT tbl_servico.nome_servico, 
@@ -222,6 +247,7 @@ class ModelServico
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    //** GET DOS CAMPOS **
     public function getEspecialidades()
     {
         $sql = "SELECT * from tbl_especialidade";
@@ -254,7 +280,7 @@ class ModelServico
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    /** CREATE **/
+    //** CREATE **
     public function createServico()
     {
 
@@ -343,7 +369,7 @@ class ModelServico
         return "Success";
     }
 
-    /** DELETES - DESABILITAR **/
+    //** DELETES - DESABILITAR **
 
     public function desabilitarServico()
     {
@@ -389,7 +415,7 @@ class ModelServico
     }
 
 
-    /** UPDATE **/
+    //** UPDATE **
 
     public function updateServico($idServicoRecebido)
     {

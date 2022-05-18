@@ -7,13 +7,15 @@ header("Content-Type: aplication/json");
 
 include("../../../Connection.php");
 include("../../../model/ModelConsumidor.php");
+include("../../../model/ModelServico.php");
 include("../../../controller/ControllerConsumidor.php");
 
 $conexao = new Connection();
 
 $model_consumidor = new ModelConsumidor($conexao->returnConnection());
+$model_servico = new ModelServico($conexao->returnConnection());
 
-$controller = new ControllerConsumidor($model_consumidor);
+$controller = new ControllerConsumidor($model_consumidor, $model_servico);
 
 $dados = $controller->router();
  
