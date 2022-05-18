@@ -90,7 +90,7 @@ class ModelAgendamento
         $stm->execute();
 
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
-        
+
     }
 
     public function getDetalhesAgendamentosConsumidor()
@@ -123,10 +123,10 @@ class ModelAgendamento
                 inner join tbl_endereco_salao
                 on tbl_empresa.id_empresa = tbl_endereco_salao.id_empresa
                 
-                WHERE id_consumidor = ? AND confirmado = 0";
+                WHERE id_agendamento = ? AND confirmado = 0";
 
         $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_id_consumidor);
+        $stm->bindValue(1, $this->_id_agendamento);
         $stm->execute();
 
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
