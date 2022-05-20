@@ -220,7 +220,7 @@ class ModelServico
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function getServicosEmpresaByCategoria()
+    public function getServicosPorEmpresa()
     {
         $sql = "SELECT tbl_servico.nome_servico, 
                 tbl_servico.preco, 

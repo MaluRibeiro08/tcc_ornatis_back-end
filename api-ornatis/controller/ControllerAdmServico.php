@@ -44,9 +44,9 @@ class ControllerAdmServico
                 } elseif ($this->_id_empresa != null && $this->_flag == "listarEspecialidadePartesCorpo") {
 
                     return $this->_model_servico->getEspecialidadesPartesCorpo();
-                } elseif ($this->_id_empresa != null && $this->_flag == "listarCategoriaServicos") {
+                } elseif ($this->_id_empresa != null && $this->_flag == "listarServicosPorEmpresa") {
 
-                    return $this->_model_servico->getServicosEmpresaByCategoria();
+                    return $this->_model_servico->getServicosPorEmpresa();
                 } elseif ($this->_id_empresa != null && $this->_flag == "listarDetalhesServico") {
 
                     $dados_servico["dados_servico"] = $this->_model_servico->getDetalhesServico();
