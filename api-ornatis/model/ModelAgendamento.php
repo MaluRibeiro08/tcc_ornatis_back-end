@@ -90,7 +90,7 @@ class ModelAgendamento
         inner join tbl_empresa
         on tbl_funcionario.id_empresa = tbl_empresa.id_empresa
         
-        WHERE id_consumidor = ? AND confirmado = 0 ";
+        WHERE id_consumidor = ? AND confirmado = 0 AND cancelado = 0";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_consumidor);
@@ -128,7 +128,8 @@ class ModelAgendamento
                 on tbl_agendamento.id_forma_pagamento = tbl_forma_pagamento.id_forma_pagamento
                 
                 WHERE tbl_funcionario.id_empresa = ? 
-                AND tbl_agendamento.confirmado = 0";
+                AND tbl_agendamento.confirmado = 0
+                AND tbl_agendamento.cancelado = 0";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_empresa);
@@ -149,7 +150,8 @@ class ModelAgendamento
                 on tbl_agendamento.id_funcionario = tbl_funcionario.id_funcionario
                 
                 WHERE tbl_funcionario.id_empresa = ? 
-                AND tbl_agendamento.confirmado = 0";
+                AND tbl_agendamento.confirmado = 0
+                AND tbl_agendamento.cancelado = 0";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_empresa);
@@ -275,13 +277,21 @@ class ModelAgendamento
         $stm->bindValue(1, $this->_data_cancelamento);
         $stm->bindValue(2, $this->_hora_cancelamento);
         $stm->bindValue(3, $this->_id_agendamento);
+        $stm->execute();
+
+        $sql = "UPDATE tbl_agendamento SET
+        cancelado = 1
+        WHERE id_agendamento = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_agendamento);
+        $stm->execute();
+
 
         if ($stm->execute()) {
             return "Success";
         } else {
             return "Erro ao cadastrar agendamento";
         }
-
     }
 }
-

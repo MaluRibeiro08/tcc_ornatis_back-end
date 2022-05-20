@@ -44,7 +44,7 @@ class ControllerAgendamentoAdm
             case 'DELETE':
                 
                 if ($this->_flag == "cancelarAgendamento") {
-                    return $this->_model_agendamento;
+                    return $this->_model_agendamento->cancelarAgendamento();
                 }
 
                 break;
