@@ -10,6 +10,7 @@ class ModelAgendamento
 
     private $_id_agendamento;
 
+    private $_id_empresa;
     private $_id_forma_pagamento;
     private $_id_tipo_atendimento;
     private $_id_funcionario;
@@ -45,6 +46,7 @@ class ModelAgendamento
                 $this->_observacoes = $_POST["observacoes"] ?? $this->_dados_agendamento->observacoes ?? null;
                 $this->_confirmado = $_POST["confirmado"] ?? $this->_dados_agendamento->confirmado ?? null;
 
+                $this->_id_empresa = $_POST["id_empresa"] ?? $this->_dados_agendamento->id_empresa ?? null;
                 $this->_id_consumidor = $_POST["id_consumidor"] ?? $this->_dados_agendamento->id_consumidor ?? null;
                 $this->_id_forma_pagamento = $_POST["id_forma_pagamento"] ?? $this->_dados_agendamento->id_forma_pagamento ?? null;
                 $this->_id_tipo_atendimento = $_POST["id_tipo_atendimento"] ?? $this->_dados_agendamento->id_tipo_atendimento ?? null;
@@ -57,6 +59,7 @@ class ModelAgendamento
 
                 $this->_id_agendamento = $_GET["id_agendamento"] ?? $this->_dados_agendamento->id_agendamento ?? null;
 
+                $this->_id_empresa = $_GET["id_empresa"] ?? $this->_dados_agendamento->id_empre_id_empresa ?? null;
                 $this->_id_consumidor = $_GET["id_consumidor"] ?? $this->_dados_agendamento->id_consumidor ?? null;
                 $this->_id_forma_pagamento = $_GET["id_forma_pagamento"] ?? $this->_dados_agendamento->id_forma_pagamento ?? null;
                 $this->_id_tipo_atendimento = $_GET["id_tipo_atendimento"] ?? $this->_dados_agendamento->id_tipo_atendimento ?? null;
