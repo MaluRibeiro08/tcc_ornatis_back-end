@@ -65,6 +65,13 @@ class ControllerAgendamentoConsumidor
 
                 break;
 
+            case 'DELETE':
+                
+                if ($this->_flag == "cancelarAgendamento") {
+                    return $this->_model_agendamento->cancelarAgendamento();
+                }
+
+                break;
             default:
                 # code...
                 break;

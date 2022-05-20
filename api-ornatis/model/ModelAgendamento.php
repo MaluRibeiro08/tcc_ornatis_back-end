@@ -24,6 +24,10 @@ class ModelAgendamento
     private $_observacoes;
     private $_confirmado;
 
+    private $_data_cancelamento;
+    private $_hora_cancelamento;
+
+
     public function __construct($conexao)
     {
 
@@ -90,7 +94,6 @@ class ModelAgendamento
         $stm->execute();
 
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
-
     }
 
     public function getDetalhesAgendamentosConsumidor()
@@ -155,5 +158,30 @@ class ModelAgendamento
         } else {
             return "Erro ao cadastrar agendamento";
         }
+    }
+
+    public function cancelarAgendamento()
+    {
+        $dateformat = "Y-m-d";
+        $this->_data_cancelamento = date($dateformat);
+
+        date_default_timezone_set('America/Sao_Paulo');
+        $timeformat = "H:i";
+        $this->_hora_cancelamento = date($timeformat);
+
+        $sql = "INSERT INTO tbl_cancelamento (data_cancelamento, hora_cancelamento, id_agendamento)
+        VALUES (?, ?, ?)";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_data_cancelamento);
+        $stm->bindValue(2, $this->_hora_cancelamento);
+        $stm->bindValue(3, $this->_id_agendamento);
+
+        if ($stm->execute()) {
+            return "Success";
+        } else {
+            return "Erro ao cadastrar agendamento";
+        }
+
     }
 }
