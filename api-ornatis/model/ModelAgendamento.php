@@ -99,6 +99,102 @@ class ModelAgendamento
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    public function getAgendamentoAdm()
+    {
+        $sql = "SELECT tbl_agendamento.id_agendamento,
+                tbl_agendamento.data_agendamento,
+                tbl_agendamento.hora_inicio,
+                tbl_agendamento.hora_fim,
+                tbl_agendamento.observacoes,
+                tbl_agendamento.id_tipo_atendimento,
+                tbl_servico.nome_servico,
+                tbl_consumidor.nome_consumidor,
+                tbl_consumidor.telefone,
+                tbl_funcionario.nome_funcionario,
+                tbl_forma_pagamento.forma_pagamento
+                
+                FROM tbl_agendamento
+                
+                inner join tbl_servico
+                on tbl_agendamento.id_servico = tbl_servico.id_servico
+                
+                inner join tbl_consumidor
+                on tbl_agendamento.id_consumidor = tbl_consumidor.id_consumidor
+                
+                inner join tbl_funcionario
+                on tbl_agendamento.id_funcionario = tbl_funcionario.id_funcionario
+                
+                inner join tbl_forma_pagamento
+                on tbl_agendamento.id_forma_pagamento = tbl_forma_pagamento.id_forma_pagamento
+                
+                WHERE tbl_funcionario.id_empresa = ? 
+                AND tbl_agendamento.confirmado = 0";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getAgendamentosCalendario()
+    {
+        $sql = "SELECT tbl_agendamento.id_agendamento,
+                tbl_agendamento.data_agendamento, 
+                tbl_agendamento.hora_inicio,
+                tbl_agendamento.hora_fim
+                FROM tbl_agendamento
+                
+                inner join tbl_funcionario
+                on tbl_agendamento.id_funcionario = tbl_funcionario.id_funcionario
+                
+                WHERE tbl_funcionario.id_empresa = ? 
+                AND tbl_agendamento.confirmado = 0";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getAgendamentoPorId()
+    {
+        $sql = "SELECT tbl_agendamento.id_agendamento,
+                tbl_agendamento.data_agendamento,
+                tbl_agendamento.hora_inicio,
+                tbl_agendamento.hora_fim,
+                tbl_agendamento.observacoes,
+                tbl_agendamento.id_tipo_atendimento,
+                tbl_servico.nome_servico,
+                tbl_consumidor.nome_consumidor,
+                tbl_consumidor.telefone,
+                tbl_funcionario.nome_funcionario,
+                tbl_forma_pagamento.forma_pagamento
+                
+                FROM tbl_agendamento
+                
+                inner join tbl_servico
+                on tbl_agendamento.id_servico = tbl_servico.id_servico
+                
+                inner join tbl_consumidor
+                on tbl_agendamento.id_consumidor = tbl_consumidor.id_consumidor
+                
+                inner join tbl_funcionario
+                on tbl_agendamento.id_funcionario = tbl_funcionario.id_funcionario
+                
+                inner join tbl_forma_pagamento
+                on tbl_agendamento.id_forma_pagamento = tbl_forma_pagamento.id_forma_pagamento
+                
+                WHERE tbl_agendamento.id_agendamento = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_agendamento);
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public function getDetalhesAgendamentosConsumidor()
     {
         $sql = "SELECT tbl_agendamento.*,
@@ -188,3 +284,4 @@ class ModelAgendamento
 
     }
 }
+
