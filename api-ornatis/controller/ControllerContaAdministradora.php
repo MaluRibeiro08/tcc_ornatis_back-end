@@ -213,6 +213,8 @@ class ControllerContaAdministradora
                     return $redesSociais;
                 } elseif ($this->_flag == "adicionarImagemSalao") {
                     return $this->_model_empresa->createImagensEstabelecimento();
+                } elseif ($this->_flag == "loginAdm") {
+                    return $this->_model_admin->login();
                 }
                 else
                 {

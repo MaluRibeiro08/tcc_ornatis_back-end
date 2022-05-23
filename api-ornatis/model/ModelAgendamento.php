@@ -193,7 +193,7 @@ class ModelAgendamento
                 AND tbl_agendamento.cancelado = 0";
 
         $stm = $this->_conexao->prepare($sql);
-        $stm->bindValue(1, $this->_id_funcionario);
+        $stm->bindValue(1, $this->_id_empresa);
         $stm->execute();
 
         return $stm->fetchAll(\PDO::FETCH_ASSOC);

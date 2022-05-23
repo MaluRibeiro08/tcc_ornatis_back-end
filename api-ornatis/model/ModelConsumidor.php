@@ -21,6 +21,8 @@ class ModelConsumidor
     private $_email_consumidor;
     private $_senha_consumidor;
 
+    private $_token;
+
     public function __construct($conexao)
     {
         $this->_method = $_SERVER['REQUEST_METHOD'];
@@ -117,13 +119,15 @@ class ModelConsumidor
 
             $this->_id_consumidor = $this->_conexao->lastInsertId();
 
+            $hash = password_hash($this->_senha_consumidor, PASSWORD_DEFAULT);
+
             $sql = "INSERT INTO tbl_login_consumidor (id_consumidor, email_consumidor, senha_consumidor)
             VALUES (?, ?, ?)";
 
             $stm = $this->_conexao->prepare($sql);
             $stm->bindValue(1, $this->_id_consumidor);
             $stm->bindValue(2, $this->_email_consumidor);
-            $stm->bindValue(3, $this->_senha_consumidor);
+            $stm->bindValue(3, $hash);
 
             if ($stm->execute()) {
                 return $this->_id_consumidor;
@@ -259,5 +263,32 @@ class ModelConsumidor
                 return "Email já cadastrado";
             }
         }
+    }
+
+    public function login()
+    {
+        // $this->_token = $_SERVER["UNIQUE_ID"];
+        // return $this->_token;
+
+        $sql = "SELECT * FROM tbl_login_consumidor WHERE email_consumidor = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_email_consumidor);
+        $stm->execute();
+
+        $login = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+        if ($login == []) {
+            return "Email não cadastrado";
+        } else {
+            if (password_verify($this->_senha_consumidor, $login[0]["senha_consumidor"])) {
+                return "Senha correta";
+            } else {
+                return "Email ou senha incorretos";
+            }
+        }
+
+        
+
     }
 }

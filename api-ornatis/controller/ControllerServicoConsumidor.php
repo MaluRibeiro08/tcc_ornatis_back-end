@@ -12,9 +12,6 @@ class ControllerServicoConsumidor
     private $_id_empresa;
 
     private $_dados_requisicao;
-    private $_array_funcionarios;
-    private $_array_genero;
-    private $_array_tipos_atendimento;
 
     public function __construct($model_servico)
     {
@@ -51,7 +48,11 @@ class ControllerServicoConsumidor
                     $dados_servico["dados_servico_tipo_atendimento"] = $this->_model_servico->getDetalhesServicoTipoAtendimento();
 
                     return $dados_servico;
-                }
+                } elseif ($this->_flag == "listarServicosPorEspecialidade") {
+                    return $this->_model_servico->getServicoPorEspecialidade();
+                } elseif ($this->_flag == "buscarServico") {
+                    return $this->_model_servico->getServicoPorPesquisa();
+                } 
 
                 break;
 

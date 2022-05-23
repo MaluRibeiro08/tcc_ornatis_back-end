@@ -8,12 +8,14 @@ class ControllerAgendamentoAdm
     private $_flag;
 
     private $_model_agendamento;
+    private $_model_empresa;
 
     private $_id_agendamento;
 
-    public function __construct($model_agendamento)
+    public function __construct($model_agendamento, $model_empresa)
     {
         $this->_model_agendamento = $model_agendamento;
+        $this->_model_empresa = $model_empresa;
 
         $this->_method = $_SERVER['REQUEST_METHOD'];
 
@@ -37,6 +39,8 @@ class ControllerAgendamentoAdm
                     return $this->_model_agendamento->getAgendamentosCalendario();
                 } elseif ($this->_flag == "listarAgendamentoPorId") {
                     return $this->_model_agendamento->getAgendamentoPorId();
+                } elseif ($this->_flag == "funcionamentoSalao") {
+                    return $this->_model_empresa->getFuncionamento();
                 }
 
                 break;

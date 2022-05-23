@@ -136,13 +136,15 @@ class ModelAdministrador
         $stm->execute();
         $this->_id_administrador = $this->_conexao->lastInsertId();
 
+        $hash = password_hash($this->_senha_adm, PASSWORD_DEFAULT);
+
         $sql = "INSERT INTO tbl_login_adm (email_adm, senha_adm, id_administrador)
         VALUES (?, ?, ?)";
 
         $stm = $this->_conexao->prepare($sql);
 
         $stm->bindValue(1, $this->_email_adm);
-        $stm->bindValue(2, $this->_senha_adm);
+        $stm->bindValue(2, $hash);
         $stm->bindValue(3, $this->_id_administrador);
 
         if ($stm->execute()) {
@@ -185,4 +187,24 @@ class ModelAdministrador
             return "Dados alterados com sucesso!";
         }
     }
+
+    public function login()
+    {
+        $sql = "SELECT * FROM tbl_login_adm WHERE email_adm = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_email_adm);
+        $stm->execute();
+
+        $login = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+        if (password_verify($this->_senha_adm, $login[0]["senha_adm"])) {
+            return "senha correta";
+        } else {
+            return "senha inválida";
+        }
+
+
+    }
+
 }

@@ -6,19 +6,18 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Content-Type: aplication/json");
 
 include("../../../Connection.php");
-include("../../../model/ModelEmpresa.php");
-include("../../../model/ModelAgendamento.php");
-include("../../../controller/ControllerAgendamentoAdm.php");
+include("../../../model/ModelFuncionario.php");
+include("../../../controller/ControllerFuncionario.php");
 
 $conexao = new Connection();
 
-$model_empresa = new ModelEmpresa($conexao->returnConnection());
-$model_agendamento = new ModelAgendamento($conexao->returnConnection());
+$model_funcionario = new ModelFuncionario($conexao->returnConnection());
 
-$controller = new ControllerAgendamentoAdm($model_agendamento, $model_empresa);
+$controller = new ControllerFuncionario($model_funcionario);
 
 $dados = $controller->router();
  
 echo json_encode(array("status"=>"Success","data"=>$dados));
+
 
 ?>

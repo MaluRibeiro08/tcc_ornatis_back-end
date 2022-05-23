@@ -9,16 +9,14 @@ class ControllerConsumidor
     private $_dados_requisicao;
 
     private $_model_consumidor;
-    private $_model_servico;
 
     private $_id_consumidor;
 
     private $_id_especialidade;
 
-    public function __construct($model_consumidor, $model_servico)
+    public function __construct($model_consumidor)
     {
         $this->_model_consumidor = $model_consumidor;
-        $this->_model_servico = $model_servico;
 
         $this->_method = $_SERVER['REQUEST_METHOD'];
 
@@ -41,10 +39,6 @@ class ControllerConsumidor
                     return $this->_model_consumidor->getCoresCabelo();
                 } elseif ($this->_flag == "listarGeneros") {
                     return $this->_model_consumidor->getGeneros();
-                } elseif ($this->_flag == "listarServicosPorEspecialidade") {
-                    return $this->_model_servico->getServicoPorEspecialidade();
-                } elseif ($this->_flag == "buscarServico") {
-                    return $this->_model_servico->getServicoPorPesquisa();
                 } 
 
                 break;
@@ -88,6 +82,8 @@ class ControllerConsumidor
                     } else {
                         return $this->_model_consumidor->updateConsumidor($this->_id_consumidor);
                     }
+                } elseif ($this->_flag == "loginConsumidor") {
+                    return $this->_model_consumidor->login();
                 }
 
                 break;

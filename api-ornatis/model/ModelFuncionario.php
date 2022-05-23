@@ -43,7 +43,7 @@ class ModelFuncionario
                 $this->_id_empresa = $_POST["id_empresa"] ?? $this->_dados_funcionario->id_empresa ?? null;
 
                 //login
-                // $this->_cod_funcionario = $_POST["cod_funcionario"] ?? $this->_dados_funcionario->cod_funcionario;
+                $this->_cod_funcionario = $_POST["cod_funcionario"] ?? null;
                 $this->_senha = $_POST["senha"] ?? $this->_dados_funcionario->senha ?? null;
 
                 $this->_hora_inicio = $_POST["hora_inicio"] ?? $this->_dados_funcionario->hora_inicio ?? null;
@@ -139,7 +139,6 @@ class ModelFuncionario
         }
 
         return $array;
-
     }
 
     public function getInformacoesFuncionario()
@@ -205,40 +204,10 @@ class ModelFuncionario
         return $dias_trabalho;
     }
 
+    //** CREATE **
+
     public function createFuncionario()
     {
-
-        // if (isset($_POST["envio_form"])) {
-
-        //     $envio_form = $_POST["envio_form"];
-
-        //     if ($envio_form == "true") {
-        //         if ($_FILES["foto_perfil"]["error"] == 4) {
-        //             //não faz nada pq não veio img
-        //             return "estariamos fazendo nada porque não veio img";
-        //         } else {
-
-        //             $nomeArquivo = $_FILES["foto_perfil"]["name"];
-
-        //             $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
-        //             $novoNomeArquivo = md5(microtime()) . ".$extensao";
-
-        //             move_uploaded_file($_FILES["foto_perfil"]["tmp_name"], "../../../upload/imagem_perfil_salao/$novoNomeArquivo");
-
-        //             $sql = "INSERT INTO tbl_funcionario (foto_perfil) 
-        //             VALUES (?) 
-        //             WHERE id_funcionario = ?";
-
-        //             $stm = $this->_conexao->prepare($sql);
-
-        //             $stm->bindvalue(1, $novoNomeArquivo);
-        //             $stm->bindvalue(2, $this->_id_funcionario);
-
-        //             $stm->execute();
-        //         }
-        //     }
-        // } else {}
-
         $sql = "INSERT INTO tbl_funcionario (nome_funcionario, id_empresa)
             VALUES (?, ?)";
 
@@ -252,14 +221,35 @@ class ModelFuncionario
         $primeiroNomeFuncionario = strtok($this->_nome_funcionario, " ");
         $codigo = substr(uniqid(rand()), 0, 4);
 
+        //verificação
+        $sql = "SELECT cod_funcionario FROM tbl_login_funcionario";
+        $stm = $this->_conexao->prepare($sql);
+        $stm->execute();
+
+        $cod_funcionarios = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
         $this->_cod_funcionario = $primeiroNomeFuncionario . $codigo;
+
+        foreach ($cod_funcionarios as $cod_funcionario) {
+
+            if ($this->_cod_funcionario ==  $cod_funcionario["cod_funcionario"]) {
+
+                $primeiroNomeFuncionario = strtok($this->_nome_funcionario, " ");
+                $codigo = substr(uniqid(rand()), 0, 4);
+
+                $this->_cod_funcionario = $primeiroNomeFuncionario . $codigo;
+            }
+
+        }
+
+        $hash = password_hash($this->_senha, PASSWORD_DEFAULT);
 
         $sql = "INSERT INTO tbl_login_funcionario (cod_funcionario, senha, id_funcionario)
             VALUES (?, ?, ?)";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_cod_funcionario);
-        $stm->bindValue(2, $this->_senha);
+        $stm->bindValue(2, $hash);
         $stm->bindValue(3, $idFuncionario);
         $stm->execute();
 
@@ -292,7 +282,7 @@ class ModelFuncionario
         return "Success";
     }
 
-    //DELETE
+    //** DELETE **
 
     public function desabilitarFuncionario($idFuncionarioRecebido)
     {
@@ -321,7 +311,7 @@ class ModelFuncionario
         $stm->execute();
     }
 
-    //UPDATE
+    //** UPDATE **
 
     public function updateFuncionarioAdm()
     {
@@ -399,4 +389,27 @@ class ModelFuncionario
 
         return "Dados atualizados com sucesso!";
     }
+
+    public function login()
+    {
+        $sql = "SELECT * FROM tbl_login_funcionario WHERE cod_funcionario = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_cod_funcionario);
+        $stm->execute();
+
+        $login = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+        if ($login == []) {
+            return "Login incorreto";
+        } else {
+            if (password_verify($this->_senha, $login[0]["senha"])) {
+                return "Senha correta";
+            } else {
+                return "Login ou senha incorretos";
+            }
+        }
+
+    }
+
 }
