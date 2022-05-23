@@ -47,6 +47,9 @@ class ControllerAdmServico
                 } elseif ($this->_id_empresa != null && $this->_flag == "listarServicosPorEmpresa") {
 
                     return $this->_model_servico->getServicosPorEmpresa();
+                }elseif ($this->_flag == "listarPartesCorpo") {
+
+                    return $this->_model_servico->getPartesCorpo();
                 } elseif ($this->_id_empresa != null && $this->_flag == "listarDetalhesServico") {
 
                     $dados_servico["dados_servico"] = $this->_model_servico->getDetalhesServico();

@@ -280,6 +280,20 @@ class ModelServico
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    public function getPartesCorpo()
+    {
+        $sql = "SELECT 
+                tbl_partes_corpo.nome_parte_corpo, 
+                tbl_partes_corpo.id_parte_corpo 
+                FROM tbl_partes_corpo";
+
+        $stm = $this->_conexao->prepare($sql);
+
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     //** CREATE **
     public function createServico()
     {
