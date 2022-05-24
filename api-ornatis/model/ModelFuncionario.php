@@ -25,6 +25,8 @@ class ModelFuncionario
     private $_hora_termino;
     private $_id_dia_semana;
 
+    private $_token;
+
     public function __construct($conexao)
     {
 
@@ -392,6 +394,8 @@ class ModelFuncionario
 
     public function login()
     {
+        $this->_token = md5(uniqid(rand(), true));
+
         $sql = "SELECT * FROM tbl_login_funcionario WHERE cod_funcionario = ?";
 
         $stm = $this->_conexao->prepare($sql);
@@ -404,7 +408,7 @@ class ModelFuncionario
             return "Login incorreto";
         } else {
             if (password_verify($this->_senha, $login[0]["senha"])) {
-                return "Senha correta";
+                return $this->_token;
             } else {
                 return "Login ou senha incorretos";
             }

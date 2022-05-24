@@ -11,7 +11,6 @@ class ModelEmpresa
     private $_id_empresa;
 
     private $_biografia;
-    private $_imagem_perfil;
     private $_telefone;
     private $_nome_fantasia;
     private $_cnpj;

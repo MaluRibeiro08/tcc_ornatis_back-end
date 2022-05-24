@@ -267,8 +267,7 @@ class ModelConsumidor
 
     public function login()
     {
-        // $this->_token = $_SERVER["UNIQUE_ID"];
-        // return $this->_token;
+        $this->_token = md5(uniqid(rand(), true));
 
         $sql = "SELECT * FROM tbl_login_consumidor WHERE email_consumidor = ?";
 
@@ -282,7 +281,7 @@ class ModelConsumidor
             return "Email não cadastrado";
         } else {
             if (password_verify($this->_senha_consumidor, $login[0]["senha_consumidor"])) {
-                return "Senha correta";
+                return $this->_token;
             } else {
                 return "Email ou senha incorretos";
             }

@@ -211,10 +211,15 @@ class ControllerContaAdministradora
 
                     $redesSociais = $this->_model_empresa->updateRedesSociais();
                     return $redesSociais;
+
                 } elseif ($this->_flag == "adicionarImagemSalao") {
                     return $this->_model_empresa->createImagensEstabelecimento();
+
                 } elseif ($this->_flag == "loginAdm") {
                     return $this->_model_admin->login();
+
+                } elseif ($this->_flag == "recuperarSenha") {
+                    return $this->_model_admin->recuperarSenha();
                 }
                 else
                 {
