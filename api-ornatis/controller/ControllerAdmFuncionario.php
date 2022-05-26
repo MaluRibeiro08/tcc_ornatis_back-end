@@ -74,7 +74,6 @@ class ControllerAdmFuncionario
                     else
                     {
                         // return "Req fetch";
-                        return $this->_model_funcionario->createFuncionario();
                         $this->_id_funcionario = $this->_model_funcionario->createFuncionario();
 
                         $this->_array_dias_trabalho = $this->_dados_requisicao->dados_dia_trabalho;
