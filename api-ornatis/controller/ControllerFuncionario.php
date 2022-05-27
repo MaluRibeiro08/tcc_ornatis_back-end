@@ -30,6 +30,12 @@ class ControllerFuncionario
     {
 
         switch ($this->_method) {
+            case 'GET':
+                if ($this->_flag == "carregarCalendario") {
+                    return $this->_model_funcionario->getDiaTrabalho();
+                }
+                break;
+
             case 'POST':
                 if ($this->_flag == "loginFuncionario") {
                     return $this->_model_funcionario->login();

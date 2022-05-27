@@ -13,6 +13,8 @@ class ModelConsumidor
     private $_id_comprimento_cabelo;
     private $_id_tipo_cabelo;
 
+    private $_id_empresa;
+
     private $_nome_consumidor;
     private $_data_nascimento;
     private $_cpf_consumidor;
@@ -57,6 +59,8 @@ class ModelConsumidor
                 $this->_id_cor_cabelo = $_GET["id_cor_cabelo"] ?? $this->_dados_consumidor->id_cor_cabelo ?? null;
                 $this->_id_comprimento_cabelo = $_GET["id_comprimento_cabelo"] ?? $this->_dados_consumidor->id_comprimento_cabelo ?? null;
                 $this->_id_tipo_cabelo = $_GET["id_tipo_cabelo"] ?? $this->_dados_consumidor->id_tipo_cabelo ?? null;
+                
+                $this->_id_empresa = $_GET["id_empresa"] ?? $this->_dados_consumidor->id_empresa ?? null;
 
                 break;
         }

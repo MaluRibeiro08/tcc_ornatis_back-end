@@ -162,7 +162,6 @@ class ModelFuncionario
 
     public function getDiaTrabalho()
     {
-
         $sql = "SELECT tbl_dia_trabalho.hora_inicio, 
 		tbl_dia_trabalho.hora_termino, 
 		tbl_dia_semana.dia_da_semana,

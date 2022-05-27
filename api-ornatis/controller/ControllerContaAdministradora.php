@@ -89,8 +89,13 @@ class ControllerContaAdministradora
                 {
                     return $this->_model_empresa->getRedesSociais();
                     
-                } elseif ($this->_flag == "carregarFuncionamento") {
-                    return $this->_model_empresa->getFuncionamento();
+                } elseif ($this->_flag == "carregarInfoCalendario") {
+                    
+                    $dados_empresa["funcionamento"] = $this->_model_empresa->getFuncionamento();
+                    $dados_empresa["horario_trabalho_funcionario"] = $this->_model_empresa->getHorarioTrabalhoFuncionarios();
+
+                    return $dados_empresa;
+
                 } else {
                     return "Não foi possível realizar ação! Verifique as informações de requisição (ids, flags)";
                 };
@@ -221,10 +226,7 @@ class ControllerContaAdministradora
                 } elseif ($this->_flag == "loginAdm") {
                     return $this->_model_admin->login();
 
-                } elseif ($this->_flag == "recuperarSenha") {
-                    return $this->_model_admin->recuperarSenha();
-                }
-                else
+                } else
                 {
                     return 'chegou sem acao';
                 } 

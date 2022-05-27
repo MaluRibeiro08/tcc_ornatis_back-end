@@ -232,6 +232,30 @@ class ModelEmpresa
         return $dias_funcionamento;
     }
 
+    public function getHorarioTrabalhoFuncionarios()
+    {
+        $sql = "SELECT tbl_dia_trabalho.id_dia_semana,
+                tbl_dia_trabalho.hora_inicio,
+                tbl_dia_trabalho.hora_termino,
+                tbl_dia_trabalho.id_funcionario
+                FROM tbl_dia_trabalho
+                
+                inner join tbl_funcionario
+                on tbl_dia_trabalho.id_funcionario = tbl_funcionario.id_funcionario
+                
+                inner join tbl_empresa
+                on tbl_funcionario.id_empresa = tbl_empresa.id_empresa
+                
+                WHERE tbl_empresa.id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public function getInformacoesPagamento()
     {
         $sql = "SELECT 
@@ -558,7 +582,7 @@ class ModelEmpresa
         if ($envio_form == "true") {
 
             if ($_FILES["imagem_salao"]["error"] != 4) {
-                
+
                 $nomeArquivo = $_FILES["imagem_salao"]["name"];
 
                 $extensao = pathinfo($nomeArquivo, PATHINFO_EXTENSION);
