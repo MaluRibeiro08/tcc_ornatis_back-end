@@ -88,8 +88,11 @@ class ControllerContaAdministradora
                 else if($this->_id_empresa != null && $this->_flag == 'carregarRedesSociais') 
                 {
                     return $this->_model_empresa->getRedesSociais();
-                }else {
-                    return "Não foi possível realizar ação! Verifique as informações de requeisição (ids, flags)";
+                    
+                } elseif ($this->_flag == "carregarFuncionamento") {
+                    return $this->_model_empresa->getFuncionamento();
+                } else {
+                    return "Não foi possível realizar ação! Verifique as informações de requisição (ids, flags)";
                 };
 
                 break;

@@ -1,14 +1,5 @@
 <?php
 
-// require_once('../bibliotecas/PHPMailer/src/PHPMailer.php');
-// require_once('../bibliotecas/PHPMailer/src/SMTP.php');
-// require_once('../bibliotecas/PHPMailer/src/Exception.php');
-
-// use PHPMailer\PHPMailer\PHPMailer;
-// use PHPMailer\PHPMailer\SMTP;
-// use PHPMailer\PHPMailer\Exception;
-
-
 class ModelAdministrador
 {
 
@@ -217,36 +208,6 @@ class ModelAdministrador
 
     }
 
-    // public function recuperarSenha()
-    // {
-    //     $mail = new PHPMailer(true);
-
-    //     try {
-
-    //         $mail->SMTPDebug = SMTP::DEBUG_SERVER;
-    //         $mail->isSMTP();
-    //         $mail->Host = 'smtp.gmail.com';
-    //         $mail->SMTPAuth = true;
-    //         $mail->Username = 'lu.oliveira0505@gmail.com';
-    //         $mail->Password = 'bb8r2d2SW';
-    //         $mail->Port = 587;
-
-    //         $mail->setFrom('lu.oliveira0505@gmail.com');
-    //         $mail->addAddress('lu.oliveira0505@gmail.com');
-
-    //         $mail->Subject = 'Recuperação de senha - Plataforma Ornatis';
-    //         $mail->AltBody = 'Chegou email teste';
-
-    //         if ($mail->send()) {
-    //             return 'mail enviado';
-    //         } else {
-    //             return 'erro';
-    //         }
-
-    //     } catch (Exception $e) {
-    //         echo "Erro ao enviar: {$mail->ErrorInfo}";
-    //     }
-
-    // }
+   
 
 }
