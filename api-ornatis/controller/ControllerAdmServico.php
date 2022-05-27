@@ -94,7 +94,7 @@ class ControllerAdmServico
                         $this->_array_tipos_atendimento = $this->_dados_requisicao->tipos_atendimento;
                         $dados_servico["dados_servico_tipo_atendimento"] = $this->_model_servico->addTipoAtendimentoServico($this->_array_tipos_atendimento, $this->_id_servico);
 
-                        return $dados_servico;
+                        return $this->_id_servico;
                     }
                 } elseif ($this->_flag == "updateServico") {
 
@@ -144,7 +144,7 @@ class ControllerAdmServico
                 break;
 
             default:
-                # code...
+                return "Não foi possível entender sua solicitação. Verifique flags, ids e tente novamente!";
                 break;
         }
     }
