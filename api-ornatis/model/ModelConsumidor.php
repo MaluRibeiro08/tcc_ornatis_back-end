@@ -20,6 +20,13 @@ class ModelConsumidor
     private $_cpf_consumidor;
     private $_telefone;
 
+    private $_rua;
+    private $_bairro;
+    private $_numero;
+    private $_complemento;
+    private $_cep;
+    private $_id_cidade;
+
     private $_email_consumidor;
     private $_senha_consumidor;
 
@@ -42,6 +49,13 @@ class ModelConsumidor
                 $this->_cpf_consumidor = $_POST["cpf_consumidor"] ?? $this->_dados_consumidor->cpf_consumidor ?? null;
                 $this->_telefone = $_POST["telefone"] ?? $this->_dados_consumidor->telefone ?? null;
 
+                $this->_rua = $_POST["rua"] ?? $this->_dados_consumidor->rua ?? null;
+                $this->_bairro = $_POST["bairro"] ?? $this->_dados_consumidor->bairro ?? null;
+                $this->_numero = $_POST["numero"] ?? $this->_dados_consumidor->numero ?? null;
+                $this->_complemento = $_POST["complemento"] ?? $this->_dados_consumidor->complemento ?? null;
+                $this->_cep = $_POST["cep"] ?? $this->_dados_consumidor->cep ?? null;
+                $this->_id_cidade = $_POST["id_cidade"] ?? $this->_dados_consumidor->id_cidade ?? null;
+
                 $this->_email_consumidor = $_POST["email_consumidor"] ?? $this->_dados_consumidor->email_consumidor ?? null;
                 $this->_senha_consumidor = $_POST["senha_consumidor"] ?? $this->_dados_consumidor->senha_consumidor ?? null;
 
@@ -59,7 +73,9 @@ class ModelConsumidor
                 $this->_id_cor_cabelo = $_GET["id_cor_cabelo"] ?? $this->_dados_consumidor->id_cor_cabelo ?? null;
                 $this->_id_comprimento_cabelo = $_GET["id_comprimento_cabelo"] ?? $this->_dados_consumidor->id_comprimento_cabelo ?? null;
                 $this->_id_tipo_cabelo = $_GET["id_tipo_cabelo"] ?? $this->_dados_consumidor->id_tipo_cabelo ?? null;
-                
+
+                $this->_id_cidade = $_GET["id_cidade"] ?? $this->_dados_consumidor->id_cidade ?? null;
+
                 $this->_id_empresa = $_GET["id_empresa"] ?? $this->_dados_consumidor->id_empresa ?? null;
 
                 break;
@@ -106,6 +122,8 @@ class ModelConsumidor
 
         if ($emailValido) {
 
+            // insert para criar consumidor
+
             $sql = "INSERT INTO tbl_consumidor (nome_consumidor, data_nascimento, cpf_consumidor, 
             telefone, id_genero, id_cor_cabelo, id_tipo_cabelo, id_comprimento_cabelo) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -124,6 +142,22 @@ class ModelConsumidor
             $this->_id_consumidor = $this->_conexao->lastInsertId();
 
             $hash = password_hash($this->_senha_consumidor, PASSWORD_DEFAULT);
+
+            // insert de endereço
+            $sql = "INSERT INTO tbl_endereco_consumidor (bairro, rua, numero, cep,
+            complemento, id_cidade, id_consumidor) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_bairro);
+            $stm->bindValue(2, $this->_rua);
+            $stm->bindValue(3, $this->_numero);
+            $stm->bindValue(4, $this->_cep);
+            $stm->bindValue(5, $this->_complemento);
+            $stm->bindValue(6, $this->_id_cidade);
+            $stm->bindValue(7, $this->_id_consumidor);
+            $stm->execute();
+
+            // insert para criar login 
 
             $sql = "INSERT INTO tbl_login_consumidor (id_consumidor, email_consumidor, senha_consumidor)
             VALUES (?, ?, ?)";
@@ -290,8 +324,5 @@ class ModelConsumidor
                 return "Email ou senha incorretos";
             }
         }
-
-        
-
     }
 }
