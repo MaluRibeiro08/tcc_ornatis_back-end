@@ -131,6 +131,9 @@ class ControllerAdmServico
                         return $dados_servico;
                     }
                 }
+                elseif ($this->_flag == "setarDisponibilidadeServico") {
+                    return $this->_model_servico->setarDisponibilidadeServico();
+                }
 
                 break;
 

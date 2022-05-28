@@ -403,6 +403,23 @@ class ModelServico
         }
     }
 
+    public function setarDisponibilidadeServico()
+    {
+        
+        $sql = "UPDATE tbl_servico SET 
+        ativo_para_uso = ?
+        WHERE id_servico = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+
+        $stm->bindvalue(1, $this->_ativo_para_uso);
+        $stm->bindvalue(2, $this->_id_servico);
+
+        if ($stm->execute()) {
+            return "Success";
+        }
+    }
+
     public function removerFuncionarios()
     {
         $sql = "DELETE FROM tbl_servico_funcionario WHERE id_servico = ?";
