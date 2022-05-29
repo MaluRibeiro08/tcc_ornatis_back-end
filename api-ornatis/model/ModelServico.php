@@ -113,6 +113,7 @@ class ModelServico
     public function getDetalhesServico()
     {
         $sql = "SELECT tbl_servico.nome_servico,
+                tbl_servico.id_servico,
                 tbl_servico.preco,
                 tbl_servico.detalhes,
                 tbl_servico.desconto,
