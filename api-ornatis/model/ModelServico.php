@@ -114,6 +114,7 @@ class ModelServico
     {
         $sql = "SELECT tbl_servico.nome_servico,
                 tbl_servico.preco,
+                tbl_servico.detalhes,
                 tbl_servico.desconto,
                 tbl_servico.tempo_duracao,
                 tbl_servico.habilitado,
