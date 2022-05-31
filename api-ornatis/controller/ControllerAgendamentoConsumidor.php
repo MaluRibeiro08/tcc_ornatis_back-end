@@ -11,17 +11,19 @@ class ControllerAgendamentoConsumidor
     private $_model_agendamento;
     private $_model_servico;
     private $_model_funcionario;
+    private $_model_empresa;
 
     private $_array_funcionarios;
 
     private $_id_servico;
 
 
-    public function __construct($model_agendamento, $model_servico, $model_funcionario)
+    public function __construct($model_agendamento, $model_servico, $model_funcionario, $model_empresa)
     {
         $this->_model_agendamento = $model_agendamento;
         $this->_model_servico = $model_servico;
         $this->_model_funcionario = $model_funcionario;
+        $this->_model_empresa = $model_empresa;
 
         $this->_method = $_SERVER['REQUEST_METHOD'];
 
@@ -53,6 +55,8 @@ class ControllerAgendamentoConsumidor
                     return $this->_model_agendamento->getAgendamentosConsumidor();
                 } elseif ($this->_flag == "listarDetalhesAgendamento") {
                     return $this->_model_agendamento->getDetalhesAgendamentosConsumidor();
+                } elseif ($this->_flag == "funcionamentoSalao") {
+                    return $this->_model_empresa->getFuncionamento();
                 }
 
                 break;
