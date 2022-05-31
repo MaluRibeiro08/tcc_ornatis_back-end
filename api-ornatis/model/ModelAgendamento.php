@@ -139,7 +139,7 @@ class ModelAgendamento
     }
 
     public function getAgendamentosFuncionario()
-    {        
+    {
         $sql = "SELECT tbl_agendamento.id_agendamento,
                 tbl_agendamento.data_agendamento,
                 tbl_agendamento.hora_inicio,
@@ -321,12 +321,52 @@ class ModelAgendamento
 
     public function cancelarAgendamento()
     {
+        $divida = false;
+
+        $sql = "SELECT hora_inicio 
+                FROM tbl_agendamento 
+                WHERE id_agendamento = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_agendamento);
+        $stm->execute();
+
+        $horaAtendimento = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
         $dateformat = "Y-m-d";
         $this->_data_cancelamento = date($dateformat);
 
         date_default_timezone_set('America/Sao_Paulo');
         $timeformat = "H:i";
         $this->_hora_cancelamento = date($timeformat);
+
+        //cálculo de horas até o atendiment0
+
+        $string1 = $this->_hora_cancelamento;
+        $string2 = $horaAtendimento[0]["hora_inicio"];
+        list($h1, $m1, $s1) = explode(':', $string1);
+        list($h2, $m2, $s2) = explode(':', $string2);
+
+        $dateTimeOne = new DateTime();
+        $dateTimeOne->setTime($h1, $m1, $s1);
+
+        $dateTimeTwo = new DateTime();
+        $dateTimeTwo->setTime($h2, $m2, $s2);
+
+        $interval = $dateTimeOne->diff($dateTimeTwo);
+        $intervalString= $interval->format('%H:%i');
+        list($h, $m) = explode(':', $intervalString);
+
+        $hora = intval($h);
+        $minuto = intval($m);
+
+        if ($minuto < 30) {
+            
+            if ($hora > 1) {
+                $hora = $hora - 1;
+            }
+        }
+
 
         $sql = "INSERT INTO tbl_cancelamento (data_cancelamento, hora_cancelamento, id_agendamento)
         VALUES (?, ?, ?)";
