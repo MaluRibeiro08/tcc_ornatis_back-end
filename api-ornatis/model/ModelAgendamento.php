@@ -25,6 +25,9 @@ class ModelAgendamento
     private $_observacoes;
     private $_confirmado;
 
+    private $_preco;
+    private $_taxa_unica_cancelamento;
+
     private $_data_cancelamento;
     private $_hora_cancelamento;
 
@@ -66,6 +69,7 @@ class ModelAgendamento
                 $this->_id_funcionario = $_GET["id_funcionario"] ?? $this->_dados_agendamento->id_funcionario ?? null;
                 $this->_id_servico = $_GET["id_servico"] ?? $this->_dados_agendamento->id_servico ?? null;
 
+                $this->_preco = $_GET["preco"] ?? $this->_dados_agendamento->preco ?? null;
                 break;
         }
 
@@ -323,7 +327,7 @@ class ModelAgendamento
     {
         $divida = false;
 
-        $sql = "SELECT hora_inicio 
+        $sql = "SELECT hora_inicio, data_agendamento 
                 FROM tbl_agendamento 
                 WHERE id_agendamento = ?";
 
@@ -331,42 +335,138 @@ class ModelAgendamento
         $stm->bindValue(1, $this->_id_agendamento);
         $stm->execute();
 
-        $horaAtendimento = $stm->fetchAll(\PDO::FETCH_ASSOC);
+        $atendimento = $stm->fetchAll(\PDO::FETCH_ASSOC);
 
+        //data e hora atuais
         $dateformat = "Y-m-d";
         $this->_data_cancelamento = date($dateformat);
 
         date_default_timezone_set('America/Sao_Paulo');
+
         $timeformat = "H:i";
         $this->_hora_cancelamento = date($timeformat);
 
-        //cálculo de horas até o atendiment0
+        //cálculo de dias até o atendimento
+        $data_inicio = new DateTime($this->_data_cancelamento);
+        $data_fim = new DateTime($atendimento[0]["data_agendamento"]);
 
+        // Resgata diferença entre as datas
+        $dateInterval = $data_inicio->diff($data_fim);
+        $dias = $dateInterval->days;
+
+        //cálculo de horas até o atendimento
         $string1 = $this->_hora_cancelamento;
-        $string2 = $horaAtendimento[0]["hora_inicio"];
+        $string2 = $atendimento[0]["hora_inicio"];
         list($h1, $m1, $s1) = explode(':', $string1);
         list($h2, $m2, $s2) = explode(':', $string2);
 
-        $dateTimeOne = new DateTime();
-        $dateTimeOne->setTime($h1, $m1, $s1);
+        $dateTime1 = new DateTime();
+        $dateTime1->setTime($h1, $m1, $s1);
 
-        $dateTimeTwo = new DateTime();
-        $dateTimeTwo->setTime($h2, $m2, $s2);
+        $dateTime2 = new DateTime();
+        $dateTime2->setTime($h2, $m2, $s2);
 
-        $interval = $dateTimeOne->diff($dateTimeTwo);
-        $intervalString= $interval->format('%H:%i');
+        $intervalo = $dateTime1->diff($dateTime2);
+        $intervalString = $intervalo->format('%H:%i');
         list($h, $m) = explode(':', $intervalString);
 
         $hora = intval($h);
         $minuto = intval($m);
 
-        if ($minuto < 30) {
-            
-            if ($hora > 1) {
-                $hora = $hora - 1;
-            }
+        if ($minuto > 30) {
+            $hora = $hora + 1;
         }
 
+        //cálculo com dias até o atendimento
+        if ($dias > 0) {
+            $hora = $hora + ($dias * 24);
+        }
+
+        //verificação de dívida
+        $sql = "SELECT valor_acima_de_100, 
+                porcentagem_sobre_valor_servico, 
+                horas_tolerancia
+                FROM tbl_taxa_cancelamento 
+                WHERE id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+        $stm->execute();
+
+        $taxasCancelamento = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+        if ($taxasCancelamento != null) {
+
+            //criação de array de horas de tolerancia 
+            $array_tolerancia_abaixo_de_100 = [];
+            $array_tolerancia_acima_de_100 = [];
+            foreach ($taxasCancelamento as $taxaCancelamento) {
+
+                if ($taxaCancelamento["valor_acima_de_100"] == 0) {
+                    $array_tolerancia_abaixo_de_100[] = $taxaCancelamento["horas_tolerancia"];
+                } else {
+                    $array_tolerancia_acima_de_100[] = $taxaCancelamento["horas_tolerancia"];
+                }
+            }
+
+            foreach ($taxasCancelamento as $taxaCancelamento) {
+
+                //verificar o valor do servico
+                if ($taxaCancelamento["valor_acima_de_100"] == 0 && $this->_preco < 100) {
+
+                    if (in_array($hora, $array_tolerancia_abaixo_de_100)) {
+
+                        $valorDivida = number_format($taxaCancelamento["porcentagem_sobre_valor_servico"] * ($this->_preco / 100), 2);
+                        return $valorDivida;
+                    } else {
+                        return $hora . 'hora n está no array';
+                    }
+
+                    //verificar hora de tolerância
+                    //calcular valor da divida
+
+
+                } else {
+
+                    if (in_array($hora, $array_tolerancia_acima_de_100)) {
+
+                        $valorDivida = number_format($taxaCancelamento["porcentagem_sobre_valor_servico"] * ($this->_preco / 100), 2);
+                        return $valorDivida;
+                    }
+                }
+            }
+        } else {
+
+            //cobrança de divida qdo há taxa única
+            $sql = "SELECT taxa_unica_cancelamento 
+                    FROM tbl_empresa 
+                    WHERE id_empresa = ?";
+
+            $stm = $this->_conexao->prepare($sql);
+            $stm->bindValue(1, $this->_id_empresa);
+            $stm->execute();
+
+            $empresa = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+            $this->_taxa_unica_cancelamento = $empresa[0]["taxa_unica_cancelamento"];
+
+            if ($this->_taxa_unica_cancelamento != 0) {
+
+                $sql = "INSERT INTO tbl_divida (valor_divida, 
+                    consumidor_paga_prestador, data_criacao, hora_criacao, 
+                    id_agendamento, id_tipo_divida) 
+                    VALUES (?, ?, ?, ?, ?, ?)";
+
+                $stm = $this->_conexao->prepare($sql);
+                $stm->bindValue(1, $this->_taxa_unica_cancelamento);
+                $stm->bindValue(2, 1);
+                $stm->bindValue(3, $this->_data_cancelamento);
+                $stm->bindValue(4, $this->_hora_cancelamento);
+                $stm->bindValue(5, $this->_id_agendamento);
+                $stm->bindValue(6, 1);
+                $stm->execute();
+            }
+        }
 
         $sql = "INSERT INTO tbl_cancelamento (data_cancelamento, hora_cancelamento, id_agendamento)
         VALUES (?, ?, ?)";
