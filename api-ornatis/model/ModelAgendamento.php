@@ -412,15 +412,36 @@ class ModelAgendamento
             foreach ($taxasCancelamento as $taxaCancelamento) {
 
                 //verificar o valor do servico
-                if ($taxaCancelamento["valor_acima_de_100"] == 0 && $this->_preco < 100) {
+                if ($taxaCancelamento["valor_acima_de_100"] == 0 && $this->_preco <= 100) {
 
-                    if (in_array($hora, $array_tolerancia_abaixo_de_100)) {
+                    if ($hora == $taxaCancelamento["hora_tolerancia"]) {
 
                         $valorDivida = number_format($taxaCancelamento["porcentagem_sobre_valor_servico"] * ($this->_preco / 100), 2);
-                        return $valorDivida;
-                    } else {
-                        return $hora . 'hora n está no array';
-                    }
+
+                        $sql = "INSERT INTO tbl_divida (valor_divida, 
+                        consumidor_paga_prestador, data_criacao, hora_criacao, 
+                        id_agendamento, id_tipo_divida) 
+                        VALUES (?, ?, ?, ?, ?, ?)";
+
+                        $stm = $this->_conexao->prepare($sql);
+                        $stm->bindValue(1, $valorDivida);
+                        $stm->bindValue(2, 1);
+                        $stm->bindValue(3, $this->_data_cancelamento);
+                        $stm->bindValue(4, $this->_hora_cancelamento);
+                        $stm->bindValue(5, $this->_id_agendamento);
+                        $stm->bindValue(6, 1);
+                        if($stm->execute()){
+                            return;
+                        }
+                    
+                    } 
+                    // elseif ($hora < $taxaCancelamento["hora_tolerancia"]) {
+                        
+
+
+                    // }  else {
+                    //     return $hora . 'hora n está no array';
+                    // }
 
                     //verificar hora de tolerância
                     //calcular valor da divida
@@ -428,7 +449,7 @@ class ModelAgendamento
 
                 } else {
 
-                    if (in_array($hora, $array_tolerancia_acima_de_100)) {
+                    if ($hora == $taxaCancelamento["hora_tolerancia"]) {
 
                         $valorDivida = number_format($taxaCancelamento["porcentagem_sobre_valor_servico"] * ($this->_preco / 100), 2);
                         return $valorDivida;
@@ -489,7 +510,7 @@ class ModelAgendamento
         if ($stm->execute()) {
             return "Success";
         } else {
-            return "Erro ao cadastrar agendamento";
+            return "Erro ao cancelar agendamento";
         }
     }
 }
