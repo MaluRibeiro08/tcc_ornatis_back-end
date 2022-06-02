@@ -327,6 +327,27 @@ class ModelAgendamento
     {
         $divida = false;
 
+        $sql = "SELECT tbl_servico.preco,
+                tbl_servico.desconto
+                FROM tbl_agendamento
+                
+                inner join tbl_servico
+                on tbl_agendamento.id_servico = tbl_servico.id_servico
+                
+                WHERE id_agendamento = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_agendamento);
+        $stm->execute();
+
+        $servico = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+        $preco = $servico[0]["preco"];
+        $desconto = $servico[0]["desconto"];
+
+        $this->_preco = $preco - ($preco * ($desconto / 100));
+
+
         $sql = "SELECT hora_inicio, data_agendamento 
                 FROM tbl_agendamento 
                 WHERE id_agendamento = ?";
@@ -400,21 +421,13 @@ class ModelAgendamento
             //criação de array de horas de tolerancia 
             $array_tolerancia_abaixo_de_100 = [];
             $array_tolerancia_acima_de_100 = [];
-            foreach ($taxasCancelamento as $taxaCancelamento) {
-
-                if ($taxaCancelamento["valor_acima_de_100"] == 0) {
-                    $array_tolerancia_abaixo_de_100[] = $taxaCancelamento["horas_tolerancia"];
-                } else {
-                    $array_tolerancia_acima_de_100[] = $taxaCancelamento["horas_tolerancia"];
-                }
-            }
 
             foreach ($taxasCancelamento as $taxaCancelamento) {
 
                 //verificar o valor do servico
                 if ($taxaCancelamento["valor_acima_de_100"] == 0 && $this->_preco <= 100) {
 
-                    if ($hora == $taxaCancelamento["hora_tolerancia"]) {
+                    if ($hora == $taxaCancelamento["horas_tolerancia"]) {
 
                         $valorDivida = number_format($taxaCancelamento["porcentagem_sobre_valor_servico"] * ($this->_preco / 100), 2);
 
@@ -430,31 +443,110 @@ class ModelAgendamento
                         $stm->bindValue(4, $this->_hora_cancelamento);
                         $stm->bindValue(5, $this->_id_agendamento);
                         $stm->bindValue(6, 1);
-                        if($stm->execute()){
+                        if ($stm->execute()) {
+                            $divida = true;
                             return;
                         }
-                    
-                    } 
-                    // elseif ($hora < $taxaCancelamento["hora_tolerancia"]) {
-                        
-
-
-                    // }  else {
-                    //     return $hora . 'hora n está no array';
-                    // }
-
-                    //verificar hora de tolerância
-                    //calcular valor da divida
-
-
+                    } else {
+                        if ($hora < $taxaCancelamento["horas_tolerancia"]) {
+                            $array_tolerancia_abaixo_de_100[] = $taxaCancelamento["horas_tolerancia"];
+                        }
+                    }
                 } else {
 
-                    if ($hora == $taxaCancelamento["hora_tolerancia"]) {
+                    if ($hora == $taxaCancelamento["horas_tolerancia"]) {
 
                         $valorDivida = number_format($taxaCancelamento["porcentagem_sobre_valor_servico"] * ($this->_preco / 100), 2);
-                        return $valorDivida;
+
+                        $sql = "INSERT INTO tbl_divida (valor_divida, 
+                        consumidor_paga_prestador, data_criacao, hora_criacao, 
+                        id_agendamento, id_tipo_divida) 
+                        VALUES (?, ?, ?, ?, ?, ?)";
+
+                        $stm = $this->_conexao->prepare($sql);
+                        $stm->bindValue(1, $valorDivida);
+                        $stm->bindValue(2, 1);
+                        $stm->bindValue(3, $this->_data_cancelamento);
+                        $stm->bindValue(4, $this->_hora_cancelamento);
+                        $stm->bindValue(5, $this->_id_agendamento);
+                        $stm->bindValue(6, 1);
+                        if ($stm->execute()) {
+                            $divida = true;
+                            return;
+                        }
+                    } else {
+                        if ($hora < $taxaCancelamento["horas_tolerancia"]) {
+                            $array_tolerancia_acima_de_100[] = $taxaCancelamento["horas_tolerancia"];
+                        }
                     }
                 }
+            }
+
+            if ($this->_preco <= 100 && $divida != true && $array_tolerancia_abaixo_de_100 != null) {
+                sort($array_tolerancia_abaixo_de_100);
+                $horaTolerancia = $array_tolerancia_abaixo_de_100[0];
+
+                $sql = "SELECT porcentagem_sobre_valor_servico 
+                        FROM tbl_taxa_cancelamento 
+                        WHERE horas_tolerancia = ? 
+                        && valor_acima_de_100 = 0 
+                        && id_empresa = ?";
+
+                $stm = $this->_conexao->prepare($sql);
+                $stm->bindValue(1, $horaTolerancia);
+                $stm->bindValue(2, $this->_id_empresa);
+                $stm->execute();
+
+                $taxaCancelamento = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+                $valorDivida = number_format($taxaCancelamento[0]["porcentagem_sobre_valor_servico"] * ($this->_preco / 100), 2);
+
+                $sql = "INSERT INTO tbl_divida (valor_divida, 
+                        consumidor_paga_prestador, data_criacao, hora_criacao, 
+                        id_agendamento, id_tipo_divida) 
+                        VALUES (?, ?, ?, ?, ?, ?)";
+
+                $stm = $this->_conexao->prepare($sql);
+                $stm->bindValue(1, $valorDivida);
+                $stm->bindValue(2, 1);
+                $stm->bindValue(3, $this->_data_cancelamento);
+                $stm->bindValue(4, $this->_hora_cancelamento);
+                $stm->bindValue(5, $this->_id_agendamento);
+                $stm->bindValue(6, 1);
+                $stm->execute();
+                
+            } elseif ($this->_preco > 100 && $divida != true && $array_tolerancia_acima_de_100 != null) {
+                sort($array_tolerancia_acima_de_100);
+                $horaTolerancia = $array_tolerancia_acima_de_100[0];
+
+                $sql = "SELECT porcentagem_sobre_valor_servico 
+                        FROM tbl_taxa_cancelamento 
+                        WHERE horas_tolerancia = ? 
+                        && valor_acima_de_100 = 0 
+                        && id_empresa = ?";
+
+                $stm = $this->_conexao->prepare($sql);
+                $stm->bindValue(1, $horaTolerancia);
+                $stm->bindValue(2, $this->_id_empresa);
+                $stm->execute();
+
+                $taxaCancelamento = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+                $valorDivida = number_format($taxaCancelamento[0]["porcentagem_sobre_valor_servico"] * ($this->_preco / 100), 2);
+
+                $sql = "INSERT INTO tbl_divida (valor_divida, 
+                        consumidor_paga_prestador, data_criacao, hora_criacao, 
+                        id_agendamento, id_tipo_divida) 
+                        VALUES (?, ?, ?, ?, ?, ?)";
+
+                $stm = $this->_conexao->prepare($sql);
+                $stm->bindValue(1, $valorDivida);
+                $stm->bindValue(2, 1);
+                $stm->bindValue(3, $this->_data_cancelamento);
+                $stm->bindValue(4, $this->_hora_cancelamento);
+                $stm->bindValue(5, $this->_id_agendamento);
+                $stm->bindValue(6, 1);
+                $stm->execute();
             }
         } else {
 
@@ -508,7 +600,7 @@ class ModelAgendamento
 
 
         if ($stm->execute()) {
-            return "Success";
+            return "Success" . " - Hora de antecendência: " . $hora;
         } else {
             return "Erro ao cancelar agendamento";
         }
