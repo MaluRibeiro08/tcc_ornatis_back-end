@@ -92,7 +92,6 @@ class ModelServico
         $stm->execute();
 
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
-
     }
 
     public function getServicoPorPesquisa()
@@ -100,13 +99,12 @@ class ModelServico
         $sql = "SELECT tbl_servico.nome_servico, tbl_servico.id_servico 
                 FROM tbl_servico 
                 WHERE locate(?, nome_servico)";
-        
+
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_pesquisa_servico);
         $stm->execute();
 
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
-
     }
 
     // ** DETALHES DE SERVIÇO **
@@ -299,6 +297,82 @@ class ModelServico
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    //** GET - HOME **
+    public function getServicosMaisAgendados()
+    {
+        $sql = "";
+    }
+
+    public function getPrevisaoLucroDiario()
+    {
+        $dateformat = "Y-m-d";
+        $dataAtual = date($dateformat);
+
+        $sql = "SELECT tbl_servico.preco,
+            tbl_servico.desconto
+            FROM tbl_agendamento
+            
+            inner join tbl_servico
+            on tbl_agendamento.id_servico = tbl_servico.id_servico
+            
+            WHERE tbl_agendamento.data_agendamento = ?
+            AND tbl_servico.id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $dataAtual);
+        $stm->bindValue(2, $this->_id_empresa);
+        $stm->execute();
+
+        $valores = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+        foreach ($valores as $valor) {
+
+            $this->_preco = $valor["preco"] - ($valor["preco"] * ($valor["desconto"] / 100));
+            $array_lucro[] = $this->_preco;
+        }
+
+        $lucro = array_sum($array_lucro);
+
+        return number_format($lucro, 2);
+    }
+
+    public function getPrevisaoLucroMensal()
+    {
+        $dateformat = "n";
+        $mes = date($dateformat);
+
+        $sql = "SELECT tbl_servico.preco,
+                tbl_servico.desconto
+                FROM tbl_agendamento
+                
+                inner join tbl_servico
+                on tbl_agendamento.id_servico = tbl_servico.id_servico
+                
+                inner join tbl_empresa
+                on tbl_servico.id_empresa = tbl_empresa.id_empresa
+                
+                WHERE month(tbl_agendamento.data_agendamento) = ?
+                AND tbl_servico.id_empresa = ?";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $mes);
+        $stm->bindValue(2, $this->_id_empresa);
+        $stm->execute();
+
+        $valores = $stm->fetchAll(\PDO::FETCH_ASSOC);
+
+        foreach ($valores as $valor) {
+
+            $this->_preco = $valor["preco"] - ($valor["preco"] * ($valor["desconto"] / 100));
+            $array_lucro[] = $this->_preco;
+        }
+
+        $lucro = array_sum($array_lucro);
+
+        return number_format($lucro, 2);
+
+    }
+
     //** CREATE **
     public function createServico()
     {
@@ -408,7 +482,7 @@ class ModelServico
 
     public function setarDisponibilidadeServico()
     {
-        
+
         $sql = "UPDATE tbl_servico SET 
         ativo_para_uso = ?
         WHERE id_servico = ?";
@@ -540,5 +614,4 @@ class ModelServico
             }
         }
     }
-
 }

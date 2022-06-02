@@ -5,6 +5,8 @@ class ControllerAdmServico
 
     private $_method;
 
+    private $_flag;
+
     private $_model_servico;
 
     private $_id_servico;
@@ -59,6 +61,11 @@ class ControllerAdmServico
                     $dados_servico["dados_servico_tipo_atendimento"] = $this->_model_servico->getDetalhesServicoTipoAtendimento();
 
                     return $dados_servico;
+                } elseif ($this->_flag == "getPrevisaoLucroDiario") {
+                    return $this->_model_servico->getPrevisaoLucroDiario();
+
+                } elseif ($this->_flag == "getPrevisaoLucroMensal") {
+                    return $this->_model_servico->getPrevisaoLucroMensal();
                 }
 
                 break;
