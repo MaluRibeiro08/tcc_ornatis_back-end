@@ -303,6 +303,26 @@ class ModelServico
         $sql = "";
     }
 
+    public function getPromocoes()
+    {
+        $sql = "SELECT tbl_servico.nome_servico,
+                tbl_servico.id_servico
+                FROM tbl_servico
+                
+                WHERE tbl_servico.id_empresa = ?
+                AND tbl_servico.desconto != 0
+                
+                ORDER BY tbl_servico.desconto desc
+                LIMIT 3";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public function getPrevisaoLucroDiario()
     {
         $dateformat = "Y-m-d";
@@ -370,7 +390,6 @@ class ModelServico
         $lucro = array_sum($array_lucro);
 
         return number_format($lucro, 2);
-
     }
 
     //** CREATE **

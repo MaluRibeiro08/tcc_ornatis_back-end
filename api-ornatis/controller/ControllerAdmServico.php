@@ -66,6 +66,10 @@ class ControllerAdmServico
 
                 } elseif ($this->_flag == "getPrevisaoLucroMensal") {
                     return $this->_model_servico->getPrevisaoLucroMensal();
+
+                } elseif ($this->_flag == "getPromocoes") {
+                    return $this->_model_servico->getPromocoes();
+                    
                 }
 
                 break;
