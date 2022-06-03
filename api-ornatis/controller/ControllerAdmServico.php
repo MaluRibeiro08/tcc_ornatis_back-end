@@ -70,6 +70,8 @@ class ControllerAdmServico
                 } elseif ($this->_flag == "getPromocoes") {
                     return $this->_model_servico->getPromocoes();
                     
+                } elseif ($this->_flag == "getServicosMaisAgendados") {
+                    return $this->_model_servico->getServicosMaisAgendados();
                 }
 
                 break;

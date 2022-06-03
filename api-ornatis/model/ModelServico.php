@@ -300,7 +300,25 @@ class ModelServico
     //** GET - HOME **
     public function getServicosMaisAgendados()
     {
-        $sql = "";
+        $sql = "SELECT tbl_servico.nome_servico,
+                COUNT(tbl_agendamento.id_servico) as agendamentos
+                FROM tbl_servico
+                
+                inner join tbl_agendamento
+                on tbl_servico.id_servico = tbl_agendamento.id_servico
+                
+                WHERE tbl_servico.id_empresa = ?
+                
+                GROUP BY tbl_agendamento.id_servico
+                ORDER BY agendamentos desc
+                LIMIT 3";
+
+        $stm = $this->_conexao->prepare($sql);
+        $stm->bindValue(1, $this->_id_empresa);
+
+        $stm->execute();
+
+        return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function getPromocoes()
