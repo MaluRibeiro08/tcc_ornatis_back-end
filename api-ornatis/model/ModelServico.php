@@ -85,7 +85,26 @@ class ModelServico
     // ** FILTROS **
     public function getServicoPorEspecialidade()
     {
-        $sql = "SELECT * FROM tbl_servico WHERE id_especialidade = ?";
+        $sql = "SELECT tbl_servico.*,
+                tbl_empresa.nome_fantasia,
+                tbl_empresa.imagem_perfil,
+                tbl_cidade.nome_cidade,
+                tbl_estado.sigla_estado
+                FROM tbl_servico 
+                
+                inner join tbl_empresa
+                on tbl_servico.id_empresa = tbl_empresa.id_empresa
+                
+                inner join tbl_endereco_salao
+                on tbl_empresa.id_empresa = tbl_endereco_salao.id_empresa
+                
+                inner join tbl_cidade
+                on tbl_endereco_salao.id_cidade = tbl_cidade.id_cidade
+                
+                inner join tbl_estado
+                on tbl_cidade.id_estado = tbl_estado.id_estado
+                
+                WHERE id_especialidade = ?";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_especialidade);
@@ -96,8 +115,25 @@ class ModelServico
 
     public function getServicoPorPesquisa()
     {
-        $sql = "SELECT tbl_servico.nome_servico, tbl_servico.id_servico 
+        $sql = "SELECT tbl_servico.*,
+                tbl_empresa.nome_fantasia,
+                tbl_empresa.imagem_perfil,
+                tbl_cidade.nome_cidade,
+                tbl_estado.sigla_estado
                 FROM tbl_servico 
+                
+                inner join tbl_empresa
+                on tbl_servico.id_empresa = tbl_empresa.id_empresa
+                
+                inner join tbl_endereco_salao
+                on tbl_empresa.id_empresa = tbl_endereco_salao.id_empresa
+                
+                inner join tbl_cidade
+                on tbl_endereco_salao.id_cidade = tbl_cidade.id_cidade
+                
+                inner join tbl_estado
+                on tbl_cidade.id_estado = tbl_estado.id_estado
+                
                 WHERE locate(?, nome_servico)";
 
         $stm = $this->_conexao->prepare($sql);
