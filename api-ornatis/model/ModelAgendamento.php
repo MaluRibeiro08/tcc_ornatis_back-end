@@ -78,11 +78,15 @@ class ModelAgendamento
 
     public function getAgendamentosConsumidor()
     {
-        $sql = "SELECT tbl_agendamento.data_agendamento, 
+        $sql = "SELECT 
+        tbl_agendamento.id_agendamento,
+        tbl_agendamento.data_agendamento, 
         tbl_agendamento.hora_inicio,
+        tbl_agendamento.hora_fim,
         tbl_servico.nome_servico,
         tbl_servico.preco,
-        tbl_empresa.nome_fantasia
+        tbl_empresa.nome_fantasia,
+        tbl_empresa.id_empresa
         FROM tbl_agendamento
         
         inner join tbl_servico 
