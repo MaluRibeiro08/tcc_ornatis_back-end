@@ -88,9 +88,10 @@ class ControllerAdmServico
 
                             if (isset($_FILES["imagem_servico"])) {
                                 if ($_FILES["imagem_servico"]["error"] == 4) {
-                                    return ("chegou a req sem imagem de serviço");
+                                    // return ("chegou a req sem imagem de serviço");
                                 } else {
-                                    return $this->_model_servico->updateServico($this->_id_servico);
+                                    // return $this->_model_servico->updateServico($this->_id_servico);
+                                    $this->_model_servico->updateServico($this->_id_servico);
                                 }
                             }
                         }
@@ -107,7 +108,7 @@ class ControllerAdmServico
                         $this->_array_tipos_atendimento = $this->_dados_requisicao->tipos_atendimento;
                         $dados_servico["dados_servico_tipo_atendimento"] = $this->_model_servico->addTipoAtendimentoServico($this->_array_tipos_atendimento, $this->_id_servico);
 
-                        return $this->_id_servico;
+                        // return $this->_id_servico;
                     }
                 } elseif ($this->_flag == "updateServico") {
 
