@@ -39,7 +39,7 @@ class ControllerServicoConsumidor
                 if ($this->_id_empresa != null && $this->_flag == "listarServicosPorEmpresa") {
 
                     return $this->_model_servico->getServicosPorEmpresa();
-                } elseif ($this->_id_empresa != null && $this->_flag == "listarDetalhesServico") {
+                } elseif ($this->_flag == "listarDetalhesServico") {
 
                     $dados_servico["dados_servico"] = $this->_model_servico->getDetalhesServico();
                     $dados_servico["dados_servico_especialidade"] = $this->_model_servico->getDetalhesServicoEspecialidade();

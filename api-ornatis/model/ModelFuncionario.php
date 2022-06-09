@@ -145,7 +145,7 @@ class ModelFuncionario
 
     public function getInformacoesFuncionario()
     {
-        $sql = "SELECT tbl_funcionario.nome_funcionario, 
+        $sql = "SELECT tbl_funcionario.id_funcionario,  tbl_funcionario.nome_funcionario, 
         tbl_funcionario.foto_perfil, tbl_login_funcionario.cod_funcionario, tbl_login_funcionario.senha
         FROM tbl_funcionario 
         
