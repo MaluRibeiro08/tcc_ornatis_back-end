@@ -116,6 +116,7 @@ class ModelAgendamento
                 tbl_agendamento.observacoes,
                 tbl_agendamento.id_tipo_atendimento,
                 tbl_servico.nome_servico,
+                tbl_servico.preco,
                 tbl_consumidor.nome_consumidor,
                 tbl_consumidor.telefone,
                 tbl_funcionario.nome_funcionario,
