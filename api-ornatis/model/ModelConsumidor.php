@@ -217,7 +217,7 @@ class ModelConsumidor
 
                     //exclusão da imagem antiga se tiver
                     if ($consumidor[0]["foto_perfil_consumidor"] != null) {
-                        unlink("../../upload/foto_perfil_consumidor/" . $consumidor[0]["foto_perfil_consumidor"]);
+                        unlink("../../../upload/foto_perfil_consumidor/" . $consumidor[0]["foto_perfil_consumidor"]);
                     }
 
                     //nova imagem
@@ -227,7 +227,7 @@ class ModelConsumidor
                     $novoNomeArquivo = md5(microtime()) . ".$extensao";
 
 
-                    move_uploaded_file($_FILES["foto_perfil_consumidor"]["tmp_name"], "../../upload/foto_perfil_consumidor/$novoNomeArquivo");
+                    move_uploaded_file($_FILES["foto_perfil_consumidor"]["tmp_name"], "../../../upload/foto_perfil_consumidor/$novoNomeArquivo");
 
                     $sql = "UPDATE tbl_consumidor SET
                     foto_perfil_consumidor = ? WHERE id_consumidor = ? ";

@@ -19,6 +19,6 @@ $dados = $controller->router();
  
 echo json_encode(array("status"=>"Success","data"=>$dados));
 
-
+return;
 
 ?>
