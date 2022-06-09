@@ -89,7 +89,9 @@ class ModelServico
                 tbl_empresa.nome_fantasia,
                 tbl_empresa.imagem_perfil,
                 tbl_cidade.nome_cidade,
-                tbl_estado.sigla_estado
+                tbl_estado.sigla_estado,
+                tbl_partes_corpo.nome_parte_corpo,
+                tbl_especialidade.nome_especialidade
                 FROM tbl_servico 
                 
                 inner join tbl_empresa
@@ -103,8 +105,14 @@ class ModelServico
                 
                 inner join tbl_estado
                 on tbl_cidade.id_estado = tbl_estado.id_estado
+
+                inner join tbl_partes_corpo
+                on tbl_servico.id_parte_corpo = tbl_partes_corpo.id_parte_corpo
+
+                inner join tbl_especialidade
+                on tbl_servico.id_especialidade = tbl_especialidade.id_especialidade
                 
-                WHERE id_especialidade = ?";
+                WHERE tbl_servico.id_especialidade = ?";
 
         $stm = $this->_conexao->prepare($sql);
         $stm->bindValue(1, $this->_id_especialidade);
@@ -142,6 +150,8 @@ class ModelServico
 
         return $stm->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+    
 
     // ** DETALHES DE SERVIÇO **
     public function getDetalhesServico()
